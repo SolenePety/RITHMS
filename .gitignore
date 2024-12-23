@@ -5,3 +5,4 @@
 .httr-oauth
 .Rdata
 .quarto
+inst/doc
