@@ -1,5 +1,6 @@
 pandoc: 3.1.11
 pkgdown: 2.1.1
 pkgdown_sha: ~
-articles: {}
-last_built: 2024-12-23T10:16Z
+articles:
+  get-started: get-started.html
+last_built: 2024-12-23T16:07Z
