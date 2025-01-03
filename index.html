@@ -81,9 +81,14 @@
 <div class="page-header"><h1 id="rithms">RITHMS<a class="anchor" aria-label="anchor" href="#rithms"></a>
 </h1></div>
 <!-- badges: start -->
-
-<p>The goal of RITHMS is to …</p>
-<div class="section level2">
+<!-- badges: end -->
+<!-- Hexsticker -->
+<p><img src="reference/figures/hex_rithms.png" alt="Hexsticker" width="150" style="float: right; margin-left: 20px;"></p>
+<p>Our framework, an R Implementation of a Transgenerational Hologenomic Model-based Simulator (RITHMS) an open-source package, builds upon the MoBPS package and incorporates the distinctive architecture of the microbiota, notably vertical and horizontal transfer as well as modulation due to the environment and host genetics. In addition, RITHMS can account for a variety of selection strategies, is adaptable to different genetic architectures.</p>
+<p>Here is a little summary of how RITHMS work, but you can read the <a href="https://png.pngtree.com/png-vector/20220616/ourmid/pngtree-work-in-progress-warning-sign-with-yellow-and-black-stripes-painted-png-image_5060340.png" class="external-link">preprint</a> for more details.</p>
+<figure><img src="reference/figures/core_algorithm.png" alt="Schema"><figcaption aria-hidden="true">
+Schema
+</figcaption></figure><div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>You can install the development version of RITHMS from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
@@ -92,36 +97,17 @@
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"SolenePety/RITHMS"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
-</h2>
-<p>Full documentation website on: <a href="https://SolenePety.github.io/RITHMS" class="external-link uri">https://SolenePety.github.io/RITHMS</a></p>
-</div>
-<div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <p>This is a basic example which shows you how to solve a common problem:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SolenePety/RITHMS" class="external-link">RITHMS</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in library(RITHMS): aucun package nommé 'RITHMS' n'est trouvé</span></span>
 <span><span class="co">## basic example code</span></span></code></pre></div>
-<p>What is special about using <code>README.Rmd</code> instead of just <code>README.md</code>? You can include R chunks like so:</p>
+<p>You already have a toy dataset that show you the expected structure of input data :</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">cars</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      speed           dist       </span></span>
-<span><span class="co">#&gt;  Min.   : 4.0   Min.   :  2.00  </span></span>
-<span><span class="co">#&gt;  1st Qu.:12.0   1st Qu.: 26.00  </span></span>
-<span><span class="co">#&gt;  Median :15.0   Median : 36.00  </span></span>
-<span><span class="co">#&gt;  Mean   :15.4   Mean   : 42.98  </span></span>
-<span><span class="co">#&gt;  3rd Qu.:19.0   3rd Qu.: 56.00  </span></span>
-<span><span class="co">#&gt;  Max.   :25.0   Max.   :120.00</span></span></code></pre></div>
-<p>You’ll still need to render <code>README.Rmd</code> regularly, to keep <code>README.md</code> up-to-date. <code>devtools::build_readme()</code> is handy for this.</p>
-<p>You can also embed plots, for example:</p>
-<div class="figure">
-<img src="reference/figures/README-pressure-1.png" alt="plot of chunk pressure" width="100%"><p class="caption">
-plot of chunk pressure
-</p>
-</div>
-<p>In that case, don’t forget to commit and push the resulting figure files, so they display on GitHub and CRAN.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">DeruPop</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in data(DeruPop): jeu de données 'DeruPop' introuvable</span></span></code></pre></div>
+<p>But we can do much more… you can check also <a href="https://png.pngtree.com/png-vector/20220616/ourmid/pngtree-work-in-progress-warning-sign-with-yellow-and-black-stripes-painted-png-image_5060340.png" class="external-link">this vignette</a> to generate the figures coming from the article</p>
 </div>
 </div>
   </div>
@@ -143,6 +129,12 @@ plot of chunk pressure
 </ul>
 </div>
 
+<div class="community">
+<h2 data-toc-skip>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
+</ul>
+</div>
 
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
@@ -158,13 +150,7 @@ plot of chunk pressure
 </ul>
 </div>
 
-<div class="dev-status">
-<h2 data-toc-skip>Dev status</h2>
-<ul class="list-unstyled">
-<li><a href="https://github.com/SolenePety/RITHMS/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/SolenePety/RITHMS/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://app.codecov.io/gh/SolenePety/RITHMS" class="external-link"><img src="https://codecov.io/gh/SolenePety/RITHMS/graph/badge.svg" alt="Codecov test coverage"></a></li>
-</ul>
-</div>
+
 
   </div>
 </div>

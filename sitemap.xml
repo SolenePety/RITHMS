@@ -1,5 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>/404.html</loc></url>
+<url><loc>/CODE_OF_CONDUCT.html</loc></url>
 <url><loc>/LICENSE-text.html</loc></url>
 <url><loc>/LICENSE.html</loc></url>
 <url><loc>/articles/get-started.html</loc></url>
@@ -7,9 +8,18 @@
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
 <url><loc>/news/index.html</loc></url>
+<url><loc>/reference/compute_beta_g.html</loc></url>
+<url><loc>/reference/compute_beta_matrix_cluster.html</loc></url>
+<url><loc>/reference/compute_current_microbiome.html</loc></url>
+<url><loc>/reference/compute_mean_microbiome.html</loc></url>
+<url><loc>/reference/compute_phenotypes.html</loc></url>
 <url><loc>/reference/formatting_data.html</loc></url>
 <url><loc>/reference/generate_founder.html</loc></url>
+<url><loc>/reference/holo_simu.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
 <url><loc>/reference/rarefied_microbiome.html</loc></url>
+<url><loc>/reference/replace_zero.html</loc></url>
+<url><loc>/reference/richness_from_abundances_gen.html</loc></url>
+<url><loc>/reference/select_individual.html</loc></url>
 </urlset>
 
