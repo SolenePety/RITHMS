@@ -11,10 +11,12 @@ License: MIT + file LICENSE
 URL: https://github.com/SolenePety/RITHMS
 BugReports: https://github.com/SolenePety/RITHMS/issues
 Imports: 
+    compositions,
     glue,
     tibble,
     vegan
 Suggests: 
+    dplyr,
     knitr,
     rmarkdown,
     testthat
