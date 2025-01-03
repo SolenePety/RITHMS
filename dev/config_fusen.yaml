@@ -1,0 +1,17 @@
+flat_first.Rmd:
+  path: dev/flat_first.Rmd
+  state: active
+  R:
+  - R/formatting_data.R
+  - R/calibrate_params_phenotypes.R
+  - R/holo_simu.R
+  tests: tests/testthat/test-formatting_data.R
+  vignettes: vignettes/get-started.Rmd
+  inflate:
+    flat_file: dev/flat_first.Rmd
+    vignette_name: Get started
+    open_vignette: true
+    check: true
+    document: true
+    overwrite: ask
+    clean: ask
