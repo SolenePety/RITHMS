@@ -1,65 +1,58 @@
----
-output: github_document
----
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
-
 
 # RITHMS
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/SolenePety/RITHMS/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/SolenePety/RITHMS/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/SolenePety/RITHMS/graph/badge.svg)](https://app.codecov.io/gh/SolenePety/RITHMS)
 <!-- badges: end -->
+<!-- Hexsticker -->
 
-The goal of RITHMS is to ...
+<img src="man/figures/hex_rithms.png" alt="Hexsticker" width="150" style="float: right; margin-left: 20px;" />
+
+Our framework, an R Implementation of a Transgenerational Hologenomic
+Model-based Simulator (RITHMS) an open-source package, builds upon the
+MoBPS package and incorporates the distinctive architecture of the
+microbiota, notably vertical and horizontal transfer as well as
+modulation due to the environment and host genetics. In addition, RITHMS
+can account for a variety of selection strategies, is adaptable to
+different genetic architectures.
+
+Here is a little summary of how RITHMS work, but you can read the
+[preprint](https://png.pngtree.com/png-vector/20220616/ourmid/pngtree-work-in-progress-warning-sign-with-yellow-and-black-stripes-painted-png-image_5060340.png)
+for more details.
+
+<figure>
+<img src="man/figures/core_algorithm.png" alt="Schema" />
+<figcaption aria-hidden="true">Schema</figcaption>
+</figure>
 
 ## Installation
 
-You can install the development version of RITHMS from [GitHub](https://github.com/) with:
+You can install the development version of RITHMS from
+[GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("pak")
 pak::pak("SolenePety/RITHMS")
 ```
 
-## Documentation
-
-Full documentation website on: https://SolenePety.github.io/RITHMS
-
 ## Example
 
 This is a basic example which shows you how to solve a common problem:
 
-
-```r
+``` r
 library(RITHMS)
-#> Error in library(RITHMS): aucun package nommé 'RITHMS' n'est trouvé
 ## basic example code
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+You already have a toy dataset that show you the expected structure of
+input data :
 
-
-```r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+``` r
+data(DeruPop)
+#> Warning in data(DeruPop): jeu de données 'DeruPop' introuvable
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
-
-You can also embed plots, for example:
-
-<div class="figure">
-<img src="man/figures/README-pressure-1.png" alt="plot of chunk pressure" width="100%" />
-<p class="caption">plot of chunk pressure</p>
-</div>
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
+But we can do much more… you can check also [this
+vignette](https://png.pngtree.com/png-vector/20220616/ourmid/pngtree-work-in-progress-warning-sign-with-yellow-and-black-stripes-painted-png-image_5060340.png)
+to generate the figures coming from the article
