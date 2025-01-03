@@ -2,10 +2,19 @@
 % Please edit documentation in R/formatting_data.R
 \name{assign_taxa}
 \alias{assign_taxa}
+\alias{gen_effect_calibration}
 \alias{read_input_data}
 \title{Assign all taxa to a cluster, eventually under genetic control using hclust}
 \usage{
 assign_taxa(founder_object, taxa_g = 0.1)
+
+gen_effect_calibration(
+  founder_object,
+  taxa_assign_g,
+  correlation = 0.5,
+  effect.size = c(seq(0.1, 1, 0.1)),
+  plot = T
+)
 
 read_input_data(
   path_to_microbiome,
@@ -15,9 +24,17 @@ read_input_data(
 )
 }
 \arguments{
-\item{founder_object}{Output of read_input_data function}
+\item{founder_object}{Output of generate_founder() function}
 
 \item{taxa_g}{Percentage of taxa under genetic control, DEFAULT = 0.1}
+
+\item{taxa_assign_g}{Factor vector giving cluster assignment for all taxa, typical output of assign_taxa()}
+
+\item{correlation}{Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5}
+
+\item{effect.size}{Vector giving the size of genetic effect to try}
+
+\item{plot}{boolean, if plot generation is required, DEFAULT = TRUE}
 
 \item{path_to_microbiome}{String giving the path to count table file}
 
@@ -30,13 +47,21 @@ read_input_data(
 \value{
 A vector with a length matching the total number of taxa with values from 0 to the number of taxa, 0 corresponding to the non under genetic control cluster
 
+A data.frame with three columns, giving the Taxa ID, the effect.size and the corresponding heritability
+
 A data.frame corresponding to (rarefied) microbiome with individuals in rows and taxa in columns. Genotypes data.frame is an attribute called "population" reachable using attr(output_name,"population")
 }
 \description{
 Assign all taxa to a cluster, eventually under genetic control using hclust
 
+Calibration of genetic effect from founder population data
+
 Formatting data from file paths to base population object
 }
 \examples{
-#exemples with dataset
+library(dplyr)
+datafile <- system.file("DeruPop.rds", package = "RITHMS")
+DeruPop <- readRDS(datafile)
+assign_taxa(founder_object = DeruPop,
+            taxa_g = 0.2)
 }

@@ -47,7 +47,11 @@ and `system.file()` to read it in your examples.
 ## Taxa assignation function
 
 ```{r examples-taxa_assignment}
-#exemples with dataset
+library(dplyr)
+datafile <- system.file("DeruPop.rds", package = "RITHMS")
+DeruPop <- readRDS(datafile)
+assign_taxa(founder_object = DeruPop,
+            taxa_g = 0.2)
 ```
 
 
@@ -62,10 +66,16 @@ and `system.file()` to read it in your examples.
 
 # HoloSimu
 ## Useful functions 
+
 ## Main function
 
+```{r examples-holo_simu}
+
+```
+
+
+
 # Get functions 
-## Useful functions 
 
 # Plot functions 
 

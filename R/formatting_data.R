@@ -13,7 +13,11 @@
 #' @rdname formatting_data
 #' @export
 #' @examples
-#' #exemples with dataset
+#' library(dplyr)
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' DeruPop <- readRDS(datafile)
+#' assign_taxa(founder_object = DeruPop,
+#'             taxa_g = 0.2)
 
 assign_taxa <- function(founder_object,
                         taxa_g = 0.1){
@@ -36,6 +40,176 @@ assign_taxa <- function(founder_object,
   taxa_assign_g <- ifelse(taxa_assign %in% cluster_id_g, taxa_assign, 0) %>% as.factor()
   levels(taxa_assign_g) <- c(0:length(cluster_id_g))
   return(taxa_assign_g)
+}
+
+
+#' Calibration of genetic effect from founder population data 
+#'
+#' @param founder_object Output of generate_founder() function
+#' @param taxa_assign_g Factor vector giving cluster assignment for all taxa, typical output of assign_taxa()
+#' @param correlation Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5
+#' @param effect.size Vector giving the size of genetic effect to try 
+#' @param plot boolean, if plot generation is required, DEFAULT = TRUE
+#'
+#' @return
+#' A data.frame with three columns, giving the Taxa ID, the effect.size and the corresponding heritability
+#' @rdname formatting_data
+#' @export
+gen_effect_calibration <- function(founder_object,
+                                   taxa_assign_g,
+                                   correlation = 0.5,
+                                   effect.size = c(seq(0.1,1,0.1)),
+                                   plot = T){
+  #init of all parameters
+  
+  #Microbiome part
+  M <- founder_object %>% t() %>% apply(2, \(x) x/sum(x))
+  M0_clr <- M |> t() |> compositions::clr() |> t()
+  taxa_scale <- apply(M0_clr, 1, sd)
+  #Genotype
+  G <- get.geno(attr(founder_object,"population"),gen=1)
+  
+  #beta arguments
+  n_g <- nrow(G)
+  n_clust_g <- taxa_assign_g[taxa_assign_g != 0] %>% unique() %>% length()
+  n_qtl_o <- ((n_g * 0.2)/n_clust_g)  %>% round()
+  
+  #output variables 
+  out_data <- data.frame()
+  
+  #One run to obtain beta info matrix 
+  beta_innit <- compute_beta_matrix_cluster(n_b = nrow(M), 
+                                            n_g = n_g, 
+                                            n_clust = taxa_assign_g, 
+                                            n_qtl_o = n_qtl_o, 
+                                            n_otus = sum(taxa_assign_g != 0), 
+                                            correlation = correlation, 
+                                            effect_size = 0.1)
+  
+  beta_info <- attr(beta_innit, "sim_params")
+  
+  for(e in effect.size){
+    beta <- compute_beta_matrix_cluster(n_b = nrow(M), 
+                                        n_g = n_g, 
+                                        n_clust = taxa_assign_g, 
+                                        n_qtl_o = n_qtl_o, 
+                                        n_otus = sum(taxa_assign_g != 0), 
+                                        correlation = correlation, 
+                                        effect_size = e,
+                                        beta_info = beta_info)
+    beta_test <- attr(beta, "sim_params")
+    #print(beta_test$id_otu[1])
+    betaG_e <- compute_beta_g(beta, G, noise = 0.5, taxa_scale = taxa_scale, center = T)
+    betaG <- attr(betaG_e,"noise")$betag
+    betag_var <- betaG |> apply(1,var)
+    
+    M_sim <- M0_clr + betaG_e
+    M_var <- apply(M_sim,1,var)
+    
+    out_data <- rbind(out_data,cbind(Taxa = names(M_var[betag_var != 0]), effect.size = e, Heritability = (betag_var[betag_var != 0] / M_var[betag_var != 0])))
+  }
+  
+  out_data$effect.size <- as.numeric(out_data$effect.size)
+  out_data$Heritability <- as.numeric(out_data$Heritability)
+  
+  if(plot){
+    p <- out_data %>% ggplot(aes(x = as.factor(effect.size),y=Heritability, fill = as.factor(effect.size))) +
+      geom_boxplot()+
+      labs(title = glue("Heritabilities distribution"),
+           subtitle = glue("({length(unique(out_data$Taxa))} taxa under genetic control)"),
+           x = "Genetic effect size") +
+      theme(panel.background = element_rect(fill="white"),
+            panel.grid.major = element_line(colour="#e3e3e3"),
+            panel.grid.minor = element_line(colour="#e9e9e9"),
+            axis.title = element_text(size = 12),
+            axis.text = element_text(size=9),
+            plot.title = element_text(size=12),
+            aspect.ratio = 1.5,
+            legend.position = "none")
+    print(p)
+    
+    p2 <- out_data %>% ggplot(aes(x=Heritability,y=as.factor(effect.size),fill=as.factor(effect.size))) +
+      geom_density_ridges(alpha=0.8)+
+      labs(title = "Ridges plot of taxa heritability",
+           x = "Taxa heritability",
+           y = "Genetic effect size")+
+      theme(legend.position = "none",
+            panel.background = element_rect(fill="white"),
+            panel.grid.major = element_line(colour="#e3e3e3"),
+            panel.grid.minor = element_line(colour="#e9e9e9"),
+            axis.title = element_text(size = 12),
+            axis.text = element_text(size=9),
+            plot.title = element_text(size=12),
+            aspect.ratio = 1.5)
+    print(p2)
+  }
+  return(out_data)
+}
+
+#' Generate beta matrix giving genetic effect per SNP on taxa abundances.
+#'
+#' @inheritParams gen_effect_calibration
+compute_beta_matrix_cluster <- function(n_b,
+                                        n_g,
+                                        n_clust,
+                                        n_qtl_o,
+                                        n_otus, #percentage
+                                        effect_size = 1,
+                                        correlation = 1, ## value between 0 and 1
+                                        beta_info = NULL
+){
+  # Initialisation of beta matrix of genetic effects
+  beta <- matrix(0, nrow = n_b, ncol = n_g, 
+                 dimnames = list(
+                   glue('OTU_{1:n_b}'), 
+                   glue('SNP_{1:n_g}') 
+                 ))
+  
+  nb_k <- (n_clust[n_clust != 0] %>% unique() %>% length())  
+  
+  if(is.null(beta_info)){
+    beta_info <- tibble(
+      cluster     = 1:nb_k,
+      id_otu      = split(1:length(n_clust), n_clust)[-1],
+      id_qtl_o    = map(cluster, \(x) {sample(1:n_g, n_qtl_o)})
+    )
+  }
+  sd_factor <- effect_size / sqrt(n_qtl_o)
+  for(clus in 1:nb_k){
+    # Extract causal SNPs for current cluster
+    id_qtl_o <- beta_info[["id_qtl_o"]][clus][[1]]
+    # Extract OTUs under genetic control for current cluster
+    ID_OTUs_gen <- beta_info[["id_otu"]][clus][[1]]
+    # fill beta with random variable 
+    # TODO: should the effect of a SNP be shared across OTU in a cluster ?
+    # to create blockwise effect in beta G ? 
+    lambda <- root(correlation)
+    ind_coef         <- rnorm(length(ID_OTUs_gen) * n_qtl_o, mean = 0, sd = sd_factor)
+    correlated_coef  <- matrix(rnorm(n_qtl_o, 0, sd_factor), 
+                               nrow = length(ID_OTUs_gen), ncol = n_qtl_o,
+                               byrow = TRUE)
+    beta[ID_OTUs_gen,id_qtl_o] <- (lambda * correlated_coef + (1 - lambda) * ind_coef) / sqrt(lambda^2 + (1-lambda)^2)
+  }
+  
+  attr(beta, "sim_params") <- beta_info
+  return(beta)
+}
+
+#' Compute product of matrixes based on few parameters
+#'
+#' @inheritParams gen_effect_calibration
+compute_beta_g <- function(beta,
+                           genotypes,
+                           noise,
+                           taxa_scale){
+  G <- genotypes
+  beta_g <- beta %*% G
+  beta_g <- beta_g %>% t() %>% scale(center=TRUE,scale=FALSE) %>% t() 
+  beta_g_raw <- beta_g
+  noise_vec = rnorm(n = nrow(beta) * ncol(G), sd = noise) * taxa_scale
+  beta_g <-  beta_g_raw + noise_vec
+  attr(beta_g,"noise") <- list('noise' = noise_vec,'betag' = beta_g_raw)
+  return(beta_g)
 }
 
 
