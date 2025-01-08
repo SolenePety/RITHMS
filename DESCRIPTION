@@ -1,25 +1,51 @@
 Package: RITHMS
-Title: Build a Package from Rmarkdown File
+Title: An Advanced Stochastic Framework for the Simulation of
+    Transgenerational Hologenomic Data
 Version: 0.0.0.9000
-Authors@R: 
-    person("John", "Doe", , "john@email.me", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0000-0000-0000"))
-Description: Use Rmarkdown First method to build your package. Start your
-    package with documentation. Everything can be set from a Rmarkdown
-    file in your project.
-License: MIT + file LICENSE
-URL: https://github.com/SolenePety/RITHMS
-BugReports: https://github.com/SolenePety/RITHMS/issues
+Authors@R: c(
+    person("Solène", "Pety", , "solene.pety@inrae.fr", role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0002-1245-7425")),
+    person("Ingrid", "David", , "ingrid.david@inrae.fr", role = c("aut", "ths"),
+           comment = c(ORCID = "0000-0002-2514-6693")),
+    person("Mahendra", "Mariadassou", , "mahendra.mariadassou@inrae.fr", role = c("aut", "ths"),
+           comment = c(ORCID = "0000-0003-2986-354X")),
+    person("Andrea", "Rau", , "andrea.rau@inrae.fr", role = c("aut", "ths"),
+           comment = c(ORCID = "0000-0001-6469-488X"))
+  )
+Description: RITHMS, an R Implementation of a Transgenerational
+    Hologenomic Model-based Simulator is an open-source package, builds
+    upon the MoBPS package and incorporates the distinctive architecture
+    of the microbiota, notably vertical and horizontal transfer as well as
+    modulation due to the environment and host genetics.
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
 Imports: 
     compositions,
     glue,
     tibble,
     vegan
 Suggests: 
+    bazar,
+    circlize,
+    ComplexHeatmap,
+    cowplot,
+    dirmult,
     dplyr,
+    furrr,
+    ggh4x,
+    ggplot2,
+    ggrepel,
+    ggridges,
     knitr,
+    MoBPS,
+    peakRAM,
+    phyloseq,
+    purrr,
+    RColorBrewer,
     rmarkdown,
-    testthat
+    stringr,
+    testthat,
+    tidyr
 VignetteBuilder: 
     knitr
 Config/fusen/version: 0.6.0

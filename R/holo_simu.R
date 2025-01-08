@@ -258,3 +258,23 @@ holo_simu <- function(h2,
   return(list_output)
 }
 
+#' If selection based on diversity, need to go back to counts using multinomial sampling from abundances.
+#'
+#' @export
+#' @inheritParams select_individual
+richness_from_abundances_gen <- function(microbiome_matrix, n_loop=10, plot=T){
+  microbiome_matrix[microbiome_matrix<0] <- 0
+  for(i in 1:n_loop){
+    microbiome_matrix <- apply(microbiome_matrix, 2, function(x){
+      rmultinom(1,10000,as.vector(x))
+    })
+    tmp_physeq <- phyloseq(otu_table(microbiome_matrix,taxa_are_rows = T))
+    if(i==1){
+      richness <- estimate_richness(tmp_physeq,measures = c("Observed","Shannon","InvSimpson"))
+    }else{
+      richness <- richness + estimate_richness(tmp_physeq,measures = c("Observed","Shannon","InvSimpson"))
+    }
+  }
+  return(richness/n_loop)
+}
+

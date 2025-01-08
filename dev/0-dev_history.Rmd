@@ -16,9 +16,8 @@ All commands that you use to use when developing packages...
 fusen::fill_description(
   pkg = here::here(),
   fields = list(
-    Title = "An Advanced Stochastic Framework for the Simultion of Transgenerational Hologenomic Data",
-    Description = "RITHMS, an R Implementation of a Transgenerational Hologenomic Model-based
-Simulator is an open-source package, builds upon the MoBPS package and incorporates the distinctive architecture of the microbiota, notably vertical and horizontal transfer as well as modulation due to the environment and host genetics",
+    Title = "An Advanced Stochastic Framework for the Simulation of Transgenerational Hologenomic Data",
+    Description = "RITHMS, an R Implementation of a Transgenerational Hologenomic Model-based Simulator is an open-source package, builds upon the MoBPS package and incorporates the distinctive architecture of the microbiota, notably vertical and horizontal transfer as well as modulation due to the environment and host genetics",
     `Authors@R` = c(
       person("Solène", "Pety", email = "solene.pety@inrae.fr", role = c("aut", "cre", "cph"), comment = c(ORCID = "0000-0002-1245-7425")),
       person("Ingrid", "David", email = "ingrid.david@inrae.fr", role = c("aut", "ths"), comment = c(ORCID = "0000-0002-2514-6693")),
