@@ -44,6 +44,7 @@ and `system.file()` to read it in your examples.
 
 ## Formatting data functions
 
+
 ## Taxa assignation function
 
 ```{r examples-taxa_assignment}
@@ -61,6 +62,7 @@ assign_taxa(founder_object = DeruPop,
 ```{r examples-genetic_effect}
 
 ```
+
 
 
 

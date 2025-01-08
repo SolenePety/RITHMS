@@ -4,7 +4,9 @@ flat_first.Rmd:
   R:
   - R/formatting_data.R
   - R/calibrate_params_phenotypes.R
+  - R/gen_effect_calibration.R
   - R/holo_simu.R
+  - R/read_input_data.R
   tests: tests/testthat/test-formatting_data.R
   vignettes: vignettes/get-started.Rmd
   inflate:

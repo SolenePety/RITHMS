@@ -17,6 +17,8 @@ modulation due to the environment and host genetics. In addition, RITHMS
 can account for a variety of selection strategies, is adaptable to
 different genetic architectures.
 
+Full documentation website on: <https://SolenePety.github.io/RITHMS>
+
 Here is a little summary of how RITHMS work, but you can read the
 [preprint](https://png.pngtree.com/png-vector/20220616/ourmid/pngtree-work-in-progress-warning-sign-with-yellow-and-black-stripes-painted-png-image_5060340.png)
 for more details.
