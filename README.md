@@ -51,8 +51,8 @@ You already have a toy dataset that show you the expected structure of
 input data :
 
 ``` r
-data(DeruPop)
-#> Warning in data(DeruPop): jeu de données 'DeruPop' introuvable
+# datafile <- system.file("BesePopTest.rds", package = "RITHMS")
+# ToyData <- readRDS(datafile)
 ```
 
 But we can do much more… you can check also [this
