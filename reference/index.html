@@ -38,13 +38,7 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-      </ul><ul class="nav navbar-nav navbar-right"><li>
-  <a href="https://github.com/SolenePety/RITHMS/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
-
-  </a>
-</li>
-      </ul></div><!--/.nav-collapse -->
+      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -65,10 +59,6 @@
         </td>
         <td><p>Compute product of matrixes based on few parameters</p></td>
       </tr><tr><td>
-          <p><code><a href="compute_beta_matrix_cluster.html">compute_beta_matrix_cluster()</a></code> </p>
-        </td>
-        <td><p>Generate beta matrix giving genetic effect per SNP on taxa abundances.</p></td>
-      </tr><tr><td>
           <p><code><a href="compute_current_microbiome.html">compute_current_microbiome()</a></code> </p>
         </td>
         <td><p>Compute microbiomes for all individuals of current generation gathering all relevant object already computed.</p></td>
@@ -81,9 +71,13 @@
         </td>
         <td><p>Compute phenotype values based on generated object of current generation</p></td>
       </tr><tr><td>
-          <p><code><a href="formatting_data.html">assign_taxa()</a></code> <code><a href="formatting_data.html">gen_effect_calibration()</a></code> <code><a href="formatting_data.html">read_input_data()</a></code> </p>
+          <p><code><a href="formatting_data.html">assign_taxa()</a></code> </p>
         </td>
         <td><p>Assign all taxa to a cluster, eventually under genetic control using hclust</p></td>
+      </tr><tr><td>
+          <p><code><a href="gen_effect_calibration.html">gen_effect_calibration()</a></code> </p>
+        </td>
+        <td><p>Calibration of genetic effect from founder population data</p></td>
       </tr><tr><td>
           <p><code><a href="generate_founder.html">generate_founder()</a></code> </p>
         </td>
@@ -93,9 +87,9 @@
         </td>
         <td><p>Main function to generate transgenerational hologenomic data</p></td>
       </tr><tr><td>
-          <p><code><a href="rarefied_microbiome.html">rarefied_microbiome()</a></code> </p>
+          <p><code><a href="read_input_data.html">read_input_data()</a></code> </p>
         </td>
-        <td><p>Rarefaction step within read_input_data</p></td>
+        <td><p>Formatting data from file paths to base population object</p></td>
       </tr><tr><td>
           <p><code><a href="replace_zero.html">replace_zero()</a></code> </p>
         </td>
@@ -104,6 +98,10 @@
           <p><code><a href="richness_from_abundances_gen.html">richness_from_abundances_gen()</a></code> </p>
         </td>
         <td><p>If selection based on diversity, need to go back to counts using multinomial sampling from abundances.</p></td>
+      </tr><tr><td>
+          <p><code><a href="root.html">root()</a></code> </p>
+        </td>
+        <td><p>Compute root value for beta matrix construction</p></td>
       </tr><tr><td>
           <p><code><a href="select_individual.html">select_individual()</a></code> </p>
         </td>
@@ -117,7 +115,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by John Doe.</p>
+  <p></p><p>Developed by Solène Pety, Ingrid David, Mahendra Mariadassou, Andrea Rau.</p>
 </div>
 
 <div class="pkgdown">
