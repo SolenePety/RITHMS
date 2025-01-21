@@ -4,7 +4,7 @@
 \alias{assign_taxa}
 \title{Assign all taxa to a cluster, eventually under genetic control using hclust}
 \usage{
-assign_taxa(founder_object, taxa_g = 0.1)
+assign_taxa(founder_object, taxa_g = 0.05)
 }
 \arguments{
 \item{founder_object}{Output of read_input_data function}
@@ -19,8 +19,8 @@ Assign all taxa to a cluster, eventually under genetic control using hclust
 }
 \examples{
 library(dplyr)
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-DeruPop <- readRDS(datafile)
-assign_taxa(founder_object = DeruPop,
-            taxa_g = 0.2)
+# datafile <- system.file("BesePopTest.rds", package = "RITHMS")
+# ToyData <- readRDS(datafile)
+# assign_taxa(founder_object = ToyData,
+#             taxa_g = 0.2)
 }

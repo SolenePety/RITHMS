@@ -40,8 +40,8 @@ and `system.file()` to read it in your examples.
 pkgload::load_all(path = here::here(), export_all = FALSE)
 
 # You will be able to read your example data file in each of your function examples and tests as follows - see chunks below
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-base_population <- readRDS(datafile)
+datafile <- system.file("BesePopTest.rds", package = "RITHMS")
+ToyData <- readRDS(datafile)
 ```
 
 # Pre-Simulation functions 
@@ -58,7 +58,6 @@ base_population <- readRDS(datafile)
 #'
 #' @return
 #' A data.frame corresponding to (rarefied) microbiome with individuals in rows and taxa in columns. Genotypes data.frame is an attribute called "population" reachable using attr(output_name,"population")
-#' @rdname formatting_data
 #' @export
 read_input_data <- function(path_to_microbiome,
                             path_to_pedmap,
@@ -77,6 +76,10 @@ read_input_data <- function(path_to_microbiome,
   return(founder_object)
 }
 
+
+```
+
+```{r function-useful_formatting_data}
 #' Rarefaction step within read_input_data
 #'
 #' @inheritParams read_input_data
@@ -143,7 +146,7 @@ generate_founder <- function(path = NULL,
 #' @export
 
 assign_taxa <- function(founder_object,
-                        taxa_g = 0.1){
+                        taxa_g = 0.05){
   dist_mat <- vegan::vegdist(x = t(founder_object),
                method = "bray")
   hc <- hclust(dist_mat)
@@ -169,10 +172,10 @@ assign_taxa <- function(founder_object,
 
 ```{r examples-taxa_assignment}
 library(dplyr)
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-DeruPop <- readRDS(datafile)
-assign_taxa(founder_object = DeruPop,
-            taxa_g = 0.2)
+# datafile <- system.file("BesePopTest.rds", package = "RITHMS")
+# ToyData <- readRDS(datafile)
+# assign_taxa(founder_object = ToyData,
+#             taxa_g = 0.2)
 ```
 
 ```{r tests-taxa_assignment}
@@ -192,7 +195,6 @@ assign_taxa(founder_object = DeruPop,
 #'
 #' @return
 #' A data.frame with three columns, giving the Taxa ID, the effect.size and the corresponding heritability
-#' @rdname formatting_data
 #' @export
 gen_effect_calibration <- function(founder_object,
                                    taxa_assign_g,
@@ -238,7 +240,7 @@ gen_effect_calibration <- function(founder_object,
                                         beta_info = beta_info)
     beta_test <- attr(beta, "sim_params")
     #print(beta_test$id_otu[1])
-    betaG_e <- compute_beta_g(beta, G, noise = 0.5, taxa_scale = taxa_scale, center = T)
+    betaG_e <- compute_beta_g(beta, G, noise = 0.5, taxa_scale = taxa_scale)
     betaG <- attr(betaG_e,"noise")$betag
     betag_var <- betaG |> apply(1,var)
     
@@ -284,7 +286,15 @@ gen_effect_calibration <- function(founder_object,
   }
   return(out_data)
 }
+```
 
+```{r examples-genetic_effect}
+```
+
+```{r tests-genetic_effect}
+```
+
+```{r function-useful_genetic_effect}
 #' Generate beta matrix giving genetic effect per SNP on taxa abundances.
 #'
 #' @inheritParams gen_effect_calibration
@@ -351,13 +361,14 @@ compute_beta_g <- function(beta,
   return(beta_g)
 }
 
-```
-
-```{r examples-genetic_effect}
-```
-
-```{r tests-genetic_effect}
-```
+#' Compute root value for beta matrix construction
+#'
+#' @inheritParams gen_effect_calibration
+root <- function(rho) {
+  if (rho == 0.5) return(0.5)
+  (2 * rho - sqrt(4 * rho^2 - 4 * rho * (2* rho - 1))) / (4*rho - 2)
+}
+``` 
 
 # HoloSimu
 ## Useful functions 
@@ -588,25 +599,6 @@ select_individual <- function(phenotypes,
   }
 
   return(list(F_id = F_id, M_id = M_id))
-}
-
-#' If selection based on diversity, need to go back to counts using multinomial sampling from abundances.
-#'
-#' @inheritParams select_individual
-richness_from_abundances_gen <- function(microbiome_matrix, n_loop=10, plot=T){
-  microbiome_matrix[microbiome_matrix<0] <- 0
-  for(i in 1:n_loop){
-    microbiome_matrix <- apply(microbiome_matrix, 2, function(x){
-      rmultinom(1,10000,as.vector(x))
-    })
-    tmp_physeq <- phyloseq(otu_table(microbiome_matrix,taxa_are_rows = T))
-    if(i==1){
-      richness <- estimate_richness(tmp_physeq,measures = c("Observed","Shannon","InvSimpson"))
-    }else{
-      richness <- richness + estimate_richness(tmp_physeq,measures = c("Observed","Shannon","InvSimpson"))
-    }
-  }
-  return(richness/n_loop)
 }
 ```
 
@@ -869,6 +861,26 @@ holo_simu <- function(h2,
     }
   }
   return(list_output)
+}
+
+#' If selection based on diversity, need to go back to counts using multinomial sampling from abundances.
+#'
+#' @export
+#' @inheritParams select_individual
+richness_from_abundances_gen <- function(microbiome_matrix, n_loop=10, plot=T){
+  microbiome_matrix[microbiome_matrix<0] <- 0
+  for(i in 1:n_loop){
+    microbiome_matrix <- apply(microbiome_matrix, 2, function(x){
+      rmultinom(1,10000,as.vector(x))
+    })
+    tmp_physeq <- phyloseq(otu_table(microbiome_matrix,taxa_are_rows = T))
+    if(i==1){
+      richness <- estimate_richness(tmp_physeq,measures = c("Observed","Shannon","InvSimpson"))
+    }else{
+      richness <- richness + estimate_richness(tmp_physeq,measures = c("Observed","Shannon","InvSimpson"))
+    }
+  }
+  return(richness/n_loop)
 }
 
 ```

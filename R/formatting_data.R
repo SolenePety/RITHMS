@@ -14,13 +14,13 @@
 #' @export
 #' @examples
 #' library(dplyr)
-#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
-#' DeruPop <- readRDS(datafile)
-#' assign_taxa(founder_object = DeruPop,
-#'             taxa_g = 0.2)
+#' # datafile <- system.file("BesePopTest.rds", package = "RITHMS")
+#' # ToyData <- readRDS(datafile)
+#' # assign_taxa(founder_object = ToyData,
+#' #             taxa_g = 0.2)
 
 assign_taxa <- function(founder_object,
-                        taxa_g = 0.1){
+                        taxa_g = 0.05){
   dist_mat <- vegan::vegdist(x = t(founder_object),
                method = "bray")
   hc <- hclust(dist_mat)

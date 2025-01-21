@@ -49,10 +49,10 @@ and `system.file()` to read it in your examples.
 
 ```{r examples-taxa_assignment}
 library(dplyr)
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-DeruPop <- readRDS(datafile)
-assign_taxa(founder_object = DeruPop,
-            taxa_g = 0.2)
+# datafile <- system.file("BesePopTest.rds", package = "RITHMS")
+# ToyData <- readRDS(datafile)
+# assign_taxa(founder_object = ToyData,
+#             taxa_g = 0.2)
 ```
 
 
