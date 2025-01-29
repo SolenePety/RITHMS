@@ -20,7 +20,7 @@ different genetic architectures.
 Full documentation website on: <https://SolenePety.github.io/RITHMS>
 
 Here is a little summary of how RITHMS work, but you can read the
-[preprint](https://png.pngtree.com/png-vector/20220616/ourmid/pngtree-work-in-progress-warning-sign-with-yellow-and-black-stripes-painted-png-image_5060340.png)
+[preprint](https://github.com/SolenePety/RITHMS/blob/main/RITHMS_Pety.pdf)
 for more details.
 
 <figure>
