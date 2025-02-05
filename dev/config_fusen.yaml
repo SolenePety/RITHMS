@@ -17,3 +17,17 @@ flat_first.Rmd:
     document: true
     overwrite: ask
     clean: ask
+generate-figures.Rmd:
+  path: R/generate-figures.Rmd
+  state: active
+  R: []
+  tests: []
+  vignettes: vignettes/generate-figures.Rmd
+  inflate:
+    flat_file: R/generate-figures.Rmd
+    vignette_name: Generate figures
+    open_vignette: true
+    check: true
+    document: true
+    overwrite: ask
+    clean: ask
