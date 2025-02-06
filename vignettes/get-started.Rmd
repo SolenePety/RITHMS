@@ -48,7 +48,7 @@ and `system.file()` to read it in your examples.
 ## Taxa assignation function
 
 ```{r examples-taxa_assignment}
-library(dplyr)
+# library(dplyr)
 # datafile <- system.file("BesePopTest.rds", package = "RITHMS")
 # ToyData <- readRDS(datafile)
 # assign_taxa(founder_object = ToyData,

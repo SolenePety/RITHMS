@@ -13,7 +13,7 @@
 #' @rdname formatting_data
 #' @export
 #' @examples
-#' library(dplyr)
+#' # library(dplyr)
 #' # datafile <- system.file("BesePopTest.rds", package = "RITHMS")
 #' # ToyData <- readRDS(datafile)
 #' # assign_taxa(founder_object = ToyData,

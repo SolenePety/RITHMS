@@ -18,7 +18,7 @@ A vector with a length matching the total number of taxa with values from 0 to t
 Assign all taxa to a cluster, eventually under genetic control using hclust
 }
 \examples{
-library(dplyr)
+# library(dplyr)
 # datafile <- system.file("BesePopTest.rds", package = "RITHMS")
 # ToyData <- readRDS(datafile)
 # assign_taxa(founder_object = ToyData,
