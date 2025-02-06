@@ -118,7 +118,9 @@ plot_grid(p1)
 ggsave("../inst/extdata/freeze/Heatmap_correlation.png", p1, width = 9, height = 6)
 ```
 
-![](../inst/extdata/freeze/Heatmap_correlation.png)
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/Heatmap_correlation.png")
+```
 
 ## **B. Lambda values**  
   
@@ -216,7 +218,9 @@ p3
 ggsave("../inst/extdata/freeze/lambda_correlation.png", p3, width = 9, height = 6)
 ```
 
-![](../inst/extdata/freeze/lambda_correlation.png)
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/lambda_correlation.png")
+```
 
 ## **C. Taxa heritability according to genetic effect**  
   
@@ -262,7 +266,10 @@ density_peaks <- out_data %>%
  ggsave("../inst/extdata/freeze/density_taxa_heri.png", p2, width = 9, height = 6)
 ```
 
-  
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/density_taxa_heri.png")
+```
+
 ## **D. Shannon diversity across generation**   
   
 ```{r,include=FALSE}
@@ -336,7 +343,10 @@ diversities_microbiomes <- generations_simu[-1] %>% map(get_microbiomes) %>% map
 p4
 ggsave("../inst/extdata/freeze/ridges_shannon.png", p4, width = 9, height = 6)
 ```
-![](../inst/extdata/freeze/ridges_shannon.png)
+
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/ridges_shannon.png")
+```
   
 ## **Global**  
   
@@ -348,7 +358,9 @@ plot_grid(top_row, bottom_row,nrow=2)
 ggsave("../inst/extdata/freeze/global_microbiome.png", plot_grid(top_row, bottom_row,nrow=2), width = 9, height = 6)
 ```
 
-![](../inst/extdata/freeze/global_microbiome.png)
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/global_microbiome.png")
+```
 
 # **Fig 4. Environmental effect**
   
@@ -413,7 +425,9 @@ diversities_microbiomes <- generations_simu_env[-1] %>% map(get_microbiomes) %>%
 
 ```
 
-![](../inst/extdata/freeze/ridges_shannon.png)
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/antibio_shannon.png")
+```
 
 ## **B. Diversity antibio effect**    
   
@@ -458,7 +472,9 @@ ggsave("../inst/extdata/freeze/mds_antibio.png", p2, width = 9, height = 6)
 
 ```
 
-![](../inst/extdata/freeze/mds_antibio.png)
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/mds_antibio.png")
+```
 
 ```{r}
 top_row <- plot_grid(p2,p1, labels = c("A","B"),rel_widths = c(2,1))
@@ -528,7 +544,9 @@ ggsave("../inst/extdata/freeze/diet_shannon.png", p4, width = 9, height = 6)
 
 ```
 
-![](../inst/extdata/freeze/diet_shannon.png)
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/diet_shannon.png")
+```
   
 ## **D. Diversity diet effect**    
  
@@ -577,7 +595,9 @@ ggsave("../inst/extdata/freeze/mds_diet.png", p3, width = 9, height = 6)
 
 ```
 
-![](../inst/extdata/freeze/mds_diet.png)
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/mds_diet.png")
+```
 
 ```{r}
 bottom_row <- plot_grid(p3,p4, labels = c("C","D"),rel_widths = c(2,1))
@@ -592,7 +612,9 @@ ggsave("../inst/extdata/freeze/global_env.png", plot_grid(top_row, bottom_row,nr
 
 ```
 
-![](../inst/extdata/freeze/global_env.png)
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/global_env.png")
+```
   
 # **Fig 5. Phenotypes**
   
@@ -726,7 +748,10 @@ p2
 ggsave("../inst/extdata/freeze/barplot_h2_b2.png", p2, width = 9, height = 6)
 
 ```
-![](../inst/extdata/freeze/barplot_h2_b2.png)
+
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/barplot_h2_b2.png")
+```
  
 ## **B. Selection Mode**  
 ```{r}
@@ -794,7 +819,10 @@ p1
 ggsave("../inst/extdata/freeze/selection_mode.png", p1, width = 9, height = 6)
 
 ```
-![](../inst/extdata/freeze/selection_mode.png)
+
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/selection_mode.png")
+```
 
 ## **Global**
 ```{r}
@@ -808,7 +836,9 @@ ggsave("../inst/extdata/freeze/global_phenotype.png", plot_grid(p2, p1, labels =
 
 ```
 
-![](../inst/extdata/freeze/global_phenotype.png)
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/global_phenotype.png")
+```
 
 # **Case study**
 ```{r}
@@ -938,3 +968,6 @@ ggsave("../inst/extdata/freeze/use_case.png", p, width = 9, height = 6)
 
 ```
 
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/use_case.png")
+```
