@@ -18,13 +18,13 @@ flat_first.Rmd:
     overwrite: ask
     clean: ask
 generate-figures.Rmd:
-  path: R/generate-figures.Rmd
+  path: dev/generate-figures.Rmd
   state: active
   R: []
   tests: []
   vignettes: vignettes/generate-figures.Rmd
   inflate:
-    flat_file: R/generate-figures.Rmd
+    flat_file: dev/generate-figures.Rmd
     vignette_name: Generate figures
     open_vignette: true
     check: true
