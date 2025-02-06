@@ -137,6 +137,9 @@ plot_grid(p1)
 ggsave("../inst/extdata/freeze/Heatmap_correlation.png", p1, width = 9, height = 6)
 ```
 
+```{r,eval=TRUE,out.width="80%"}
+knitr::include_graphics("../inst/extdata/freeze/Heatmap_correlation.png")
+```
 
 ![](../inst/extdata/freeze/Heatmap_correlation.png)
 
