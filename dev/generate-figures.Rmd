@@ -3,16 +3,21 @@ title: "Generate figures"
 output: rmarkdown::html_vignette
 ---
 
-```{r setup, include=FALSE}
+```{r setup}
+#| include: no
+
 knitr::opts_chunk$set(message=FALSE,
                       warning=FALSE,
                       results="asis",
                       echo = FALSE,
                       collapse = TRUE,
+                      eval = FALSE,
                       comment = "#>")
 ```
 
-```{r init,message=FALSE,warning=FALSE,results="asis",echo=FALSE}
+
+```{r init}
+
 library(RITHMS)
 library(MoBPS)
 library(dplyr)
@@ -35,14 +40,17 @@ library(furrr)
 library(peakRAM)
 ```
 
+
 ```{r}
 greens_pal <- c("#6df17c","#2ede41","#26c537","#1da42c","#157e21","#0E5e17")
 ```
+
 
 ```{r}
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
 founder_object <- readRDS(datafile)
 ```
+
 
 # **Fig 3. Microbiome : simulation reflects structure of microbiome**
   
@@ -72,6 +80,7 @@ generations_simu <- holo_simu(h2 = 0.25,
                               seed = 333)
 
 ```
+
 
 ```{r}
 #Correlation intra-cluster for cluster under genetic control
@@ -105,7 +114,11 @@ p1 <- grid.grabExpr(draw(Heatmap(cor_matrix,
         heatmap_legend_param = list(title = "Correlation", title_gp = gpar(fontsize = 5, fontface = "bold"), labels_gp = gpar(fontsize = 5, fontface = 'bold')))))
 
 plot_grid(p1)
+
+ggsave("../inst/extdata/freeze/Heatmap_correlation.png", p1, width = 9, height = 6)
 ```
+
+![](../inst/extdata/freeze/Heatmap_correlation.png)
 
 ## **B. Lambda values**  
   
@@ -117,6 +130,7 @@ seed_value <- sample(c(100:9999),n_it)
 
 taxa_assign_g <- assign_taxa(founder_object)
 ```
+
 
 ```{r}
 noise = 0.1
@@ -159,7 +173,9 @@ lambda = c(0,0.5,1)
   long_cor_gen <- cor_gen_table %>% pivot_longer(c("Mother","Father","Ambient"),
                                                  names_to = "cor_type",
                                                  values_to = "value")
+  
 ```
+
 
 ```{r}
 
@@ -189,11 +205,18 @@ p3 <- long_cor_gen %>% summarise(value = mean(value), .by = c(lambda, cor_type))
   xlab("Lambda") +
   labs(col = "Parents") +
   guides(shape = "none") +
-  ylim(0,1) +
+  ylim(-0.2,1) +
+  scale_y_continuous(
+    breaks = seq(0,1,0.25),
+    labels = seq(0,1,0.25)
+  ) +
   scale_color_brewer(palette = "Dark2")
 
 p3
+ggsave("../inst/extdata/freeze/lambda_correlation.png", p3, width = 9, height = 6)
 ```
+
+![](../inst/extdata/freeze/lambda_correlation.png)
 
 ## **C. Taxa heritability according to genetic effect**  
   
@@ -236,11 +259,13 @@ density_peaks <- out_data %>%
     scale_fill_manual(values = c("#00AFBB", "#E7B800", "#FC4E07")) +
     scale_color_manual(values = c("#00AFBB", "#E7B800", "#FC4E07"))
  p2
+ ggsave("../inst/extdata/freeze/density_taxa_heri.png", p2, width = 9, height = 6)
 ```
+
   
 ## **D. Shannon diversity across generation**   
   
-```{r}
+```{r,include=FALSE}
 #TODO à mettre dans flat_first
 get_microbiomes <- function(data, transpose = F, CLR = F) {
   if(transpose){
@@ -277,6 +302,7 @@ get_mean_diversity <- function(data) {
   mean(data$Shannon)
 }
 ```
+
   
 ```{r}
 h2 = 0.25
@@ -308,7 +334,9 @@ diversities_microbiomes <- generations_simu[-1] %>% map(get_microbiomes) %>% map
   scale_fill_manual(values = rev(greens_pal))
   
 p4
+ggsave("../inst/extdata/freeze/ridges_shannon.png", p4, width = 9, height = 6)
 ```
+![](../inst/extdata/freeze/ridges_shannon.png)
   
 ## **Global**  
   
@@ -316,7 +344,11 @@ p4
 top_row <- plot_grid(p1,p2, ncol = 2, labels = c("A","B"))
 bottom_row <- plot_grid(p3,p4, ncol = 2, labels = c("C","D"))
 plot_grid(top_row, bottom_row,nrow=2)
+
+ggsave("../inst/extdata/freeze/global_microbiome.png", plot_grid(top_row, bottom_row,nrow=2), width = 9, height = 6)
 ```
+
+![](../inst/extdata/freeze/global_microbiome.png)
 
 # **Fig 4. Environmental effect**
   
@@ -359,6 +391,7 @@ generations_simu_env <- holo_simu(h2 = h2,
                                   env_gen = c(F,T,F,F,F))
 ```
 
+
 ```{r}
 diversities_microbiomes <- generations_simu_env[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen) |> bind_rows(.id = "Generation")
 
@@ -376,8 +409,12 @@ diversities_microbiomes <- generations_simu_env[-1] %>% map(get_microbiomes) %>%
     scale_fill_manual(values = rev(greens_pal)[1:4])
   
   p1
+  ggsave("../inst/extdata/freeze/antibio_shannon.png", p1, width = 9, height = 6)
+
 ```
-  
+
+![](../inst/extdata/freeze/ridges_shannon.png)
+
 ## **B. Diversity antibio effect**    
   
 ```{r}
@@ -417,11 +454,16 @@ p2 <- ggplot(data = DF, aes(x=DF[,1], y=DF[,2], color = antibio, shape=antibio))
   facet_wrap2(~Generation, nrow = 2, ncol = 2, strip = strip_themed(background_x = elem_list_rect(fill = rev(greens_pal)[1:4])))
 
 p2
+ggsave("../inst/extdata/freeze/mds_antibio.png", p2, width = 9, height = 6)
+
 ```
+
+![](../inst/extdata/freeze/mds_antibio.png)
 
 ```{r}
 top_row <- plot_grid(p2,p1, labels = c("A","B"),rel_widths = c(2,1))
-```  
+```
+
   
 ## **C. MDS diet effect**    
   
@@ -466,6 +508,7 @@ generations_simu_env <- holo_simu(h2 = h2,
                               env_gen = c(T,T,T,T,T))
 ```
 
+
 ```{r}
 diversities_microbiomes <- generations_simu_env[c(2,3,4,5)] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen) |> bind_rows(.id = "Generation")
 
@@ -481,8 +524,11 @@ diversities_microbiomes <- generations_simu_env[c(2,3,4,5)] %>% map(get_microbio
               aspect.ratio = 1.5)+
         scale_fill_manual(values = rev(greens_pal)[1:4])
 p4
-  
+ggsave("../inst/extdata/freeze/diet_shannon.png", p4, width = 9, height = 6)
+
 ```
+
+![](../inst/extdata/freeze/diet_shannon.png)
   
 ## **D. Diversity diet effect**    
  
@@ -527,17 +573,26 @@ p3 <- ggplot(data = DF, aes(x=DF[,1], y=DF[,2], color = diet, shape=diet)) +
   facet_wrap2(~Generation, nrow = 2, ncol = 2, strip = strip_themed(background_x = elem_list_rect(fill = rev(greens_pal)[1:4]))) +
   scale_fill_manual(values = rev(greens_pal)[1:4])
 p3
+ggsave("../inst/extdata/freeze/mds_diet.png", p3, width = 9, height = 6)
+
 ```
+
+![](../inst/extdata/freeze/mds_diet.png)
 
 ```{r}
 bottom_row <- plot_grid(p3,p4, labels = c("C","D"),rel_widths = c(2,1))
 ```
+
   
 ## **Global**  
   
 ```{r}
 plot_grid(top_row,bottom_row,nrow = 2)
-```   
+ggsave("../inst/extdata/freeze/global_env.png", plot_grid(top_row, bottom_row,nrow=2), width = 9, height = 6)
+
+```
+
+![](../inst/extdata/freeze/global_env.png)
   
 # **Fig 5. Phenotypes**
   
@@ -549,6 +604,7 @@ n_it = 1
 set.seed(42)
 vec_seed <- sample(100:10000,n_it)
 ```
+
 
 ```{r}
 noise = 0.6
@@ -584,6 +640,7 @@ params_df <- tibble::tribble(
   crossing(tibble(`Selection Type` = c("GB", "G", "B", "Random"))) |> 
   mutate(sim_ID = row_number(), .before = "h2")
 ```
+
 
 ```{r}
 
@@ -666,10 +723,12 @@ p2 <- metrics_values |> ggplot(aes(x=Generation, y = Value, fill = Metric))+
   scale_y_continuous(expand = expansion(0, 0)) + 
   scale_fill_manual(values = colours)
 p2
+ggsave("../inst/extdata/freeze/barplot_h2_b2.png", p2, width = 9, height = 6)
+
 ```
+![](../inst/extdata/freeze/barplot_h2_b2.png)
  
 ## **B. Selection Mode**  
-
 ```{r}
 mean_phenotypes <- results %>% select(mean_phenotypes) %>% bind_cols(params_df_it) %>% unnest_wider(mean_phenotypes)
 phenotypes_longer <- mean_phenotypes %>% 
@@ -732,23 +791,32 @@ p1 <- phenotypes_longer |>
   scale_fill_manual(values = colours) +
   coord_cartesian(clip = "off")
 p1
+ggsave("../inst/extdata/freeze/selection_mode.png", p1, width = 9, height = 6)
+
 ```
+![](../inst/extdata/freeze/selection_mode.png)
 
 ## **Global**
+```{r}
+#| fig.width: 10.0
+#| fig.height: 6.0
 
-```{r fig.width=10, fig.height=6}
 #plot_grid(p2, gt, labels = c('A', 'B'), rel_widths = c(1,2))
 plot_grid(p2, p1, labels = c('A', 'B'), rel_widths = c(1,2))
 
+ggsave("../inst/extdata/freeze/global_phenotype.png", plot_grid(p2, p1, labels = c('A', 'B'), rel_widths = c(1,2)), width = 10, height = 6)
+
 ```
 
-# **Case study**
+![](../inst/extdata/freeze/global_phenotype.png)
 
+# **Case study**
 ```{r}
-n_it = 1
+n_it = 3
 set.seed(123)
 vec_seed <- sample(100:10000,n_it)
 ```
+
 
 ```{r}
 params_df <- tibble::tribble(
@@ -801,9 +869,10 @@ for (i in 1:nrow(params_df)) {
 
 ```
 
+
 ```{r}
-diff_y <- mean_phenotypes_y$G3 - mean_phenotypes_y$G0
-diff_div <- diversities_microbiomes$G3 - diversities_microbiomes$G0
+diff_y <- mean_phenotypes_y$G5 - mean_phenotypes_y$G0
+diff_div <- diversities_microbiomes$G5 - diversities_microbiomes$G0
 diff_data <- cbind(diff_y = diff_y,
                    diff_div = diff_div) %>%
   as.data.frame() %>%
@@ -816,7 +885,7 @@ diff_data_concat <- diff_data %>% summarise(mean_div = mean(diff_div),
                                             .by = c(category))
 
 
-diff_data %>%
+p <- diff_data %>%
   mutate(w = str_remove_all(category, "\\(|,.*") |> as.numeric()) |> 
   ggplot(aes(y = diff_y, x = diff_div, 
              # colour = as.factor(category)
@@ -863,4 +932,9 @@ diff_data %>%
   theme(legend.key.width = unit(25, "mm"),
         legend.background = element_rect(fill = "transparent")) +
   NULL
+
+p
+ggsave("../inst/extdata/freeze/use_case.png", p, width = 9, height = 6)
+
 ```
+
