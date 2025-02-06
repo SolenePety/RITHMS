@@ -134,14 +134,11 @@ p1 <- grid.grabExpr(draw(Heatmap(cor_matrix,
 
 plot_grid(p1)
 
-ggsave("../inst/extdata/freeze/Heatmap_correlation.png", p1, width = 9, height = 6)
+ggsave("../man/figures/Heatmap_correlation.png", p1, width = 9, height = 6)
 ```
 
-```{r,eval=TRUE,out.width="80%"}
-knitr::include_graphics("../inst/extdata/freeze/Heatmap_correlation.png")
-```
 
-![](../inst/extdata/freeze/Heatmap_correlation.png)
+![](../man/figures/Heatmap_correlation.png){width=80%}
 
 ## **B. Lambda values**  
   
@@ -236,11 +233,11 @@ p3 <- long_cor_gen %>% summarise(value = mean(value), .by = c(lambda, cor_type))
   scale_color_brewer(palette = "Dark2")
 
 p3
-ggsave("../inst/extdata/freeze/lambda_correlation.png", p3, width = 9, height = 6)
+ggsave("../man/figures/lambda_correlation.png", p3, width = 9, height = 6)
 ```
 
 
-![](../inst/extdata/freeze/lambda_correlation.png)
+![](../man/figures/lambda_correlation.png){width=80%}
 
 ## **C. Taxa heritability according to genetic effect**  
   
@@ -283,7 +280,7 @@ density_peaks <- out_data %>%
     scale_fill_manual(values = c("#00AFBB", "#E7B800", "#FC4E07")) +
     scale_color_manual(values = c("#00AFBB", "#E7B800", "#FC4E07"))
  p2
- ggsave("../inst/extdata/freeze/density_taxa_heri.png", p2, width = 9, height = 6)
+ ggsave("../man/figures/density_taxa_heri.png", p2, width = 9, height = 6)
 ```
 
 
@@ -362,10 +359,10 @@ diversities_microbiomes <- generations_simu[-1] %>% map(get_microbiomes) %>% map
   scale_fill_manual(values = rev(greens_pal))
   
 p4
-ggsave("../inst/extdata/freeze/ridges_shannon.png", p4, width = 9, height = 6)
+ggsave("../man/figures/ridges_shannon.png", p4, width = 9, height = 6)
 ```
 
-![](../inst/extdata/freeze/ridges_shannon.png)
+![](../man/figures/ridges_shannon.png){width=80%}
   
 ## **Global**  
   
@@ -374,11 +371,11 @@ top_row <- plot_grid(p1,p2, ncol = 2, labels = c("A","B"))
 bottom_row <- plot_grid(p3,p4, ncol = 2, labels = c("C","D"))
 plot_grid(top_row, bottom_row,nrow=2)
 
-ggsave("../inst/extdata/freeze/global_microbiome.png", plot_grid(top_row, bottom_row,nrow=2), width = 9, height = 6)
+ggsave("../man/figures/global_microbiome.png", plot_grid(top_row, bottom_row,nrow=2), width = 9, height = 6)
 ```
 
 
-![](../inst/extdata/freeze/global_microbiome.png)
+![](../man/figures/global_microbiome.png){width=80%}
 
 # **Fig 4. Environmental effect**
   
@@ -439,12 +436,12 @@ diversities_microbiomes <- generations_simu_env[-1] %>% map(get_microbiomes) %>%
     scale_fill_manual(values = rev(greens_pal)[1:4])
   
   p1
-  ggsave("../inst/extdata/freeze/antibio_shannon.png", p1, width = 9, height = 6)
+  ggsave("../man/figures/antibio_shannon.png", p1, width = 9, height = 6)
 
 ```
 
 
-![](../inst/extdata/freeze/ridges_shannon.png)
+![](../man/figures/ridges_shannon.png){width=80%}
 
 ## **B. Diversity antibio effect**    
   
@@ -485,12 +482,12 @@ p2 <- ggplot(data = DF, aes(x=DF[,1], y=DF[,2], color = antibio, shape=antibio))
   facet_wrap2(~Generation, nrow = 2, ncol = 2, strip = strip_themed(background_x = elem_list_rect(fill = rev(greens_pal)[1:4])))
 
 p2
-ggsave("../inst/extdata/freeze/mds_antibio.png", p2, width = 9, height = 6)
+ggsave("../man/figures/mds_antibio.png", p2, width = 9, height = 6)
 
 ```
 
 
-![](../inst/extdata/freeze/mds_antibio.png)
+![](../man/figures/mds_antibio.png){width=80%}
 ```{r}
 top_row <- plot_grid(p2,p1, labels = c("A","B"),rel_widths = c(2,1))
 ```
@@ -556,12 +553,12 @@ diversities_microbiomes <- generations_simu_env[c(2,3,4,5)] %>% map(get_microbio
               aspect.ratio = 1.5)+
         scale_fill_manual(values = rev(greens_pal)[1:4])
 p4
-ggsave("../inst/extdata/freeze/diet_shannon.png", p4, width = 9, height = 6)
+ggsave("../man/figures/diet_shannon.png", p4, width = 9, height = 6)
 
 ```
 
 
-![](../inst/extdata/freeze/diet_shannon.png)
+![](../man/figures/diet_shannon.png){width=80%}
   
 ## **D. Diversity diet effect**    
  
@@ -606,12 +603,12 @@ p3 <- ggplot(data = DF, aes(x=DF[,1], y=DF[,2], color = diet, shape=diet)) +
   facet_wrap2(~Generation, nrow = 2, ncol = 2, strip = strip_themed(background_x = elem_list_rect(fill = rev(greens_pal)[1:4]))) +
   scale_fill_manual(values = rev(greens_pal)[1:4])
 p3
-ggsave("../inst/extdata/freeze/mds_diet.png", p3, width = 9, height = 6)
+ggsave("../man/figures/mds_diet.png", p3, width = 9, height = 6)
 
 ```
 
 
-![](../inst/extdata/freeze/mds_diet.png)
+![](../man/figures/mds_diet.png){width=80%}
 ```{r}
 bottom_row <- plot_grid(p3,p4, labels = c("C","D"),rel_widths = c(2,1))
 ```
@@ -622,12 +619,12 @@ bottom_row <- plot_grid(p3,p4, labels = c("C","D"),rel_widths = c(2,1))
   
 ```{r}
 plot_grid(top_row,bottom_row,nrow = 2)
-ggsave("../inst/extdata/freeze/global_env.png", plot_grid(top_row, bottom_row,nrow=2), width = 9, height = 6)
+ggsave("../man/figures/global_env.png", plot_grid(top_row, bottom_row,nrow=2), width = 9, height = 6)
 
 ```
 
 
-![](../inst/extdata/freeze/global_env.png)
+![](../man/figures/global_env.png){width=80%}
   
 # **Fig 5. Phenotypes**
   
@@ -758,11 +755,11 @@ p2 <- metrics_values |> ggplot(aes(x=Generation, y = Value, fill = Metric))+
   scale_y_continuous(expand = expansion(0, 0)) + 
   scale_fill_manual(values = colours)
 p2
-ggsave("../inst/extdata/freeze/barplot_h2_b2.png", p2, width = 9, height = 6)
+ggsave("../man/figures/barplot_h2_b2.png", p2, width = 9, height = 6)
 
 ```
 
-![](../inst/extdata/freeze/barplot_h2_b2.png)
+![](../man/figures/barplot_h2_b2.png){width=80%}
  
 ## **B. Selection Mode**  
 ```{r}
@@ -827,11 +824,11 @@ p1 <- phenotypes_longer |>
   scale_fill_manual(values = colours) +
   coord_cartesian(clip = "off")
 p1
-ggsave("../inst/extdata/freeze/selection_mode.png", p1, width = 9, height = 6)
+ggsave("../man/figures/selection_mode.png", p1, width = 9, height = 6)
 
 ```
 
-![](../inst/extdata/freeze/selection_mode.png)
+![](../man/figures/selection_mode.png){width=80%}
 
 ## **Global**
 ```{r}
@@ -841,12 +838,12 @@ ggsave("../inst/extdata/freeze/selection_mode.png", p1, width = 9, height = 6)
 #plot_grid(p2, gt, labels = c('A', 'B'), rel_widths = c(1,2))
 plot_grid(p2, p1, labels = c('A', 'B'), rel_widths = c(1,2))
 
-ggsave("../inst/extdata/freeze/global_phenotype.png", plot_grid(p2, p1, labels = c('A', 'B'), rel_widths = c(1,2)), width = 10, height = 6)
+ggsave("../man/figures/global_phenotype.png", plot_grid(p2, p1, labels = c('A', 'B'), rel_widths = c(1,2)), width = 10, height = 6)
 
 ```
 
 
-![](../inst/extdata/freeze/global_phenotype.png)
+![](../man/figures/global_phenotype.png){width=80%}
 
 # **Case study**
 ```{r}
@@ -972,8 +969,9 @@ p <- diff_data %>%
   NULL
 
 p
-ggsave("../inst/extdata/freeze/use_case.png", p, width = 9, height = 6)
+ggsave("../man/figures/use_case.png", p, width = 9, height = 6)
 
 ```
 
 
+![](../man/figures/use_case.png){width=80%}
