@@ -22,8 +22,6 @@ library(RITHMS)
 
 
 ```{r setup}
-#| include: no
-
 knitr::opts_chunk$set(message=FALSE,
                       warning=FALSE,
                       echo = TRUE,
@@ -34,6 +32,8 @@ knitr::opts_chunk$set(message=FALSE,
 
 
 ```{r init}
+#| class.source: fold-show
+
 
 library(RITHMS)
 library(MoBPS)
@@ -59,11 +59,15 @@ library(peakRAM)
 
 
 ```{r}
+#| class.source: fold-show
+
 greens_pal <- c("#6df17c","#2ede41","#26c537","#1da42c","#157e21","#0E5e17")
 ```
 
 
 ```{r}
+#| class.source: fold-show
+
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
 founder_object <- readRDS(datafile)
 ```
@@ -76,6 +80,8 @@ founder_object <- readRDS(datafile)
 ## **A. Correlation heatmap**  
   
 ```{r}
+#| class.source: fold-show
+
 taxa_assign_g_small <- assign_taxa(founder_object, 
                                    taxa_g = 0.04)
 
@@ -154,6 +160,8 @@ taxa_assign_g <- assign_taxa(founder_object)
 
 
 ```{r}
+#| class.source: fold-show
+
 noise = 0.1
 effect.size = 0.1
 center_bg = T
@@ -293,6 +301,7 @@ density_peaks <- out_data %>%
 ```{r}
 #| include: no
 
+
 #TODO à mettre dans flat_first
 get_microbiomes <- function(data, transpose = F, CLR = F) {
   if(transpose){
@@ -334,6 +343,8 @@ get_mean_diversity <- function(data) {
 
   
 ```{r}
+#| class.source: fold-show
+
 h2 = 0.25
 b2 = 0.25
 generations_simu <- holo_simu(h2 = h2,
@@ -388,6 +399,8 @@ ggsave("../man/figures/global_microbiome.png", plot_grid(top_row, bottom_row,nro
 ## **A. MDS antibio effect**    
   
 ```{r}
+#| class.source: fold-show
+
 h2 = 0.25
 b2 = 0.25
 noise = 0.6
@@ -506,6 +519,8 @@ top_row <- plot_grid(p2,p1, labels = c("A","B"),rel_widths = c(2,1))
 ## **C. MDS diet effect**    
   
 ```{r}
+#| class.source: fold-show
+
 h2 = 0.25
 b2 = 0.25
 noise = 0.6
@@ -652,6 +667,8 @@ vec_seed <- sample(100:10000,n_it)
 
 
 ```{r}
+#| class.source: fold-show
+
 noise = 0.6
 effect.size = 0.3
 lambda = 0.1
@@ -688,6 +705,8 @@ params_df <- tibble::tribble(
 
 
 ```{r}
+#| class.source: fold-show
+
 
 run_simulation <- function(i, it) {
   start_time_it <- Sys.time()
@@ -867,6 +886,8 @@ vec_seed <- sample(100:10000,n_it)
 
 
 ```{r}
+#| class.source: fold-show
+
 params_df <- tibble::tribble(
    ~div,  ~TBV,
    0,    1,
