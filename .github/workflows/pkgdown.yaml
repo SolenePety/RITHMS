@@ -37,7 +37,7 @@ jobs:
           needs: website
        
       - name: Install system dependencies
-      	run: apt-get update && apt-get install -y libglpk-dev
+        run: apt-get update && apt-get install -y libglpk-dev
  
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
