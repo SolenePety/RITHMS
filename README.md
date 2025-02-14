@@ -20,8 +20,7 @@ different genetic architectures.
 Full documentation website on: <https://SolenePety.github.io/RITHMS>
 
 Here is a little summary of how RITHMS work, but you can read the
-[preprint](https://github.com/SolenePety/RITHMS/blob/main/RITHMS_Pety.pdf)
-for more details.
+[preprint](https://hal.science/hal-04913329) for more details.
 
 <figure>
 <img src="man/figures/core_algorithm.png" alt="Schema" />
@@ -34,8 +33,8 @@ You can install the development version of RITHMS from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("pak")
-pak::pak("SolenePety/RITHMS")
+# install.packages("devtools")
+devtools::install_github("SolenePety/RITHMS")
 ```
 
 ## Example
@@ -51,7 +50,7 @@ You already have a toy dataset that show you the expected structure of
 input data :
 
 ``` r
-# datafile <- system.file("BesePopTest.rds", package = "RITHMS")
+# datafile <- system.file("DeruPop.rds", package = "RITHMS")
 # ToyData <- readRDS(datafile)
 ```
 
