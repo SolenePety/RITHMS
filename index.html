@@ -61,7 +61,7 @@
 <p><img src="reference/figures/hex_rithms.png" alt="Hexsticker" width="150" style="float: right; margin-left: 20px;"></p>
 <p>Our framework, an R Implementation of a Transgenerational Hologenomic Model-based Simulator (RITHMS) an open-source package, builds upon the MoBPS package and incorporates the distinctive architecture of the microbiota, notably vertical and horizontal transfer as well as modulation due to the environment and host genetics. In addition, RITHMS can account for a variety of selection strategies, is adaptable to different genetic architectures.</p>
 <p>Full documentation website on: <a href="https://SolenePety.github.io/RITHMS" class="external-link uri">https://SolenePety.github.io/RITHMS</a></p>
-<p>Here is a little summary of how RITHMS work, but you can read the <a href="https://github.com/SolenePety/RITHMS/blob/main/RITHMS_Pety.pdf" class="external-link">preprint</a> for more details.</p>
+<p>Here is a little summary of how RITHMS work, but you can read the <a href="https://hal.science/hal-04913329" class="external-link">preprint</a> for more details.</p>
 <figure><img src="reference/figures/core_algorithm.png" alt="Schema"><figcaption aria-hidden="true">
 Schema
 </figcaption></figure><div class="section level2">
@@ -69,8 +69,8 @@ Schema
 </h2>
 <p>You can install the development version of RITHMS from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"SolenePety/RITHMS"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"SolenePety/RITHMS"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
@@ -81,7 +81,7 @@ Schema
 <span><span class="co">## basic example code</span></span></code></pre></div>
 <p>You already have a toy dataset that show you the expected structure of input data :</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># datafile &lt;- system.file("BesePopTest.rds", package = "RITHMS")</span></span>
+<code class="sourceCode R"><span><span class="co"># datafile &lt;- system.file("DeruPop.rds", package = "RITHMS")</span></span>
 <span><span class="co"># ToyData &lt;- readRDS(datafile)</span></span></code></pre></div>
 <p>But we can do much more… you can check also <a href="https://png.pngtree.com/png-vector/20220616/ourmid/pngtree-work-in-progress-warning-sign-with-yellow-and-black-stripes-painted-png-image_5060340.png" class="external-link">this vignette</a> to generate the beautiful figures coming from the article</p>
 </div>
