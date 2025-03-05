@@ -675,7 +675,7 @@ holo_simu <- function(h2,
   #call to compute beta matrix function, common for all generations
   ######
   microbiome_filtered <- founder_object |> t()
-  n_g <- nrow(get.geno(population, gen=1))
+  n_g <- nrow(MoBPS::get.geno(population, gen=1))
   
   #####################
   ### beta matrix generation
