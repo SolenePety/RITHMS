@@ -2,6 +2,7 @@
 
 export(assign_taxa)
 export(gen_effect_calibration)
+export(get_microbiomes)
 export(holo_simu)
 export(read_input_data)
 export(richness_from_abundances_gen)

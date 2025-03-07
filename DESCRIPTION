@@ -26,26 +26,9 @@ Imports:
     tibble,
     vegan
 Suggests: 
-    bazar,
-    circlize,
-    ComplexHeatmap,
-    cowplot,
-    dirmult,
-    dplyr,
-    furrr,
-    ggh4x,
-    ggplot2,
-    ggrepel,
-    ggridges,
     knitr,
-    peakRAM,
-    phyloseq,
-    purrr,
-    RColorBrewer,
     rmarkdown,
-    stringr,
-    testthat,
-    tidyr
+    testthat
 VignetteBuilder: 
     knitr
 Config/fusen/version: 0.6.0

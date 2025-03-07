@@ -5,6 +5,7 @@ flat_first.Rmd:
   - R/formatting_data.R
   - R/calibrate_params_phenotypes.R
   - R/gen_effect_calibration.R
+  - R/get_microbiomes.R
   - R/holo_simu.R
   - R/read_input_data.R
   tests: tests/testthat/test-formatting_data.R

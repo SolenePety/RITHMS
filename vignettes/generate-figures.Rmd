@@ -879,8 +879,8 @@ ggsave("../man/figures/global_phenotype.png", plot_grid(p2, p1, labels = c('A', 
 
 # **Case study**
 ```{r}
-n_it = 3
-set.seed(123)
+n_it = 1
+set.seed(456)
 vec_seed <- sample(100:10000,n_it)
 ```
 

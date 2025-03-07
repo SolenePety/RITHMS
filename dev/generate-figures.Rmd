@@ -16,7 +16,6 @@ knitr::opts_chunk$set(message=FALSE,
 
 
 ```{r init, class.source = 'fold-show'}
-
 library(RITHMS)
 library(MoBPS)
 library(dplyr)
@@ -267,46 +266,6 @@ density_peaks <- out_data %>%
 
   
 ## **D. Shannon diversity across generation**   
-  
-```{r, include=FALSE}
-
-#TODO à mettre dans flat_first
-get_microbiomes <- function(data, transpose = F, CLR = F) {
-  if(transpose){
-    if(CLR){
-      return(data |> pluck("microbiome") |> t() |> replace_zero() |> compositions::clr() |> as.data.frame())
-    }else{
-      return(data |> pluck("microbiome") |> t() |> as.data.frame())
-    }
-  }
-  data |> pluck("microbiome") |> as.data.frame()
-}
-
-get_mean_phenotypes <- function(data) {
-  data |> pluck("phenotypes","y") |> mean()
-}
-
-get_phenotypes_value <- function(data,value = "gq") {
-  data |> pluck("phenotypes",value)
-}
-
-get_om_beta_g <- function(data) {
-  data |> pluck("omega_beta_g")
-}
-
-get_selected_ind <- function(data) {
-  data |> pluck("ID_selected")
-}
-
-get_phenotypes <- function(data) {
-  data |> pluck("phenotypes") |> as.data.frame() |> as_tibble(rownames = "ID") 
-}
-
-get_mean_diversity <- function(data) {
-  mean(data$Shannon)
-}
-```
-
 
   
 ```{r, class.source = 'fold-show'}
@@ -824,8 +783,8 @@ ggsave("../man/figures/global_phenotype.png", plot_grid(p2, p1, labels = c('A', 
 
 # **Case study**
 ```{r}
-n_it = 3
-set.seed(123)
+n_it = 1
+set.seed(40)
 vec_seed <- sample(100:10000,n_it)
 ```
 
@@ -868,6 +827,7 @@ for (i in 1:nrow(params_df)) {
                                 effect.size = effect.size,
                                 lambda = lambda,
                                 selection = T,
+                                dir = T,
                                 size_selection_F = 0.3,
                                 size_selection_M = 0.3,
                                 selection_type = "div.GB",

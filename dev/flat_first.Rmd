@@ -352,8 +352,8 @@ compute_beta_g <- function(beta,
                            noise,
                            taxa_scale){
   G <- genotypes
-  beta_g <- beta %*% G
-  beta_g <- beta_g %>% t() %>% scale(center=TRUE,scale=FALSE) %>% t() 
+  beta_g_tmp <- beta %*% G
+  beta_g <- beta_g_tmp %>% t() %>% scale(center=TRUE,scale=FALSE) %>% t() 
   beta_g_raw <- beta_g
   noise_vec = rnorm(n = nrow(beta) * ncol(G), sd = noise) * taxa_scale
   beta_g <-  beta_g_raw + noise_vec
@@ -892,6 +892,49 @@ richness_from_abundances_gen <- function(microbiome_matrix, n_loop=10, plot=T){
 ```
 
 # Get functions 
+
+```{r function-get}
+
+#' Useful functions to extract elements of interest
+#'
+#' @export
+#' 
+get_microbiomes <- function(data, transpose = F, CLR = F) {
+  if(transpose){
+    if(CLR){
+      return(data |> pluck("microbiome") |> t() |> replace_zero() |> compositions::clr() |> as.data.frame())
+    }else{
+      return(data |> pluck("microbiome") |> t() |> as.data.frame())
+    }
+  }
+  data |> pluck("microbiome") |> as.data.frame()
+}
+
+get_mean_phenotypes <- function(data) {
+  data |> pluck("phenotypes","y") |> mean()
+}
+
+get_phenotypes_value <- function(data,value = "gq") {
+  data |> pluck("phenotypes",value)
+}
+
+get_om_beta_g <- function(data) {
+  data |> pluck("omega_beta_g")
+}
+
+get_selected_ind <- function(data) {
+  data |> pluck("ID_selected")
+}
+
+get_phenotypes <- function(data) {
+  data |> pluck("phenotypes") |> as.data.frame() |> as_tibble(rownames = "ID") 
+}
+
+get_mean_diversity <- function(data) {
+  mean(data$Shannon)
+}
+```
+
 
 # Plot functions 
 

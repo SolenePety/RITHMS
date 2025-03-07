@@ -58,8 +58,8 @@ compute_beta_g <- function(beta,
                            noise,
                            taxa_scale){
   G <- genotypes
-  beta_g <- beta %*% G
-  beta_g <- beta_g %>% t() %>% scale(center=TRUE,scale=FALSE) %>% t() 
+  beta_g_tmp <- beta %*% G
+  beta_g <- beta_g_tmp %>% t() %>% scale(center=TRUE,scale=FALSE) %>% t() 
   beta_g_raw <- beta_g
   noise_vec = rnorm(n = nrow(beta) * ncol(G), sd = noise) * taxa_scale
   beta_g <-  beta_g_raw + noise_vec
