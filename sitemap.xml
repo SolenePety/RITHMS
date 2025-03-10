@@ -16,7 +16,13 @@
 <url><loc>/reference/formatting_data.html</loc></url>
 <url><loc>/reference/gen_effect_calibration.html</loc></url>
 <url><loc>/reference/generate_founder.html</loc></url>
+<url><loc>/reference/get_mean_diversity.html</loc></url>
+<url><loc>/reference/get_mean_phenotypes.html</loc></url>
 <url><loc>/reference/get_microbiomes.html</loc></url>
+<url><loc>/reference/get_om_beta_g.html</loc></url>
+<url><loc>/reference/get_phenotypes.html</loc></url>
+<url><loc>/reference/get_phenotypes_value.html</loc></url>
+<url><loc>/reference/get_selected_ind.html</loc></url>
 <url><loc>/reference/holo_simu.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
 <url><loc>/reference/read_input_data.html</loc></url>
