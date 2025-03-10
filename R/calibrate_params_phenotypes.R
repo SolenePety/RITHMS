@@ -159,6 +159,7 @@ compute_current_microbiome <- function(beta,
 #' Replace zero in the matrix by 1e-15 to avoid infinite values when CLR transformation is computed
 #'
 #' @inheritParams holo_simu
+#' @export
 replace_zero <- function(x){
   W <- oneOrDataset(x)
   nmv <- is.NMV(W)

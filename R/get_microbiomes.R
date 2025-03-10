@@ -18,36 +18,42 @@ get_microbiomes <- function(data, transpose = F, CLR = F) {
 
 #' Useful function to extract mean phenotype values from RITHMS output
 #'
+#' @export
 get_mean_phenotypes <- function(data) {
   data |> pluck("phenotypes","y") |> mean()
 }
 
 #' Useful function to extract phenotype values from RITHMS output ("gq" by default)
 #'
+#' @export
 get_phenotypes_value <- function(data,value = "gq") {
   data |> pluck("phenotypes",value)
 }
 
 #' Useful function to extract omega beta G values from RITHMS output
 #'
+#' @export
 get_om_beta_g <- function(data) {
   data |> pluck("omega_beta_g")
 }
 
 #' Useful function to extract ID of selected individuals from RITHMS output
 #'
+#' @export
 get_selected_ind <- function(data) {
   data |> pluck("ID_selected")
 }
 
 #' Useful function to extract all phenotype values as data frame from RITHMS output
 #'
+#' @export
 get_phenotypes <- function(data) {
   data |> pluck("phenotypes") |> as.data.frame() |> as_tibble(rownames = "ID") 
 }
 
 #' Useful function to extract Shannon diversity from RITHMS output
 #'
+#' @export
 get_mean_diversity <- function(data) {
   mean(data$Shannon)
 }
