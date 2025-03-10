@@ -2,10 +2,10 @@
 % Please edit documentation in R/get_microbiomes.R
 \name{get_microbiomes}
 \alias{get_microbiomes}
-\title{Useful functions to extract elements of interest}
+\title{Useful function to extract microbiomes from RITHMS output}
 \usage{
 get_microbiomes(data, transpose = F, CLR = F)
 }
 \description{
-Useful functions to extract elements of interest
+Useful function to extract microbiomes from RITHMS output
 }
