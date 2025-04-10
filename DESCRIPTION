@@ -41,7 +41,6 @@ Suggests:
     peakRAM,
     phyloseq,
     purrr,
-    RColorBrewer,
     rmarkdown,
     stringr,
     testthat,
