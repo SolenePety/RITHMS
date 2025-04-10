@@ -198,7 +198,7 @@ holo_simu <- function(h2,
                                                      noise = noise.microbiome, taxa_scale = taxa_scale, 
                                                      lambda = lambda,
                                                      dir = dir,
-                                                     thetaX = thetaX)
+                                                     thetaX = NULL)
       }
     }else{
       microbiome_gen <- compute_current_microbiome(beta = beta,
@@ -208,7 +208,7 @@ holo_simu <- function(h2,
                                                    noise = noise.microbiome, taxa_scale = taxa_scale, 
                                                    lambda = lambda,
                                                    dir = dir,
-                                                   thetaX = thetaX)
+                                                   thetaX = NULL)
     }
     ######
     # Step 3 : get_current_phenotype
