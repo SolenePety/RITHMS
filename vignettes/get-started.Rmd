@@ -44,15 +44,25 @@ and `system.file()` to read it in your examples.
 
 ## Formatting data functions
 
+```{r example-formatting_data}
+# founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'prefix'",
+#                                   path_to_pedmap = "/path/to/pedmap/'prefix'",
+#                                   biome_id_column = "ind_id",
+#                                   threshold = 0.05,
+#                                   ind_selected = NULL)
+
+```
+
+
+
 
 ## Taxa assignation function
 
 ```{r examples-taxa_assignment}
-# library(dplyr)
-# datafile <- system.file("BesePopTest.rds", package = "RITHMS")
-# ToyData <- readRDS(datafile)
-# assign_taxa(founder_object = ToyData,
-#             taxa_g = 0.2)
+datafile <- system.file("DeruPop.rds", package = "RITHMS")
+ToyData <- readRDS(datafile)
+assign_taxa(founder_object = ToyData,
+            taxa_g = 0.2)
 ```
 
 
@@ -60,7 +70,15 @@ and `system.file()` to read it in your examples.
 ## Calibration of genetic effect
 
 ```{r examples-genetic_effect}
-
+datafile <- system.file("DeruPop.rds", package = "RITHMS")
+ToyData <- readRDS(datafile)
+taxa_assign_g <- assign_taxa(founder_object = ToyData)
+effect_size_vector <- c(seq(0.1,1, by = 0.2))
+out_data <- gen_effect_calibration(founder_object = ToyData,
+                                   taxa_assign_g = taxa_assign_g,
+                                   correlation = 0.5,
+                                   effect.size = effect_size_vector,
+                                   plot = TRUE)
 ```
 
 
@@ -72,12 +90,74 @@ and `system.file()` to read it in your examples.
 ## Main function
 
 ```{r examples-holo_simu}
-
+datafile <- system.file("DeruPop.rds", package = "RITHMS")
+ToyData <- readRDS(datafile)
+taxa_assign_g <- assign_taxa(founder_object = ToyData)
+generations_simu <- holo_simu(h2 = 0.25,
+                              b2 = 0.25,
+                              founder_object = ToyData,
+                              n_clust = taxa_assign_g,
+                              n_ind = 500,
+                              verbose = FALSE,
+                              noise.microbiome = 0.5,
+                              effect.size = 0.3,
+                              lambda = 0.5,
+                              dir = TRUE,
+                              selection = FALSE,
+                              seed = 1234)
 ```
 
 
 
 # Get functions 
+
+```{r examples-get}
+library(magrittr)
+library(purrr)
+
+datafile <- system.file("DeruPop.rds", package = "RITHMS")
+ToyData <- readRDS(datafile)
+taxa_assign_g <- assign_taxa(founder_object = ToyData)
+generations_simu <- holo_simu(h2 = 0.25,
+                              b2 = 0.25,
+                              founder_object = ToyData,
+                              n_clust = taxa_assign_g,
+                              n_ind = 500,
+                              verbose = FALSE,
+                              noise.microbiome = 0.5,
+                              effect.size = 0.3,
+                              lambda = 0.5,
+                              dir = TRUE,
+                              selection = FALSE,
+                              seed = 1234)
+
+# To extract CLR abundances of the G1 generation microbiome
+G1_microbiome <- get_microbiomes(generations_simu$G1, CLR = TRUE)
+
+# To extract all the relative abundances of microbiomes from all generations
+# substract metadata
+microbiomes <- generations_simu[-1] %>% map(get_microbiomes)
+
+# To extract mean phenotypes of all generations
+mean_phenotypes <- generations_simu[-1] %>% map(get_mean_phenotypes)
+
+# To extract phenotypic values for each individual of generation G1
+G1_phenotypes_values <- get_phenotypes_value(generations_simu$G1)
+
+# To extract the phenotype of each generation as the combined effects of microbiota and direct genetic effects
+phenotypes <- generations_simu[-1] %>% map(get_phenotypes)
+
+# To extract omega beta G values for each individual of generation G1
+G1_om_beta_g <- get_om_beta_g(generations_simu$G1)
+
+# To extract ID of selected individuals to each generation
+selected_inds <- generations_simu[-1] %>% map(get_selected_ind) 
+
+# To extract Shannon diversity
+# First step, compute richness from abundances
+richness_from_abundances <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen)
+shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
+```
 
 
 # Plot functions 

@@ -7,19 +7,20 @@
 #' @inheritParams stats::hclust
 #' @inheritParams stats::cutree
 #' @inheritParams vegan::vegdist
+#' 
 #' @importFrom vegan vegdist
 #' @importFrom glue glue
+#' @importFrom magrittr %>%
 #'
 #' @return
 #' A vector with a length matching the total number of taxa with values from 0 to the number of taxa, 0 corresponding to the non under genetic control cluster
 #' @rdname formatting_data
 #' @export
 #' @examples
-#' # library(dplyr)
-#' # datafile <- system.file("BesePopTest.rds", package = "RITHMS")
-#' # ToyData <- readRDS(datafile)
-#' # assign_taxa(founder_object = ToyData,
-#' #             taxa_g = 0.2)
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' ToyData <- readRDS(datafile)
+#' assign_taxa(founder_object = ToyData,
+#'             taxa_g = 0.2)
 
 assign_taxa <- function(founder_object,
                         taxa_g = 0.05){

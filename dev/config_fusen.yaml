@@ -8,6 +8,7 @@ flat_first.Rmd:
   - R/get_microbiomes.R
   - R/holo_simu.R
   - R/read_input_data.R
+  - R/formatting-data-functions.R
   tests: tests/testthat/test-formatting_data.R
   vignettes: vignettes/get-started.Rmd
   inflate:

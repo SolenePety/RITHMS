@@ -40,7 +40,7 @@ and `system.file()` to read it in your examples.
 pkgload::load_all(path = here::here(), export_all = FALSE)
 
 # You will be able to read your example data file in each of your function examples and tests as follows - see chunks below
-datafile <- system.file("BesePopTest.rds", package = "RITHMS")
+datafile <- system.file("BasePopTest.rds", package = "RITHMS")
 ToyData <- readRDS(datafile)
 ```
 
@@ -53,6 +53,7 @@ ToyData <- readRDS(datafile)
 #'
 #' @param path_to_microbiome String giving the path to count table file
 #' @param path_to_pedmap String giving the path and prefix to ped and map file
+#' @param biome_id_column String specifying the name of the column containing the individual IDs for the microbiome matrix. Default is "ind_id".
 #' @param threshold Threshold for rarefaction, DEFAULT = 0.05
 #' @param ind_selected Vector of string values with individuals to keep, have to match rownames of count table file, DEFAULT = NULL
 #' 
@@ -62,17 +63,18 @@ ToyData <- readRDS(datafile)
 #' @importFrom magrittr %>%
 #' 
 #' @return
-#' A data.frame corresponding to (rarefied) microbiome with individuals in rows and taxa in columns. Genotypes data.frame is an attribute called "population" reachable using attr(output_name,"population")
+#' A data.frame corresponding to (rarefied) microbiome with individuals in rows and taxa in columns. Genotypes data.frame is an attribute called "population" reachable using `attr(output_name,"population")`
 #' @export
 read_input_data <- function(path_to_microbiome,
                             path_to_pedmap,
+                            biome_id_columns = "ind_id",
                             threshold = 0.05,
                             ind_selected = NULL){
   ########
   #read microbiome file and make genotypes and microbiome data match according to individuals
   ########
   microbiome <- data.table::fread(path_to_microbiome)
-  microbiome_filtered5 <- rarefied_microbiome(microbiome, threshold = threshold)
+  microbiome_filtered5 <- rarefied_microbiome(microbiome, id_columns = biome_id_columns, threshold = threshold)
   if(!is.null(ind_selected)){
     microbiome_filtered5 <- microbiome_filtered5 %>% filter(rownames(.) %in% ind_selected)
   }
@@ -84,16 +86,36 @@ read_input_data <- function(path_to_microbiome,
 
 ```
 
+```{r example-formatting_data}
+# founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'prefix'",
+#                                   path_to_pedmap = "/path/to/pedmap/'prefix'",
+#                                   biome_id_column = "ind_id",
+#                                   threshold = 0.05,
+#                                   ind_selected = NULL)
+
+```
+
 ```{r function-useful_formatting_data}
-#' Rarefaction step within read_input_data
-#' @importFrom tibble as_tibble column_to_rownames tibble
+#' @importFrom tibble as_tibble column_to_rownames tibble with
 #' @importFrom dplyr rename filter pull
 #' @importFrom MoBPS creating.diploid
+#' @importFrom magrittr %>%
+#' 
+#' Rarefaction step within read_input_data
+#' 
+#' @param microbiome_matrix Microbiome counting table, OTUs in columns and a column specifying the IDs
+#' @param id_column String specifying the name of the column containing the individual IDs. Default is "ind_id"
+#' @param threshold Minimum prevalence threshold
 #' 
 #' @inheritParams read_input_data
-rarefied_microbiome <- function(microbiome_matrix, 
+#' 
+#' @return
+#' The filtered microbiome matrix, without OTUs whose prevalence is lower than the set threshold
+#' 
+rarefied_microbiome <- function(microbiome_matrix,
+                                id_column = "ind_id",
                                 threshold = 0.05){
-  microbiome_matrix <- microbiome_matrix |> as_tibble() |> column_to_rownames("numero_individu")
+  microbiome_matrix <- microbiome_matrix |> as_tibble() |> column_to_rownames(var = id_column)
   abundant_otus <- tibble(
     V1         = colnames(microbiome_matrix),
     prevalence = colMeans(microbiome_matrix > 0)
@@ -103,12 +125,18 @@ rarefied_microbiome <- function(microbiome_matrix,
 
 #' Formatting of ped and map files into haplotypes table and filter individuals
 #'
+#' @param path String giving the path and prefix to ped and map file
+#' @param microbiome_matrix Filtered microbiome matrix, with OTUs in columns and individuals in rows
+#' 
+#' @return 
+#' Matrix of taxa (in columns) accross individuals (in rows), genotypes of each generation are reachable thanks to **"population"** attribute. Genotypes are encodes as 0,1,2 and generated using the [MoBPS](10.1534/g3.120.401193) package.
+#' 
 #' @inheritParams read_input_data
 generate_founder <- function(path = NULL,
-                             microbiote_matrix){
+                             microbiome_matrix){
   # # Convert PED-file into haplotype dataset (one haplotype per colum)
   if(is.null(path)){
-    stop("path must be a valid string like : '/path/to/directory/prefix'")
+    stop("path must be a valid string like : '/path/to/directory/prefix")
   }else{
     if(FALSE %in% file_test("-f", c(glue("{path}.ped"),
                                     glue("{path}.map")))){
@@ -137,6 +165,14 @@ generate_founder <- function(path = NULL,
 
 ```
 
+
+```{r function-useful_formatting_data}
+# microbiome <- data.table::fread("/path/to/microbiome/'prefix'")
+# microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
+
+
+```
+
 ## Taxa assignation function
 
 ```{r function-taxa_assignment}
@@ -147,8 +183,10 @@ generate_founder <- function(path = NULL,
 #' @inheritParams stats::hclust
 #' @inheritParams stats::cutree
 #' @inheritParams vegan::vegdist
+#' 
 #' @importFrom vegan vegdist
 #' @importFrom glue glue
+#' @importFrom magrittr %>%
 #'
 #' @return
 #' A vector with a length matching the total number of taxa with values from 0 to the number of taxa, 0 corresponding to the non under genetic control cluster
@@ -181,11 +219,10 @@ assign_taxa <- function(founder_object,
 ```
 
 ```{r examples-taxa_assignment}
-# library(dplyr)
-# datafile <- system.file("BesePopTest.rds", package = "RITHMS")
-# ToyData <- readRDS(datafile)
-# assign_taxa(founder_object = ToyData,
-#             taxa_g = 0.2)
+datafile <- system.file("DeruPop.rds", package = "RITHMS")
+ToyData <- readRDS(datafile)
+assign_taxa(founder_object = ToyData,
+            taxa_g = 0.2)
 ```
 
 ```{r tests-taxa_assignment}
@@ -205,9 +242,10 @@ assign_taxa <- function(founder_object,
 #' 
 #' @importFrom compositions clr 
 #' @importFrom MoBPS get.geno
-#' @importFrom ggplot2 ggplot geom.boxplot labs theme
+#' @importFrom ggplot2 ggplot geom_boxplot labs theme aes element_text element_rect element_line
 #' @importFrom ggridges geom_density_ridges
 #' @importFrom glue glue
+#' @importFrom magrittr %>%
 #' 
 #' @return
 #' A data.frame with three columns, giving the Taxa ID, the effect.size and the corresponding heritability
@@ -305,6 +343,15 @@ gen_effect_calibration <- function(founder_object,
 ```
 
 ```{r examples-genetic_effect}
+datafile <- system.file("DeruPop.rds", package = "RITHMS")
+ToyData <- readRDS(datafile)
+taxa_assign_g <- assign_taxa(founder_object = ToyData)
+effect_size_vector <- c(seq(0.1,1, by = 0.2))
+out_data <- gen_effect_calibration(founder_object = ToyData,
+                                   taxa_assign_g = taxa_assign_g,
+                                   correlation = 0.5,
+                                   effect.size = effect_size_vector,
+                                   plot = TRUE)
 ```
 
 ```{r tests-genetic_effect}
@@ -314,8 +361,9 @@ gen_effect_calibration <- function(founder_object,
 #' @importFrom glue glue
 #' @importFrom tibble tibble
 #' @importFrom purrr map
+#' @importFrom magrittr %>%
 #' 
-#' Generate beta matrix giving genetic effect per SNP on taxa abundances.
+#' #' Generate beta matrix giving genetic effect per SNP on taxa abundances.
 #' 
 #' @inheritParams gen_effect_calibration
 compute_beta_matrix_cluster <- function(n_b,
@@ -401,6 +449,7 @@ root <- function(rho) {
 #' @importFrom compositions clr oneOrDataset is.NMV
 #' @importFrom dplyr select
 #' @importFrom stringr str_extract
+#' @importFrom magrittr %>%
 #' 
 #'
 #' @inheritParams holo_simu
@@ -638,8 +687,9 @@ select_individual <- function(phenotypes,
 #' @importFrom MoBPS get.geno breeding.diploid get.pedigree
 #' @importFrom compositions clr clrInv
 #' @importFrom glue glue
-#' @importFrom phyloseq phyloseq estimate_richness
+#' @importFrom phyloseq phyloseq estimate_richness otu_table
 #' @importFrom purrr list_c
+#' @importFrom magrittr %>%
 #'
 #' @param h2 direct heritability value, between 0 and 1 
 #' @param b2 microbiability value, between 0 and 1
@@ -920,6 +970,21 @@ richness_from_abundances_gen <- function(microbiome_matrix, n_loop=10, plot=T){
 ```
 
 ```{r examples-holo_simu}
+datafile <- system.file("DeruPop.rds", package = "RITHMS")
+ToyData <- readRDS(datafile)
+taxa_assign_g <- assign_taxa(founder_object = ToyData)
+generations_simu <- holo_simu(h2 = 0.25,
+                              b2 = 0.25,
+                              founder_object = ToyData,
+                              n_clust = taxa_assign_g,
+                              n_ind = 500,
+                              verbose = FALSE,
+                              noise.microbiome = 0.5,
+                              effect.size = 0.3,
+                              lambda = 0.5,
+                              dir = TRUE,
+                              selection = FALSE,
+                              seed = 1234)
 ```
 
 ```{r tests-holo_simu}
@@ -928,11 +993,13 @@ richness_from_abundances_gen <- function(microbiome_matrix, n_loop=10, plot=T){
 # Get functions 
 
 ```{r function-get}
-
-#' Useful function to extract microbiomes from RITHMS output
 #' @importFrom compositions clr
 #' @importFrom purrr pluck
 #' @importFrom tibble as_tibble
+#' @importFrom magrittr %>%
+#' 
+#' Useful function to extract microbiomes from RITHMS output
+#' 
 #' @export
 #' 
 get_microbiomes <- function(data, transpose = F, CLR = F) {
@@ -956,7 +1023,7 @@ get_mean_phenotypes <- function(data) {
 #' Useful function to extract phenotype values from RITHMS output ("gq" by default)
 #'
 #'@export
-get_phenotypes_value <- function(data,value = "gq") {
+get_phenotypes_value <- function(data, value = "gq") {
   data |> pluck("phenotypes",value)
 }
 
@@ -989,6 +1056,53 @@ get_mean_diversity <- function(data) {
 }
 ```
 
+```{r examples-get}
+library(magrittr)
+library(purrr)
+
+datafile <- system.file("DeruPop.rds", package = "RITHMS")
+ToyData <- readRDS(datafile)
+taxa_assign_g <- assign_taxa(founder_object = ToyData)
+generations_simu <- holo_simu(h2 = 0.25,
+                              b2 = 0.25,
+                              founder_object = ToyData,
+                              n_clust = taxa_assign_g,
+                              n_ind = 500,
+                              verbose = FALSE,
+                              noise.microbiome = 0.5,
+                              effect.size = 0.3,
+                              lambda = 0.5,
+                              dir = TRUE,
+                              selection = FALSE,
+                              seed = 1234)
+
+# To extract CLR abundances of the G1 generation microbiome
+G1_microbiome <- get_microbiomes(generations_simu$G1, CLR = TRUE)
+
+# To extract all the relative abundances of microbiomes from all generations
+# substract metadata
+microbiomes <- generations_simu[-1] %>% map(get_microbiomes)
+
+# To extract mean phenotypes of all generations
+mean_phenotypes <- generations_simu[-1] %>% map(get_mean_phenotypes)
+
+# To extract phenotypic values for each individual of generation G1
+G1_phenotypes_values <- get_phenotypes_value(generations_simu$G1)
+
+# To extract the phenotype of each generation as the combined effects of microbiota and direct genetic effects
+phenotypes <- generations_simu[-1] %>% map(get_phenotypes)
+
+# To extract omega beta G values for each individual of generation G1
+G1_om_beta_g <- get_om_beta_g(generations_simu$G1)
+
+# To extract ID of selected individuals to each generation
+selected_inds <- generations_simu[-1] %>% map(get_selected_ind) 
+
+# To extract Shannon diversity
+# First step, compute richness from abundances
+richness_from_abundances <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen)
+shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
+```
 
 # Plot functions 
 

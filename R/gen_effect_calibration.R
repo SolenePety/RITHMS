@@ -3,6 +3,7 @@
 #' @importFrom glue glue
 #' @importFrom tibble tibble
 #' @importFrom purrr map
+#' @importFrom magrittr %>%
 #' 
 #' Generate beta matrix giving genetic effect per SNP on taxa abundances.
 #' 
@@ -89,13 +90,24 @@ root <- function(rho) {
 #' 
 #' @importFrom compositions clr 
 #' @importFrom MoBPS get.geno
-#' @importFrom ggplot2 ggplot geom.boxplot labs theme
+#' @importFrom ggplot2 ggplot geom_boxplot labs theme aes element_text element_rect element_line
 #' @importFrom ggridges geom_density_ridges
 #' @importFrom glue glue
+#' @importFrom magrittr %>%
 #' 
 #' @return
 #' A data.frame with three columns, giving the Taxa ID, the effect.size and the corresponding heritability
 #' @export
+#' @examples
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' ToyData <- readRDS(datafile)
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' effect_size_vector <- c(seq(0.1,1, by = 0.2))
+#' out_data <- gen_effect_calibration(founder_object = ToyData,
+#'                                    taxa_assign_g = taxa_assign_g,
+#'                                    correlation = 0.5,
+#'                                    effect.size = effect_size_vector,
+#'                                    plot = TRUE)
 gen_effect_calibration <- function(founder_object,
                                    taxa_assign_g,
                                    correlation = 0.5,
