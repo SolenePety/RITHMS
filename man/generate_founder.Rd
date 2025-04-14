@@ -4,7 +4,15 @@
 \alias{generate_founder}
 \title{Formatting of ped and map files into haplotypes table and filter individuals}
 \usage{
-generate_founder(path = NULL, microbiote_matrix)
+generate_founder(path = NULL, microbiome_matrix)
+}
+\arguments{
+\item{path}{String giving the path and prefix to ped and map file}
+
+\item{microbiome_matrix}{Filtered microbiome matrix, with OTUs in columns and individuals in rows}
+}
+\value{
+Matrix of taxa (in columns) accross individuals (in rows), genotypes of each generation are reachable thanks to \strong{"population"} attribute. Genotypes are encodes as 0,1,2 and generated using the \href{10.1534/g3.120.401193}{MoBPS} package.
 }
 \description{
 Formatting of ped and map files into haplotypes table and filter individuals

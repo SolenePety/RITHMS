@@ -7,6 +7,7 @@
 #' @importFrom compositions clr oneOrDataset is.NMV
 #' @importFrom dplyr select
 #' @importFrom stringr str_extract
+#' @importFrom magrittr %>%
 #' 
 #'
 #' @inheritParams holo_simu

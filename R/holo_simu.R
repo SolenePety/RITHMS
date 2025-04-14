@@ -5,8 +5,9 @@
 #' @importFrom MoBPS get.geno breeding.diploid get.pedigree
 #' @importFrom compositions clr clrInv
 #' @importFrom glue glue
-#' @importFrom phyloseq phyloseq estimate_richness
+#' @importFrom phyloseq phyloseq estimate_richness otu_table
 #' @importFrom purrr list_c
+#' @importFrom magrittr %>%
 #'
 #' @param h2 direct heritability value, between 0 and 1 
 #' @param b2 microbiability value, between 0 and 1
@@ -39,6 +40,22 @@
 #' A big list object with metada info such as beta matrix details and each generation at level 1. For each generation, the genotypes, the microbiomes, the phenotypes, the pedigree and the individuals selected can be reachable.
 #' @rdname holo_simu
 #' @export
+#' @examples
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' ToyData <- readRDS(datafile)
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' generations_simu <- holo_simu(h2 = 0.25,
+#'                               b2 = 0.25,
+#'                               founder_object = ToyData,
+#'                               n_clust = taxa_assign_g,
+#'                               n_ind = 500,
+#'                               verbose = FALSE,
+#'                               noise.microbiome = 0.5,
+#'                               effect.size = 0.3,
+#'                               lambda = 0.5,
+#'                               dir = TRUE,
+#'                               selection = FALSE,
+#'                               seed = 1234)
 holo_simu <- function(h2,
                       b2,
                       founder_object,
