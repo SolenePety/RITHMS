@@ -55,7 +55,12 @@ ToyData <- readRDS(datafile)
 #' @param path_to_pedmap String giving the path and prefix to ped and map file
 #' @param threshold Threshold for rarefaction, DEFAULT = 0.05
 #' @param ind_selected Vector of string values with individuals to keep, have to match rownames of count table file, DEFAULT = NULL
-#'
+#' 
+#' @importFrom data.table fread
+#' @importFrom dplyr filter
+#' @importFrom glue glue
+#' @importFrom magrittr %>%
+#' 
 #' @return
 #' A data.frame corresponding to (rarefied) microbiome with individuals in rows and taxa in columns. Genotypes data.frame is an attribute called "population" reachable using attr(output_name,"population")
 #' @export
@@ -81,15 +86,18 @@ read_input_data <- function(path_to_microbiome,
 
 ```{r function-useful_formatting_data}
 #' Rarefaction step within read_input_data
-#'
+#' @importFrom tibble as_tibble column_to_rownames tibble
+#' @importFrom dplyr rename filter pull
+#' @importFrom MoBPS creating.diploid
+#' 
 #' @inheritParams read_input_data
 rarefied_microbiome <- function(microbiome_matrix, 
                                 threshold = 0.05){
-  microbiome_matrix <- microbiome_matrix |> tidyverse::as_tibble() |> tidyverse::column_to_rownames("numero_individu")
-  abundant_otus <- tidyverse::tibble(
+  microbiome_matrix <- microbiome_matrix |> as_tibble() |> column_to_rownames("numero_individu")
+  abundant_otus <- tibble(
     V1         = colnames(microbiome_matrix),
     prevalence = colMeans(microbiome_matrix > 0)
-  ) |> rename(OTU = V1) |> filter(prevalence >= threshold) |> tidyverse::pull(OTU)
+  ) |> rename(OTU = V1) |> filter(prevalence >= threshold) |> pull(OTU)
   return(microbiome_matrix[, abundant_otus])
 }
 
@@ -102,12 +110,12 @@ generate_founder <- function(path = NULL,
   if(is.null(path)){
     stop("path must be a valid string like : '/path/to/directory/prefix'")
   }else{
-    if(FALSE %in% file_test("-f", c(glue::glue("{path}.ped"),
-                                    glue::glue("{path}.map")))){
-      stop(glue::glue("Files {path}.ped and/or {path}.map don't exist, please check your path argument"))
+    if(FALSE %in% file_test("-f", c(glue("{path}.ped"),
+                                    glue("{path}.map")))){
+      stop(glue("Files {path}.ped and/or {path}.map don't exist, please check your path argument"))
     }else{
-      map <- as.matrix(read.table(glue::glue("{path}.map")))
-      ped <- as.matrix(read.table(glue::glue("{path}.ped")))
+      map <- as.matrix(read.table(glue("{path}.map")))
+      ped <- as.matrix(read.table(glue("{path}.ped")))
       #Step to filter ped map based on microbiome matrix,
       #rownames microbiote_matrix must be ind ID to match column 2 of ped file
       ped_ind <- ped[,2] %>% gsub("\\s","",.)
@@ -139,6 +147,8 @@ generate_founder <- function(path = NULL,
 #' @inheritParams stats::hclust
 #' @inheritParams stats::cutree
 #' @inheritParams vegan::vegdist
+#' @importFrom vegan vegdist
+#' @importFrom glue glue
 #'
 #' @return
 #' A vector with a length matching the total number of taxa with values from 0 to the number of taxa, 0 corresponding to the non under genetic control cluster
@@ -147,14 +157,14 @@ generate_founder <- function(path = NULL,
 
 assign_taxa <- function(founder_object,
                         taxa_g = 0.05){
-  dist_mat <- vegan::vegdist(x = t(founder_object),
+  dist_mat <- vegdist(x = t(founder_object),
                method = "bray")
   hc <- hclust(dist_mat)
   taxa_assign <- cutree(hc, k = 100)
   ntaxa_g = 0
   cluster_id_g = c()
   if(sum(table(taxa_assign)[table(taxa_assign) > 10 & table(taxa_assign) < 25]) < round(length(taxa_assign)*taxa_g)){
-    print(glue::glue("{sum(table(taxa_assign)[table(taxa_assign) > 10 & table(taxa_assign) < 25])} taxa available for genetic control sampling but {round(length(taxa_assign)*taxa_g)} asked. Change taxa_g parameter please."))
+    print(glue("{sum(table(taxa_assign)[table(taxa_assign) > 10 & table(taxa_assign) < 25])} taxa available for genetic control sampling but {round(length(taxa_assign)*taxa_g)} asked. Change taxa_g parameter please."))
   }
   while(ntaxa_g < round(length(taxa_assign)*taxa_g)){
     new_id <- table(taxa_assign)[table(taxa_assign) > 10 & table(taxa_assign) < 25] %>% sample(1) %>% names() %>% as.numeric()
@@ -192,7 +202,13 @@ assign_taxa <- function(founder_object,
 #' @param correlation Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5
 #' @param effect.size Vector giving the size of genetic effect to try 
 #' @param plot boolean, if plot generation is required, DEFAULT = TRUE
-#'
+#' 
+#' @importFrom compositions clr 
+#' @importFrom MoBPS get.geno
+#' @importFrom ggplot2
+#' @importFrom ggridges geom_density_ridges
+#' @importFrom glue glue
+#' 
 #' @return
 #' A data.frame with three columns, giving the Taxa ID, the effect.size and the corresponding heritability
 #' @export
@@ -205,10 +221,10 @@ gen_effect_calibration <- function(founder_object,
   
   #Microbiome part
   M <- founder_object %>% t() %>% apply(2, \(x) x/sum(x))
-  M0_clr <- M |> t() |> compositions::clr() |> t()
+  M0_clr <- M |> t() |> clr() |> t()
   taxa_scale <- apply(M0_clr, 1, sd)
   #Genotype
-  G <- MoBPS::get.geno(attr(founder_object,"population"),gen=1)
+  G <- get.geno(attr(founder_object,"population"),gen=1)
   
   #beta arguments
   n_g <- nrow(G)
@@ -254,10 +270,10 @@ gen_effect_calibration <- function(founder_object,
   out_data$Heritability <- as.numeric(out_data$Heritability)
   
   if(plot){
-    p <- out_data %>% tidyverse::ggplot(aes(x = as.factor(effect.size),y=Heritability, fill = as.factor(effect.size))) +
-      tidyverse::geom_boxplot()+
-      labs(title = glue::glue("Heritabilities distribution"),
-           subtitle = glue::glue("({length(unique(out_data$Taxa))} taxa under genetic control)"),
+    p <- out_data %>% ggplot(aes(x = as.factor(effect.size),y=Heritability, fill = as.factor(effect.size))) +
+      geom_boxplot()+
+      labs(title = glue("Heritabilities distribution"),
+           subtitle = glue("({length(unique(out_data$Taxa))} taxa under genetic control)"),
            x = "Genetic effect size") +
       theme(panel.background = element_rect(fill="white"),
             panel.grid.major = element_line(colour="#e3e3e3"),
@@ -269,8 +285,8 @@ gen_effect_calibration <- function(founder_object,
             legend.position = "none")
     print(p)
     
-    p2 <- out_data %>% tidyverse::ggplot(aes(x=Heritability,y=as.factor(effect.size),fill=as.factor(effect.size))) +
-      tidyverse::geom_density_ridges(alpha=0.8)+
+    p2 <- out_data %>% ggplot(aes(x=Heritability,y=as.factor(effect.size),fill=as.factor(effect.size))) +
+      geom_density_ridges(alpha=0.8)+
       labs(title = "Ridges plot of taxa heritability",
            x = "Taxa heritability",
            y = "Genetic effect size")+
@@ -295,8 +311,12 @@ gen_effect_calibration <- function(founder_object,
 ```
 
 ```{r function-useful_genetic_effect}
+#' @importFrom glue glue
+#' @importFrom tibble tibble
+#' @importFrom purr map
+#' 
 #' Generate beta matrix giving genetic effect per SNP on taxa abundances.
-#'
+#' 
 #' @inheritParams gen_effect_calibration
 compute_beta_matrix_cluster <- function(n_b,
                                         n_g,
@@ -317,10 +337,10 @@ compute_beta_matrix_cluster <- function(n_b,
   nb_k <- (n_clust[n_clust != 0] %>% unique() %>% length())  
   
   if(is.null(beta_info)){
-    beta_info <- tidyverse::tibble(
+    beta_info <- tibble(
       cluster     = 1:nb_k,
       id_otu      = split(1:length(n_clust), n_clust)[-1],
-      id_qtl_o    = tidyverse::map(cluster, \(x) {sample(1:n_g, n_qtl_o)})
+      id_qtl_o    = map(cluster, \(x) {sample(1:n_g, n_qtl_o)})
     )
   }
   sd_factor <- effect_size / sqrt(n_qtl_o)
@@ -374,6 +394,12 @@ root <- function(rho) {
 ## Useful functions 
 
 ```{r function-useful_holo_simu}
+#' @importFrom bazar stopifnot stopif
+#' @importFrom dirmult rdirichlet
+#' @importFrom compositions clr oneOrDataset is.NMV
+#' @importFrom dplyr select
+#' @importFrom stringr str_extract
+#' 
 #' Calibration of coefficients to compute phenotypes
 #'
 #' @inheritParams holo_simu
@@ -486,7 +512,7 @@ compute_mean_microbiome <- function(microbiome, dir = F, n_ind = NULL, ao, mix.p
   mean_microbiome <- rowMeans(microbiome)
   if(dir){
     stopif(is.null(n_ind))
-    dir_mean <- dirmult::rdirichlet(n_ind,as.numeric(mean_microbiome)*ao) %>% t()
+    dir_mean <- rdirichlet(n_ind,as.numeric(mean_microbiome)*ao) %>% t()
     mix_mean <- (mix.params[1] * dir_mean + mix.params[2] * matrix(mean_microbiome,nrow=nrow(dir_mean),ncol=ncol(dir_mean),byrow=F))
     attr(mix_mean, "dirichlet") <- dir_mean
     return(mix_mean)
@@ -516,14 +542,14 @@ compute_current_microbiome <- function(beta,
   }
   #TODO : check dimensions of thetaX
   if(!is.null(thetaX)){
-    microbiome <- t(compositions::clr(t(internal_compute)%>% replace_zero())) + beta_g_eps + thetaX
+    microbiome <- t(clr(t(internal_compute)%>% replace_zero())) + beta_g_eps + thetaX
   }else{
-    microbiome <- t(compositions::clr(t(internal_compute)%>% replace_zero())) + beta_g_eps
+    microbiome <- t(clr(t(internal_compute)%>% replace_zero())) + beta_g_eps
   }
   colnames(microbiome) <- colnames(beta_g_eps)
   
   attr(microbiome,"noise_microbiome") <- list('attr'=attr(beta_g_eps,"noise"), 
-                                              'clr_mic' = t(compositions::clr(t(internal_compute)%>% replace_zero())),
+                                              'clr_mic' = t(clr(t(internal_compute)%>% replace_zero())),
                                               'env_eff' = thetaX)
   #return CLR(microbiome)
   return(microbiome)
@@ -534,8 +560,8 @@ compute_current_microbiome <- function(beta,
 #' @inheritParams holo_simu
 #' @export
 replace_zero <- function(x){
-  W <- compositions::oneOrDataset(x)
-  nmv <- compositions::is.NMV(W)
+  W <- oneOrDataset(x)
+  nmv <- is.NMV(W)
   ifelse(nmv, W, 1e-15)
 }
 
@@ -584,8 +610,8 @@ select_individual <- function(phenotypes,
     }
     
     #extract individuals ID
-    F_id <- score[grep("^F",rownames(score)),] %>% sort(decreasing = T) %>% names() %>% stringr::str_extract("[0-9]+") %>% head(n_F)
-    M_id <- score[grep("^M",rownames(score)),] %>% sort(decreasing = T) %>% names() %>% stringr::str_extract("[0-9]+") %>% head(n_M)
+    F_id <- score[grep("^F",rownames(score)),] %>% sort(decreasing = T) %>% names() %>% str_extract("[0-9]+") %>% head(n_F)
+    M_id <- score[grep("^M",rownames(score)),] %>% sort(decreasing = T) %>% names() %>% str_extract("[0-9]+") %>% head(n_M)
     
   }else{
     if(!is.null(size_selection_F) || !is.null(size_selection_M)){
@@ -595,8 +621,8 @@ select_individual <- function(phenotypes,
     n_F <- (0.3 * length(grep("^F",colnames(genotypes)))) |> round()
     n_M <- (0.3 * length(grep("^M",colnames(genotypes)))) |> round()
     #extract individuals ID
-    F_id <- colnames(genotypes)[grep("^F",colnames(genotypes))] %>% stringr::str_extract("[0-9]+") %>% sample(n_F)
-    M_id <- colnames(genotypes)[grep("^M",colnames(genotypes))] %>% stringr::str_extract("[0-9]+") %>% sample(n_M)
+    F_id <- colnames(genotypes)[grep("^F",colnames(genotypes))] %>% str_extract("[0-9]+") %>% sample(n_F)
+    M_id <- colnames(genotypes)[grep("^M",colnames(genotypes))] %>% str_extract("[0-9]+") %>% sample(n_M)
   }
 
   return(list(F_id = F_id, M_id = M_id))
@@ -607,6 +633,11 @@ select_individual <- function(phenotypes,
 
 ```{r function-holo_simu}
 #' Main function to generate transgenerational hologenomic data 
+#'
+#' @importFrom MoBPS get.geno breeding.diploid get.pedigree
+#' @importFrom composition clr clrInv
+#' @importFrom glue glue
+#' @importFrom phyloseq phyloseq estimate_richness otu.table
 #'
 #' @param h2 direct heritability value, between 0 and 1 
 #' @param b2 microbiability value, between 0 and 1
@@ -676,7 +707,7 @@ holo_simu <- function(h2,
   #call to compute beta matrix function, common for all generations
   ######
   microbiome_filtered <- founder_object |> t()
-  n_g <- nrow(MoBPS::get.geno(population, gen=1))
+  n_g <- nrow(get.geno(population, gen=1))
   
   #####################
   ### beta matrix generation
@@ -699,11 +730,11 @@ holo_simu <- function(h2,
   ## ML estimate of founder pop compositions
   microbiome_gen <- apply(microbiome_filtered, 2, \(x) x/sum(x))
   ## shrinkage estimator: weighted average of ML composition and pop-level mean composition followed by clr transform
-  microbiome_gen <- (mix.params[1] * microbiome_gen + mix.params[2] * matrix(rowMeans(microbiome_gen),nrow=nrow(microbiome_gen),ncol=ncol(microbiome_gen),byrow=F)) |> t() |> compositions::clr() |> t()
+  microbiome_gen <- (mix.params[1] * microbiome_gen + mix.params[2] * matrix(rowMeans(microbiome_gen),nrow=nrow(microbiome_gen),ncol=ncol(microbiome_gen),byrow=F)) |> t() |> clr() |> t()
   # microbiome_gen <- microbiome_gen |> replace_zero() |> t() |> compositions::clr() |> t()
   #abundances
   taxa_scale <- microbiome_gen |> apply(1, sd)
-  colnames(microbiome_gen) <- MoBPS::get.geno(population, gen = 1) %>% colnames()
+  colnames(microbiome_gen) <- get.geno(population, gen = 1) %>% colnames()
   
   if(is.null(qtn_y)){
     Nqtl_y = 100
@@ -714,7 +745,7 @@ holo_simu <- function(h2,
   #####################
   ### founder phenotypes and parameters calibration
   #####################
-  params_phenotypes <- calibrate_params_phenotypes(X0 = MoBPS::get.geno(population,gen = 1),
+  params_phenotypes <- calibrate_params_phenotypes(X0 = get.geno(population,gen = 1),
                                                    B0 = microbiome_gen, #CLR abundances ,
                                                    h2 = h2,
                                                    b2 = b2,
@@ -722,7 +753,7 @@ holo_simu <- function(h2,
                                                    Nqtl_y = Nqtl_y,
                                                    Notu_y = length(otu_list))
   
-  phenotypes_founder <- compute_phenotypes(X = MoBPS::get.geno(population,gen = 1), 
+  phenotypes_founder <- compute_phenotypes(X = get.geno(population,gen = 1), 
                                            B = microbiome_gen, #CLR abundances 
                                            Nqtl_y = Nqtl_y, 
                                            Notu_y = length(otu_list), 
@@ -740,8 +771,8 @@ holo_simu <- function(h2,
                    QTN_y = params_phenotypes$qtl_list, 
                    G_coeff = params_phenotypes$alpha, 
                    B_coeff = params_phenotypes$omega)
-  G0 <- list(microbiome = microbiome_gen |>  t() |> compositions::clrInv() |> t(), 
-             genotypes = MoBPS::get.geno(population,gen = 1), 
+  G0 <- list(microbiome = microbiome_gen |>  t() |> clrInv() |> t(), 
+             genotypes = get.geno(population,gen = 1), 
              phenotypes = phenotypes_founder)
   list_output <- list(metadata = metadata, G0 = G0)
   
@@ -752,7 +783,7 @@ holo_simu <- function(h2,
   for(i in 1:n_gen){
     start_g <- proc.time()
     if(verbose){
-      print(glue::glue("Generation : {i}"))
+      print(glue("Generation : {i}"))
     }
     #Warning : outside MoBPS functions, index of generation is i+1
     ######
@@ -760,11 +791,11 @@ holo_simu <- function(h2,
     ######
     if(i==1){
       #renames microbiome matrix with individuals names
-      population <- MoBPS::breeding.diploid(population,
+      population <- breeding.diploid(population,
                                      breeding.size = c(n_ind/2,n_ind/2),
                                      verbose = F)
     }else{
-      population <- MoBPS::breeding.diploid(population,
+      population <- breeding.diploid(population,
                                      breeding.size = c(n_ind/2,n_ind/2), 
                                      selection.m.database = cbind(i,1,as.numeric(ID_selected$M_id)), 
                                      selection.f.database = cbind(i,2,as.numeric(ID_selected$F_id)),
@@ -775,8 +806,8 @@ holo_simu <- function(h2,
     # Step 2 : get_current_microbiome
     ######
     #Extract microbiomes of the mothers
-    microbiome_gen <- microbiome_gen |>  t() |> compositions::clrInv() |> t()
-    current_mother_microbiomes <- sapply(MoBPS::get.pedigree(population, gen=i+1)[,"mother"],function(x){
+    microbiome_gen <- microbiome_gen |>  t() |> clrInv() |> t()
+    current_mother_microbiomes <- sapply(get.pedigree(population, gen=i+1)[,"mother"],function(x){
       microbiome_gen[,x]
     })
     
@@ -789,7 +820,7 @@ holo_simu <- function(h2,
     if(!is.null(env_gen)){
       if(env_gen[i]){
         microbiome_gen <- compute_current_microbiome(beta = beta,
-                                                     current_genotypes = MoBPS::get.geno(population,gen = i+1),
+                                                     current_genotypes = get.geno(population,gen = i+1),
                                                      mother_microbiomes = current_mother_microbiomes,
                                                      mean_microbiome = mean_microbiome,
                                                      noise = noise.microbiome, taxa_scale = taxa_scale, 
@@ -798,7 +829,7 @@ holo_simu <- function(h2,
                                                      thetaX = thetaX) #not mandatory if we check dimension of mean_microbiome
       }else{
         microbiome_gen <- compute_current_microbiome(beta = beta,
-                                                     current_genotypes = MoBPS::get.geno(population,gen = i+1),
+                                                     current_genotypes = get.geno(population,gen = i+1),
                                                      mother_microbiomes = current_mother_microbiomes,
                                                      mean_microbiome = mean_microbiome,
                                                      noise = noise.microbiome, taxa_scale = taxa_scale, 
@@ -808,7 +839,7 @@ holo_simu <- function(h2,
       }
     }else{
       microbiome_gen <- compute_current_microbiome(beta = beta,
-                                                   current_genotypes = MoBPS::get.geno(population,gen = i+1),
+                                                   current_genotypes = get.geno(population,gen = i+1),
                                                    mother_microbiomes = current_mother_microbiomes,
                                                    mean_microbiome = mean_microbiome,
                                                    noise = noise.microbiome, taxa_scale = taxa_scale, 
@@ -819,7 +850,7 @@ holo_simu <- function(h2,
     ######
     # Step 3 : get_current_phenotype
     ######
-    phenotypes <- compute_phenotypes(X = MoBPS::get.geno(population,gen = i+1), 
+    phenotypes <- compute_phenotypes(X = get.geno(population,gen = i+1), 
                                      B = microbiome_gen, #CLR abundances 
                                      Nqtl_y = Nqtl_y, 
                                      Notu_y=length(otu_list), 
@@ -835,8 +866,8 @@ holo_simu <- function(h2,
     ######
     
     ID_selected <- select_individual(phenotypes = phenotypes,
-                                     microbiomes = microbiome_gen |>  t() |> compositions::clrInv() |> t(),
-                                     genotypes = MoBPS::get.geno(population,gen = 1+i),
+                                     microbiomes = microbiome_gen |>  t() |> clrInv() |> t(),
+                                     genotypes = get.geno(population,gen = 1+i),
                                      beta = beta,
                                      beta_otu = params_phenotypes$omega,
                                      selection = selection,
@@ -848,17 +879,17 @@ holo_simu <- function(h2,
     ###
     #update output
     ###
-    list_output[[glue("G{i}")]] <- list(microbiome = microbiome_gen |>  t() |> compositions::clrInv() |> t(),
-                                        genotypes = MoBPS::get.geno(population,gen = 1+i),
+    list_output[[glue("G{i}")]] <- list(microbiome = microbiome_gen |>  t() |> clrInv() |> t(),
+                                        genotypes = get.geno(population,gen = 1+i),
                                         phenotypes = phenotypes,
-                                        pedigree = MoBPS::get.pedigree(population,gen = i+1),
+                                        pedigree = get.pedigree(population,gen = i+1),
                                         mean_microbiome = mean_microbiome,
                                         noise_microbiome = attr(microbiome_gen,"noise_microbiome"),
                                         ID_selected = c(glue("F_{ID_selected$F_id}"),glue("M_{ID_selected$M_id}")),
-                                        omega_beta_g = as.vector(params_phenotypes$omega %*% (beta[rowSums(beta) != 0, ] %*% MoBPS::get.geno(population,gen = 1+i))))
+                                        omega_beta_g = as.vector(params_phenotypes$omega %*% (beta[rowSums(beta) != 0, ] %*% get.geno(population,gen = 1+i))))
     if(verbose){
       end_g <- proc.time() - start_g
-      print(glue::glue("Executed in {round(end_g[1] |> as.numeric(),3)} seconds"))
+      print(glue("Executed in {round(end_g[1] |> as.numeric(),3)} seconds"))
     }
   }
   return(list_output)
@@ -874,11 +905,11 @@ richness_from_abundances_gen <- function(microbiome_matrix, n_loop=10, plot=T){
     microbiome_matrix <- apply(microbiome_matrix, 2, function(x){
       rmultinom(1,10000,as.vector(x))
     })
-    tmp_physeq <- phyloseq::phyloseq(otu_table(microbiome_matrix,taxa_are_rows = T))
+    tmp_physeq <- phyloseq(otu_table(microbiome_matrix,taxa_are_rows = T))
     if(i==1){
-      richness <- phyloseq::estimate_richness(tmp_physeq,measures = c("Observed","Shannon","InvSimpson"))
+      richness <- estimate_richness(tmp_physeq,measures = c("Observed","Shannon","InvSimpson"))
     }else{
-      richness <- richness + phyloseq::estimate_richness(tmp_physeq,measures = c("Observed","Shannon","InvSimpson"))
+      richness <- richness + estimate_richness(tmp_physeq,measures = c("Observed","Shannon","InvSimpson"))
     }
   }
   return(richness/n_loop)
@@ -897,13 +928,15 @@ richness_from_abundances_gen <- function(microbiome_matrix, n_loop=10, plot=T){
 ```{r function-get}
 
 #' Useful function to extract microbiomes from RITHMS output
-#'
+#' @importFrom compositions clr
+#' @importFrom purr pluck
+#' @importFrom tibble as_tibble
 #' @export
 #' 
 get_microbiomes <- function(data, transpose = F, CLR = F) {
   if(transpose){
     if(CLR){
-      return(data |> pluck("microbiome") |> t() |> replace_zero() |> compositions::clr() |> as.data.frame())
+      return(data |> pluck("microbiome") |> t() |> replace_zero() |> clr() |> as.data.frame())
     }else{
       return(data |> pluck("microbiome") |> t() |> as.data.frame())
     }
@@ -943,7 +976,7 @@ get_selected_ind <- function(data) {
 #'
 #'@export
 get_phenotypes <- function(data) {
-  data |> pluck("phenotypes") |> as.data.frame() |> tidyverse::as_tibble(rownames = "ID") 
+  data |> pluck("phenotypes") |> as.data.frame() |> as_tibble(rownames = "ID") 
 }
 
 #' Useful function to extract Shannon diversity from RITHMS output
