@@ -6,6 +6,7 @@
 #' @importFrom compositions clr clrInv
 #' @importFrom glue glue
 #' @importFrom phyloseq phyloseq estimate_richness
+#' @importFrom purrr list_c
 #'
 #' @param h2 direct heritability value, between 0 and 1 
 #' @param b2 microbiability value, between 0 and 1
