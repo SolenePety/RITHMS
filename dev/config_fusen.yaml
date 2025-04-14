@@ -18,6 +18,7 @@ flat_first.Rmd:
     document: true
     overwrite: ask
     clean: ask
+    codecov: false
 generate-figures.Rmd:
   path: dev/generate-figures.Rmd
   state: active

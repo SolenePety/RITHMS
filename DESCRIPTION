@@ -20,35 +20,37 @@ Description: RITHMS, an R Implementation of a Transgenerational
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Imports: 
+    bazar,
     compositions,
+    data.table,
+    dirmult,
+    dplyr,
+    ggplot2,
+    ggridges,
     glue,
+    magrittr,
     MoBPS (<= 1.11.03),
+    phyloseq,
+    purrr,
+    stringr,
     tibble,
     vegan
 Suggests: 
-    bazar,
     circlize,
     ComplexHeatmap,
     cowplot,
-    dirmult,
-    dplyr,
     furrr,
     ggh4x,
-    ggplot2,
     ggrepel,
-    ggridges,
     knitr,
     peakRAM,
-    phyloseq,
-    purrr,
     RColorBrewer,
     rmarkdown,
-    stringr,
     testthat,
     tidyr
 VignetteBuilder: 
     knitr
-Config/fusen/version: 0.6.0
+Config/fusen/version: 0.7.1
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

@@ -205,7 +205,7 @@ assign_taxa <- function(founder_object,
 #' 
 #' @importFrom compositions clr 
 #' @importFrom MoBPS get.geno
-#' @importFrom ggplot2
+#' @importFrom ggplot2 ggplot geom.boxplot labs theme
 #' @importFrom ggridges geom_density_ridges
 #' @importFrom glue glue
 #' 
@@ -313,7 +313,7 @@ gen_effect_calibration <- function(founder_object,
 ```{r function-useful_genetic_effect}
 #' @importFrom glue glue
 #' @importFrom tibble tibble
-#' @importFrom purr map
+#' @importFrom purrr map
 #' 
 #' Generate beta matrix giving genetic effect per SNP on taxa abundances.
 #' 
@@ -394,13 +394,14 @@ root <- function(rho) {
 ## Useful functions 
 
 ```{r function-useful_holo_simu}
-#' @importFrom bazar stopifnot stopif
+#' Calibration of coefficients to compute phenotypes
+#' 
+#' @importFrom bazar stopif
 #' @importFrom dirmult rdirichlet
 #' @importFrom compositions clr oneOrDataset is.NMV
 #' @importFrom dplyr select
 #' @importFrom stringr str_extract
 #' 
-#' Calibration of coefficients to compute phenotypes
 #'
 #' @inheritParams holo_simu
 calibrate_params_phenotypes <- function(X0,
@@ -635,9 +636,9 @@ select_individual <- function(phenotypes,
 #' Main function to generate transgenerational hologenomic data 
 #'
 #' @importFrom MoBPS get.geno breeding.diploid get.pedigree
-#' @importFrom composition clr clrInv
+#' @importFrom compositions clr clrInv
 #' @importFrom glue glue
-#' @importFrom phyloseq phyloseq estimate_richness otu.table
+#' @importFrom phyloseq phyloseq estimate_richness
 #'
 #' @param h2 direct heritability value, between 0 and 1 
 #' @param b2 microbiability value, between 0 and 1
@@ -929,7 +930,7 @@ richness_from_abundances_gen <- function(microbiome_matrix, n_loop=10, plot=T){
 
 #' Useful function to extract microbiomes from RITHMS output
 #' @importFrom compositions clr
-#' @importFrom purr pluck
+#' @importFrom purrr pluck
 #' @importFrom tibble as_tibble
 #' @export
 #' 
