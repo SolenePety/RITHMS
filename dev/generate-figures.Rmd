@@ -4,9 +4,9 @@ output:
   rmarkdown::html_vignette:
     code_folding: hide
 ---
-
-The purpose of this vignette is to provide access to the code and data used to generate the figures in [the article](https://arxiv.org/abs/2502.07366) describing the simulation framework behind RITHMS. The purpose of these figures is to check that our model simulates the expected characteristics of the microbiota.
-
+  
+In this vignette, we explore a large number of simulation scenarios to illustrate the capabilities and features of RITHMS. These results were obtained on the dataset described below. Further explanations are given in [the article](https://arxiv.org/abs/2502.07366). RITHMS can account for a variety of **selection strategies** and is adaptable to different genetic architectures. We found that simulated data accurately preserved key characteristics **across generations**, notably **microbial diversity metrics**, exhibited the expected behavior in terms and **correlation** between taxa and of modulation of **vertical and horizontal transmission**, response to **environmental effects** and the evolution of **phenotypic values** depending on selection strategy.   
+     
 ```{r setup}
 #| echo: no
 
@@ -53,7 +53,12 @@ To visualise changes over generations, we will use a green gradient :
 greens_pal <- c("#6df17c","#2ede41","#26c537","#1da42c","#157e21","#0E5e17")
 ```
 
+General theme parameters for plots :  
+  
+```{r}
 
+```
+  
 # **Load data**
   
 The data matrix loaded is the count matrix of taxa (in columns) across individuals (in rows). In our toy dataset, a subset from [Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/), there are **1845 species** and **780 individuals** coming from the conventional diet. Genotypes are encoded as 0,1,2 and reachable thanks to *"population"* attribute.
@@ -963,11 +968,6 @@ ggsave("../man/figures/barplot_h2_b2.png", p2, width = 9, height = 6)
  
 ## **Mean phenotype change across generations according to selection strategy**   
   
-For the selection criteria we have :  
-- <font color="#ce0104">Red line</font> = Selection on microbiota breeding values,   
-- <font color="#0237AE">Blue line</font> = Selection on direct breeding values,   
-- <font color="#8123d9">Purple line</font> = Selection on total breeding values,   
-- <font color="black">Black line</font> = Random selection    
     
 ```{r}
 #| class.source: fold-hide
@@ -1052,7 +1052,12 @@ ggsave("../man/figures/selection_mode.png", p1, width = 9, height = 6)
 
 
 ![](../man/figures/selection_mode.png){width=80%}
-
+For the selection criteria we have :  
+- <font color="#ce0104">Red line</font> = Selection on microbiota breeding values,   
+- <font color="#0237AE">Blue line</font> = Selection on direct breeding values,   
+- <font color="#8123d9">Purple line</font> = Selection on total breeding values,   
+- <font color="black">Black line</font> = Random selection      
+  
 # **Selection index based on a combination of trait and diversity metrics**  
   
 As a first demonstration of the usefulness of RITHMS, we consider a practical case study of complex breeding program with a multi-trait objective: maximizing phenotypic change while perserving microbial $\alpha$-diversity.  
@@ -1239,3 +1244,13 @@ ggsave("../man/figures/use_case.png", p, width = 9, height = 6)
 
 
 ![](../man/figures/use_case.png){width=80%}
+  
+# **Future work**  
+  
+It would be interesting to extend the RITHMS model to :  
+(i) account for **microbial interactions** with a non-diagonal covariance matrix for the noise component $\sigma_{m}$ of the taxa abundances,   
+(ii) allow for the inclusion of **more complex environmental effects**,    
+(iii) allow for the **use of semi-complete**, rather than fully paired, genomic and microbiota data to create the base population, which would enable RITHMS simulations to be calibrated on a datasets for which some samples lack genomic or microbiota data,  
+(iv) the use of RITHMS to alternative **hologenomic datasets**, notably for a variety of species and experimental designs, and additional use cases for the evaluation of complex breeding schemes.  
+  
+**For any ideas or collaboration relating to the package, feel free to contact : solene.pety@inrae.fr**
