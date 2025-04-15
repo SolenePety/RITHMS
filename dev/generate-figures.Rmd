@@ -4,8 +4,12 @@ output:
   rmarkdown::html_vignette:
     code_folding: hide
 ---
-
+  
+In this vignette, we explore a large number of simulation scenarios to illustrate the capabilities and features of RITHMS. These results were obtained on the dataset described below. Further explanations are given in [the article](https://arxiv.org/abs/2502.07366). RITHMS can account for a variety of **selection strategies** and is adaptable to different genetic architectures. We found that simulated data accurately preserved key characteristics **across generations**, notably **microbial diversity metrics**, exhibited the expected behavior in terms and **correlation** between taxa and of modulation of **vertical and horizontal transmission**, response to **environmental effects** and the evolution of **phenotypic values** depending on selection strategy.   
+     
 ```{r setup}
+#| echo: no
+
 knitr::opts_chunk$set(message=FALSE,
                       warning=FALSE,
                       echo = TRUE,
@@ -15,8 +19,10 @@ knitr::opts_chunk$set(message=FALSE,
 ```
 
 
-```{r init, class.source = 'fold-show'}
-library(RITHMS)
+```{r init}
+#| class.source: fold-show
+#| eval: yes
+
 library(MoBPS)
 library(dplyr)
 library(compositions)
@@ -39,54 +45,113 @@ library(peakRAM)
 ```
 
 
-```{r, class.source = 'fold-show'}
+To visualise changes over generations, we will use a green gradient : 
+  
+```{r}
+#| class.source: fold-show
+
 greens_pal <- c("#6df17c","#2ede41","#26c537","#1da42c","#157e21","#0E5e17")
 ```
 
+General theme parameters for plots :  
+  
+```{r}
 
-```{r, class.source = 'fold-show'}
+```
+  
+# **Load data**
+  
+The data matrix loaded is the count matrix of taxa (in columns) across individuals (in rows). In our toy dataset, a subset from [Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/), there are **1845 species** and **780 individuals** coming from the conventional diet. Genotypes are encoded as 0,1,2 and reachable thanks to *"population"* attribute.
+  
+```{r}
+#| class.source: fold-show
+#| eval: yes
+
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
 founder_object <- readRDS(datafile)
+
+founder_object[1:5,1:5]
+```
+
+
+```{r}
+#| class.source: fold-show
+#| eval: yes
+
+#MoBPS population structure, use get.geno() and generation index to extract genotypes
+genotypes <- attr(founder_object, "population") %>%
+  get.geno(gen=1)
+
+genotypes[1:5,1:5]
 ```
 
 
 
-# **Fig 3. Microbiome : simulation reflects structure of microbiome**
+# **Simulation reflects structure of microbiome**
   
-## **A. Correlation heatmap**  
+This section matches code of **Figure 3** of the paper.  
   
-```{r, class.source = 'fold-show'}
+## **Produce intra- and inter-cluster (anti)correlations**  
+  
+Through $\beta$ matrix, its values and the overlapping of QTL, we're able to induce correlations between taxa. 
+  
+For this example, **4%** of the taxa are under genetic control. The pairwise correlation matrix of taxa abundances are represented here. Taxa are sorted based on the cluster they belong to.
+  
+```{r}
+#| class.source: fold-show
+#| eval: yes
+
 taxa_assign_g_small <- assign_taxa(founder_object, 
                                    taxa_g = 0.04)
 
+# Output is the assignation of each taxa to a cluster, 0 corresponds to taxa that are not under genetic control
+taxa_assign_g_small[taxa_assign_g_small !=0 ]
+```
 
-noise = 0.6
-effect.size = 0.3
-lambda = 0.5
-center_bg = T
-dir = T
-generations_simu <- holo_simu(h2 = 0.25,
-                              b2 = 0.25,
+
+Once you have these elements you're able to call `holo_simu()`.  
+  
+```{r}
+#| class.source: fold-show
+
+noise = 0.6 #noise of the microbiome
+effect.size = 0.3 #genetic effect size
+lambda = 0.5 #same weight for vertical and horizontal transmission
+dir = T #dirichlet sampling for ambient microbiome
+
+generations_simu <- holo_simu(h2 = 0.25, #direct heritability
+                              b2 = 0.25, #microbiability
                               founder_object = founder_object,
                               n_clust = taxa_assign_g_small,
-                              n_ind = 500,
-                              verbose = F,
+                              n_ind = 500, #per generation
+                              verbose = F, 
                               noise.microbiome = noise,
                               effect.size = effect.size,
                               lambda = lambda,
                               dir = dir,
-                              selection = F,
+                              selection = F, #30% males and females sampled for next generation
                               seed = 333)
 
 ```
 
 
+The $\beta$ matrix is reachable through metadata of `holo_simu()` output.   
+  
 ```{r}
+#| class.source: fold-hide
+
 #Correlation intra-cluster for cluster under genetic control
 beta <- generations_simu$metadata$Beta_matrix[taxa_assign_g_small != 0,]
 cor_matrix <- cor(t(beta))
 taxa_order <- taxa_assign_g_small[taxa_assign_g_small != 0] %>% order()
 cor_matrix <- cor_matrix[taxa_order,taxa_order]
+```
+
+
+Then we're able to build our Heatmap using [ComplexHeatmap](https://jokergoo.github.io/ComplexHeatmap-reference/book/)  
+  
+```{r}
+#| class.source: fold-hide
 
 pal <- colorRampPalette(RColorBrewer::brewer.pal(5,"Set1"))(length(taxa_assign_g_small[taxa_assign_g_small != 0] %>% unique()))
 clus_col <- structure(pal, names = taxa_assign_g_small[taxa_assign_g_small != 0] %>% unique() %>% as.vector())
@@ -113,38 +178,59 @@ p1 <- grid.grabExpr(draw(Heatmap(cor_matrix,
         heatmap_legend_param = list(title = "Correlation", title_gp = gpar(fontsize = 5, fontface = "bold"), labels_gp = gpar(fontsize = 5, fontface = 'bold')))))
 
 plot_grid(p1)
+```
+
+
+```{r}
+#| echo: no
 
 ggsave("../man/figures/Heatmap_correlation.png", p1, width = 9, height = 6)
 ```
 
 
+
 ![](../man/figures/Heatmap_correlation.png){width=80%}
 
-## **B. Lambda values**  
+## **Modulate relative importance of vertical and horizontal transmission**  
   
+The composition of the microbiota of individuals are given by this equation : $\lambda \boldsymbol{M}^{(t-1)}_{d(i)} + (1 - \lambda) \boldsymbol{M}^{(t)}_{a(i)}$. Given this, $\lambda = 0$ corresponds to no vertical transmission. We're looking here at the correlations between offspring α-diversity (from G2) and that of its mother (purple), father (orange) or ambient microbiota (green) for increasing values of λ.
 ```{r}
+#| class.source: fold-show
+
 set.seed(484)
+
 #Change n_it to increase the accuracy of the function, n_it = 10 used in the article
 n_it = 1
 seed_value <- sample(c(100:9999),n_it)
+
+params_df_it <- tibble::tibble(lambda = c(0,0.5,1)) %>%
+  crossing(tibble(seed = seed_value)) %>% 
+  mutate(sim_ID = row_number(), .before = "lambda")
+```
+
+  
+We perform the taxa assignation for all this small study.  
+  
+```{r}
+#| class.source: fold-show
 
 taxa_assign_g <- assign_taxa(founder_object)
 ```
 
 
-```{r, class.source = 'fold-show'}
+Then we have the following function that can be call in parallel for all the different scnarios in this test.  
+  
+```{r}
+#| class.source: fold-show
+
 noise = 0.1
 effect.size = 0.1
 center_bg = T
 dir = T
-lambda = c(0,0.5,1)
 
 #Boxplot lambda vs diversity correlation with offspring
-  cor_gen_table <- data.frame()
-  for(s in seed_value){
-    print(glue("Seed : {s}"))
-    for(l in lambda){
-      print(glue("Lambda : {l}"))
+  
+run_simulation_lambda <- function(i, it) {
       generations_simu <- holo_simu(h2 = 0.25,
                                     b2 = 0.25,
                                     founder_object = founder_object,
@@ -153,31 +239,74 @@ lambda = c(0,0.5,1)
                                     verbose = F,
                                     noise.microbiome = noise,
                                     effect.size = effect.size,
-                                    lambda = l,
+                                    lambda = as.numeric(params_df_it[i,"lambda"]),
                                     dir = dir,
                                     selection = F,
-                                    seed = s)
+                                    seed = as.numeric(params_df_it[i,"seed"]))
+      
+      #Richness of G2 offsprings
+      current_div <- generations_simu$G2$microbiome %>% 
+        richness_from_abundances_gen()
+      
+      #Richness of offpsring's fathers
+      previous_s_div <- sapply(generations_simu$G2$pedigree[,"father"],
+                               function(x){generations_simu$G1$microbiome[,x]}) %>% 
+        richness_from_abundances_gen()
+      
+      #Richness of offpsring's mothers
+      previous_d_div <- sapply(generations_simu$G2$pedigree[,"mother"],
+                               function(x){generations_simu$G1$microbiome[,x]}) %>% 
+        richness_from_abundances_gen()
+      
+      #Richness of ambient microbiome
+      ambient_div <- generations_simu$G2$mean_microbiome %>% 
+        richness_from_abundances_gen()
+      
+      
+      tibble(lambda = list(as.numeric(params_df_it[i,"lambda"])),
+             Mother = list(cor(current_div$Shannon,previous_d_div$Shannon)),
+             Father = list(cor(current_div$Shannon,previous_s_div$Shannon)),
+             Ambient = list(cor(current_div$Shannon,ambient_div$Shannon))
+      )
+  } 
+```
 
-      current_div <- generations_simu$G2$microbiome %>% richness_from_abundances_gen()
-      previous_s_div <- sapply(generations_simu$G2$pedigree[,"father"],function(x){generations_simu$G1$microbiome[,x]}) %>% richness_from_abundances_gen()
-      previous_d_div <- sapply(generations_simu$G2$pedigree[,"mother"],function(x){generations_simu$G1$microbiome[,x]}) %>% richness_from_abundances_gen()
-      ambient_div <- generations_simu$G2$mean_microbiome %>% richness_from_abundances_gen()
-      cor_gen_table <- rbind(cor_gen_table,
-                           cbind(l,
-                                 cor(current_div$Shannon,previous_d_div$Shannon),
-                                 cor(current_div$Shannon,previous_s_div$Shannon),
-                                 cor(current_div$Shannon,ambient_div$Shannon)))
-    }
-  }
-  colnames(cor_gen_table) <- c("lambda","Mother","Father","Ambient")
-  long_cor_gen <- cor_gen_table %>% pivot_longer(c("Mother","Father","Ambient"),
-                                                 names_to = "cor_type",
-                                                 values_to = "value")
   
+If you want to parallelize the code, you could use `plan(multisession)`.  
+   
+```{r}
+#| class.source: fold-show
+
+plan(sequential)
+results <- future_map_dfr(
+  seq_len(nrow(params_df_it)),
+  function(i) {
+    map_dfr(seq_len(n_it), ~ run_simulation_lambda(i, .x))
+  }
+)
+plan(sequential)
+```
+
+  
+The useful information of these simulations are the microbiomes, the pedigree and the ambient microbiome that could be extracted for each generation. We're focusing on G2 here.  
+  
+```{r}
+#| class.source: fold-hide
+
+long_cor_gen <- results %>% 
+  mutate(lambda = unlist(lambda),
+         Mother = unlist(Mother),
+         Father = unlist(Father),
+         Ambient = unlist(Ambient)) %>%
+  pivot_longer(c("Mother","Father","Ambient"),
+               names_to = "cor_type",
+               values_to = "value")
 ```
 
 
+
 ```{r}
+#| class.source: fold-hide
 
 lambda_label <- cbind(x = c(0,0.5,1),
                       y = c(0.8,0.2,0.8),
@@ -213,24 +342,38 @@ p3 <- long_cor_gen %>% summarise(value = mean(value), .by = c(lambda, cor_type))
   scale_color_brewer(palette = "Dark2")
 
 p3
+```
+
+
+```{r}
+#| echo: no
+
 ggsave("../man/figures/lambda_correlation.png", p3, width = 9, height = 6)
 ```
 
 
+
 ![](../man/figures/lambda_correlation.png){width=80%}
 
-## **C. Taxa heritability according to genetic effect**  
+## **Achieve a target distribution of taxa heritabilities**  
+  
+The function `calibrate_gen_effect()` is intended to guide the user in choosing an appropriate effect size to achieve a target distribution of taxa heritabilities. Build-in plots are in the function but we've used the output of the function in order to make a density plot of the distribution of taxa heritability for increasing genetic effect sizes ($\sigma_{\beta}\times\sqrt{\text{QTL}_\text{o}}$), shown above each curve.
   
 ```{r}
+#| class.source: fold-show
 
 out_data <- gen_effect_calibration(founder_object = founder_object,
                                    taxa_assign_g = taxa_assign_g,
                                    correlation = 0.5,
-                                  effect.size = c(0.3,0.6,1),
-                                  plot = F)
+                                   effect.size = c(0.3,0.6,1),
+                                   plot = F)
+```
 
 
-  # Calculate density peaks
+```{r}
+#| class.source: fold-hide
+
+# Calculate density peaks
 density_peaks <- out_data %>%
   group_by(effect.size) %>%
   summarise(
@@ -260,15 +403,24 @@ density_peaks <- out_data %>%
     scale_fill_manual(values = c("#00AFBB", "#E7B800", "#FC4E07")) +
     scale_color_manual(values = c("#00AFBB", "#E7B800", "#FC4E07"))
  p2
- ggsave("../man/figures/density_taxa_heri.png", p2, width = 9, height = 6)
+```
+
+
+```{r}
+#| echo: no
+
+ggsave("../man/figures/density_taxa_heri.png", p2, width = 9, height = 6)
 ```
 
 
   
-## **D. Shannon diversity across generation**   
-
+## **Alpha-diversity remains stable across generations**   
   
-```{r, class.source = 'fold-show'}
+In a neutral framework, without selection of environmental effect, we expect the $\alpha$-diversity to be stable across generations. From `holo_simu()` output, the relative abundances of taxa, $\alpha$-diversity indexes thanks to multinomial sampling in `richness_from_abundances_gen()` function.  
+  
+```{r}
+#| class.source: fold-show
+
 h2 = 0.25
 b2 = 0.25
 generations_simu <- holo_simu(h2 = h2,
@@ -283,6 +435,11 @@ generations_simu <- holo_simu(h2 = h2,
                               dir = dir,
                               selection = F,
                               seed = 8082)
+```
+
+
+```{r}
+#| class.source: fold-show
 
 diversities_microbiomes <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen) |> bind_rows(.id = "Generation")
   p4 <- ggplot(diversities_microbiomes,aes(x=Shannon,y=Generation,fill=Generation)) +
@@ -298,29 +455,36 @@ diversities_microbiomes <- generations_simu[-1] %>% map(get_microbiomes) %>% map
   scale_fill_manual(values = rev(greens_pal))
   
 p4
+```
+
+
+```{r}
+#| class.source: fold-show
+
 ggsave("../man/figures/ridges_shannon.png", p4, width = 9, height = 6)
 ```
 
+
 ![](../man/figures/ridges_shannon.png){width=80%}
+
+# **Introduction of transient perturbations of the microbiota**
   
-## **Global**  
+In breeding and selection programs, it is essential to account for fixed environmental effects, given their strong role in modulating an individual’s phenotype. It is therefore important to verify that simulated transgenerational hologenomic data can correctly integrate such factors under a variety of plausible scenarios, such as short-term treatments or long-term diet effects.  
+  
+To build this modulation, the user build outside the main function the $\theta X$ product and choose precisely the values and the effect size given to each environmental effect. Dimensions of this product should match the `founder_object` ones.  
+  
+To evaluate our simulation on that part we've computed a multidimensional scaling (MDS) of microbial abundance data using Bray-Curtis distances and ridges plot of Shannon index values.
+  
+This section matches code of **Figure 4** of the paper.   
+  
+## **Sporadic environmental effect**  
+  
+Half the individuals at G1 are subject to a sporadic antibiotic treatment which affects all taxa.  
   
 ```{r}
-top_row <- plot_grid(p1,p2, ncol = 2, labels = c("A","B"))
-bottom_row <- plot_grid(p3,p4, ncol = 2, labels = c("C","D"))
-plot_grid(top_row, bottom_row,nrow=2)
+#| class.source: fold-show
 
-ggsave("../man/figures/global_microbiome.png", plot_grid(top_row, bottom_row,nrow=2), width = 9, height = 6)
-```
-
-
-![](../man/figures/global_microbiome.png){width=80%}
-
-# **Fig 4. Environmental effect**
-  
-## **A. MDS antibio effect**    
-  
-```{r, class.source = 'fold-show'}
+#Construction of environmental effect before simulating the population
 h2 = 0.25
 b2 = 0.25
 noise = 0.6
@@ -331,15 +495,19 @@ lambda = 0.5
 
 set.seed(42)
 antibio <- rep(0, n_ind)
-antibio_ind <- sample(1:n_ind, 250)
+antibio_ind <- sample(1:n_ind, 250) #selecting index of individuals
 antibio[antibio_ind] <- 1 
 X <- matrix(antibio, ncol = n_ind, nrow = 1)
 
-# theta <- all taxa, big size effect with negative values
-theta <- rnorm(ncol(founder_object),mean = 0, sd = 5)
-theta <- ifelse(theta > 0, -theta, theta) %>% matrix(ncol = 1, nrow = ncol(founder_object))#Only negative values for all taxa
+theta <- rnorm(ncol(founder_object),mean = 0, sd = 5) #sampling strong antibiotics effect
+theta <- ifelse(theta > 0, -theta, theta) %>% matrix(ncol = 1, nrow = ncol(founder_object)) #only negative values for all taxa
 
 thetaX <- theta %*% X
+```
+
+
+```{r}
+#| class.source: fold-show
 
 generations_simu_env <- holo_simu(h2 = h2,
                                   b2 = b2,
@@ -354,11 +522,17 @@ generations_simu_env <- holo_simu(h2 = h2,
                                   selection = F,
                                   seed = 30,
                                   thetaX = thetaX,
-                                  env_gen = c(F,T,F,F,F))
+                                  env_gen = c(T,F,F,F,F)) #on the five generations asked, we apply thetaX only on G1, not considering G0
 ```
 
 
+### **Diversity on antibiotic effect**  
+  
+Call to `get_microbiomes()` and `richness_from_abundances_gen()` to extract all useful metrics.  
+  
 ```{r}
+#| class.source: fold-hide
+
 diversities_microbiomes <- generations_simu_env[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen) |> bind_rows(.id = "Generation")
 
   p1 <- diversities_microbiomes %>% filter(!Generation %in% c("G4","G5")) %>%
@@ -375,16 +549,25 @@ diversities_microbiomes <- generations_simu_env[-1] %>% map(get_microbiomes) %>%
     scale_fill_manual(values = rev(greens_pal)[1:4])
   
   p1
-  ggsave("../man/figures/antibio_shannon.png", p1, width = 9, height = 6)
+```
+
+
+```{r}
+#| echo: no
+
+ggsave("../man/figures/antibio_shannon.png", p1, width = 9, height = 6)
 
 ```
 
 
-![](../man/figures/ridges_shannon.png){width=80%}
 
-## **B. Diversity antibio effect**    
+![](../man/figures/antibio_shannon.png){width=80%}
+
+### **MDS on antibiotic effect**    
   
 ```{r}
+#| class.source: fold-hide
+
 microbiomes_all <- generations_simu_env[c(2,3,4,5)] %>% map(get_microbiomes, transpose = T, CLR = F) |> bind_rows(.id = "Generation")
                           
 antibio_vec <- rep(0, nrow(microbiomes_all))
@@ -392,9 +575,23 @@ id_antibio_ind <- rownames(microbiomes_all)[which(microbiomes_all$Generation == 
 antibio_vec[which(microbiomes_all$Generation == "G1")[id_antibio_ind]] <- 1
 metadata <- cbind(Generation = microbiomes_all$Generation, ID = rownames(microbiomes_all), antibio = antibio_vec) |> as.data.frame()
 rownames(metadata) <- metadata$ID
+```
+
+
+Call to [vegan package](https://cran.r-project.org/web/packages/vegan/vignettes/intro-vegan.pdf) to compute Bray Curtis distance matrix.  
+  
+```{r}
+#| class.source: fold-hide
 
 dist_mat <- vegan::vegdist(x = microbiomes_all[-1],
                  method = "bray")
+```
+
+
+Call to [phyloseq package](https://joey711.github.io/phyloseq/) to manipulate efficiently and compute MDS with `ordinate()` function.  
+  
+```{r}
+#| class.source: fold-hide
 
 physeq <- phyloseq(
   otu_table(t(microbiomes_all[,-1]), taxa_are_rows = TRUE),
@@ -403,6 +600,12 @@ physeq <- phyloseq(
 ord <- ordinate(physeq, method = "MDS", distance = dist_mat)
 
 DF <- plot_ordination(physeq, ord, justDF = T)
+```
+
+
+```{r}
+#| class.source: fold-hide
+
 p2 <- ggplot(data = DF, aes(x=DF[,1], y=DF[,2], color = antibio, shape=antibio)) + 
     labs(x = "Axis 1",
          y = "Axis 2") +
@@ -421,21 +624,26 @@ p2 <- ggplot(data = DF, aes(x=DF[,1], y=DF[,2], color = antibio, shape=antibio))
   facet_wrap2(~Generation, nrow = 2, ncol = 2, strip = strip_themed(background_x = elem_list_rect(fill = rev(greens_pal)[1:4])))
 
 p2
-ggsave("../man/figures/mds_antibio.png", p2, width = 9, height = 6)
-
 ```
+
+
+```{r}
+#| echo: no
+
+ggsave("../man/figures/mds_antibio.png", p2, width = 9, height = 6)
+```
+
 
 
 ![](../man/figures/mds_antibio.png){width=80%}
+
+## **Sustained environmental effet** 
+  
+Starting from G1, half the individuals at each generation (blue triangles) are subject to a diet favoring two clusters of taxa.  
+  
 ```{r}
-top_row <- plot_grid(p2,p1, labels = c("A","B"),rel_widths = c(2,1))
-```
+#| class.source: fold-show
 
-
-  
-## **C. MDS diet effect**    
-  
-```{r, class.source = 'fold-show'}
 h2 = 0.25
 b2 = 0.25
 noise = 0.6
@@ -452,13 +660,17 @@ diet_ind <- sample(1:n_ind, 250)
 diet[diet_ind] <- 1 
 X <- matrix(diet, ncol = n_ind, nrow = 1)
 
-# theta <- all taxa, big size effect with negative values
 theta <- rep(0, length(taxa_assign_g))
 cluster_diet <- table(taxa_assign_g)[table(taxa_assign_g) > 10 & table(taxa_assign_g) < 30] %>% sample(3) %>% names() %>% as.numeric() #sample of clusters modulated by diet
 theta[taxa_assign_g %in% cluster_diet] <- rnorm(sum(taxa_assign_g %in% cluster_diet ),mean = 0, sd = 2)
 theta <- ifelse(theta < 0, -theta, theta) %>% matrix(ncol = 1, nrow = length(taxa_assign_g))#Only positive values for all taxa
 
 thetaX <- theta %*% X
+```
+
+
+```{r}
+#| class.source: fold-show
 
 generations_simu_env <- holo_simu(h2 = h2,
                               b2 = b2,
@@ -473,11 +685,15 @@ generations_simu_env <- holo_simu(h2 = h2,
                               selection = F,
                               seed = 3042,
                               thetaX = thetaX,
-                              env_gen = c(T,T,T,T,T))
+                              env_gen = c(T,T,T,T,T)) #Applied on all generations 
 ```
 
-
+  
+### **Diversity on diet effect**  
+  
 ```{r}
+#| class.source: fold-hide
+
 diversities_microbiomes <- generations_simu_env[c(2,3,4,5)] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen) |> bind_rows(.id = "Generation")
 
   p4 <- ggplot(diversities_microbiomes,aes(x=Shannon,y=Generation,fill=Generation)) +
@@ -492,16 +708,25 @@ diversities_microbiomes <- generations_simu_env[c(2,3,4,5)] %>% map(get_microbio
               aspect.ratio = 1.5)+
         scale_fill_manual(values = rev(greens_pal)[1:4])
 p4
-ggsave("../man/figures/diet_shannon.png", p4, width = 9, height = 6)
-
 ```
+
+
+```{r}
+#| echo: no
+
+ggsave("../man/figures/diet_shannon.png", p4, width = 9, height = 6)
+```
+
 
 
 ![](../man/figures/diet_shannon.png){width=80%}
   
-## **D. Diversity diet effect**    
+### **MDS on diet effect**  
  
 ```{r}
+#| class.source: fold-hide
+
+#Post-processing of the data
 microbiomes_all <- generations_simu_env[c(2,3,4,5)] %>% map(get_microbiomes, transpose = T, CLR = F) |> bind_rows(.id = "Generation")
 
 diet_vec <- rep(0, nrow(microbiomes_all))
@@ -513,16 +738,30 @@ diet_vec[which(microbiomes_all$Generation == "G5")[diet_ind]] <- 1
 
 metadata <- cbind(Generation = microbiomes_all$Generation, ID = rownames(microbiomes_all), diet = diet_vec) |> as.data.frame()
 rownames(metadata) <- metadata$ID
+```
+
+
+```{r}
+#| class.source: fold-hide
 
 dist_mat <- vegan::vegdist(x = microbiomes_all[-1],
                  method = "bray")
+```
 
+
+```{r}
+#| class.source: fold-hide
 
 physeq <- phyloseq(
   otu_table(t(microbiomes_all[,-1]), taxa_are_rows = TRUE),
   sample_data(metadata))
 
 ord <- ordinate(physeq, method = "MDS", distance = dist_mat)
+```
+
+
+```{r}
+#| class.source: fold-hide
 
 DF <- plot_ordination(physeq, ord, justDF = T)
 p3 <- ggplot(data = DF, aes(x=DF[,1], y=DF[,2], color = diet, shape=diet)) + 
@@ -542,33 +781,30 @@ p3 <- ggplot(data = DF, aes(x=DF[,1], y=DF[,2], color = diet, shape=diet)) +
   facet_wrap2(~Generation, nrow = 2, ncol = 2, strip = strip_themed(background_x = elem_list_rect(fill = rev(greens_pal)[1:4]))) +
   scale_fill_manual(values = rev(greens_pal)[1:4])
 p3
-ggsave("../man/figures/mds_diet.png", p3, width = 9, height = 6)
-
 ```
 
+
+  
+```{r}
+#| echo: no
+
+ggsave("../man/figures/mds_diet.png", p3, width = 9, height = 6)
+```
+
+  
 
 ![](../man/figures/mds_diet.png){width=80%}
-```{r}
-bottom_row <- plot_grid(p3,p4, labels = c("C","D"),rel_widths = c(2,1))
-```
-
-
+   
+# **Fine selection of direct heritability, microbiability and selection schemes**  
   
-## **Global**  
+In the absence of selection, we want to verify that the target values are reached and maintained across generations and then observe trends in phenotypic improvement as a function of four different selection strategies.  
   
-```{r}
-plot_grid(top_row,bottom_row,nrow = 2)
-ggsave("../man/figures/global_env.png", plot_grid(top_row, bottom_row,nrow=2), width = 9, height = 6)
-
-```
-
-
-![](../man/figures/global_env.png){width=80%}
+All the computation for both plots in this section are performed at the same time, the barplot is a subset of the facet grid.  
   
-# **Fig 5. Phenotypes**
+This section matches code of **Figure 5** of the paper.  
   
-## **A. Consistant values of direct heritability and microbiability across generation**  
-  
+## **Target values of direct heritability and microbiability are reached and maintained**   
+   
 ```{r}
 # n_it = 50 was used to generate the figures of the article
 n_it = 1
@@ -576,13 +812,16 @@ set.seed(42)
 vec_seed <- sample(100:10000,n_it)
 ```
 
+  
+```{r}
+#| class.source: fold-show
 
-```{r, class.source = 'fold-show'}
 noise = 0.6
 effect.size = 0.3
 lambda = 0.1
 dir = T
-
+  
+#For the exemple, not all values were computed, you can uncomment all the lines to obtain the complete figure.
 params_df_it <- tibble::tribble(
   ~h2,  ~b2,
 #  0.05, 0.05,
@@ -613,47 +852,54 @@ params_df <- tibble::tribble(
 ```
 
 
-```{r, class.source = 'fold-show'}
+```{r}
+#| class.source: fold-show
 
 run_simulation <- function(i, it) {
   start_time_it <- Sys.time()
-
+  
   ram_result <- peakRAM({
-  taxa_assign_g <- assign_taxa(founder_object)
-
-  generations_simu <- holo_simu(
-    h2 = params_df$h2[i],
-    b2 = params_df$b2[i],
-    founder_object = founder_object,
-    n_clust = taxa_assign_g,
-    n_ind = 500,
-    verbose = FALSE,
-    noise.microbiome = noise,
-    effect.size = effect.size,
-    lambda = lambda,
-    dir = dir,
-    selection = if (params_df$`Selection Type`[i] == "Random") FALSE else TRUE,
-    size_selection_F = 0.3,
-    size_selection_M = 0.3,
-    selection_type = if (params_df$`Selection Type`[i] == "Random") NULL else params_df$`Selection Type`[i],
-    seed = vec_seed[it]
-  )
+    taxa_assign_g <- assign_taxa(founder_object)
+    
+    generations_simu <- holo_simu(
+      h2 = params_df$h2[i],
+      b2 = params_df$b2[i],
+      founder_object = founder_object,
+      n_clust = taxa_assign_g,
+      n_ind = 500,
+      verbose = FALSE,
+      noise.microbiome = noise,
+      effect.size = effect.size,
+      lambda = lambda,
+      dir = dir,
+      selection = if (params_df$`Selection Type`[i] == "Random") FALSE else TRUE,
+      size_selection_F = 0.3,
+      size_selection_M = 0.3,
+      selection_type = if (params_df$`Selection Type`[i] == "Random") NULL else params_df$`Selection Type`[i],
+      seed = vec_seed[it]
+    )
   })
-
+  
   gc() #clean memory
-
+  
   phenotypes_all <- generations_simu[-1] %>% map(get_phenotypes) |> bind_rows(.id = "Generation")
   
-  tibble(mean_phenotypes = list(generations_simu[-1] %>% map(get_mean_phenotypes)),
-         metric_values = list(phenotypes_all %>% group_by(Generation) %>% summarise(h2 = var(gq)/var(y), 
-                                                                                                b2 = var(gb)/var(y), 
-                                                                                                e2 = 1 - var(gq)/var(y) - var(gb)/var(y)))
+  tibble(mean_phenotypes = list(generations_simu[-1] %>% 
+                                  map(get_mean_phenotypes)),
+         metric_values = list(phenotypes_all %>% 
+                                group_by(Generation) %>% 
+                                summarise(h2 = var(gq)/var(y), 
+                                          b2 = var(gb)/var(y), 
+                                          e2 = 1 - var(gq)/var(y) - var(gb)/var(y)))
   )
-
-
-
 }
+```
 
+  
+If you want to parallelize the code, you could use `plan(multisession)`.  
+   
+```{r}
+#| class.source: fold-show
 
 plan(sequential)
 results <- future_map_dfr(
@@ -662,15 +908,29 @@ results <- future_map_dfr(
     map_dfr(seq_len(n_it), ~ run_simulation(i, .x))
   }
 )
-
 plan(sequential)
+```
 
+  
+```{r}
+#| class.source: fold-hide
+
+metrics_values <- results %>% 
+  bind_cols(params_df_it) %>% 
+  filter(h2 == 0.25,b2 == 0.25) %>% #for barplot, gather only results for h2 = b2 = 0.25
+  select(metric_values) %>% 
+  unnest_wider(metric_values) %>% 
+  unnest_longer(c(Generation,h2,b2,e2)) %>% 
+  group_by(Generation) %>% 
+  summarize(h2 = mean(h2), b2 = mean(b2), e2=mean(e2)) %>% 
+  pivot_longer(cols = c(h2, b2, e2), names_to = "Metric", values_to = "Value")
+
+metrics_values$Metric <- factor(metrics_values$Metric, levels = c("e2","b2","h2"))
 ```
 
 
 ```{r}
-metrics_values <- results %>% bind_cols(params_df_it) %>% filter(h2 == 0.25,b2 == 0.25) %>% select(metric_values) %>% unnest_wider(metric_values) %>% unnest_longer(c(Generation,h2,b2,e2)) %>% group_by(Generation) %>% summarize(h2 = mean(h2), b2 = mean(b2), e2=mean(e2)) %>% pivot_longer(cols = c(h2, b2, e2), names_to = "Metric", values_to = "Value")
-metrics_values$Metric <- factor(metrics_values$Metric, levels = c("e2","b2","h2"))
+#| class.source: fold-hide
 
 colours <- setNames(c("#ce0104", "#0237AE", "#808080"), 
                     c("b2", "h2", "e2"))
@@ -694,15 +954,29 @@ p2 <- metrics_values |> ggplot(aes(x=Generation, y = Value, fill = Metric))+
   scale_y_continuous(expand = expansion(0, 0)) + 
   scale_fill_manual(values = colours)
 p2
-ggsave("../man/figures/barplot_h2_b2.png", p2, width = 9, height = 6)
-
 ```
+
+
+```{r}
+#| echo: no
+
+ggsave("../man/figures/barplot_h2_b2.png", p2, width = 9, height = 6)
+```
+
 
 ![](../man/figures/barplot_h2_b2.png){width=80%}
  
-## **B. Selection Mode**  
+## **Mean phenotype change across generations according to selection strategy**   
+  
+    
 ```{r}
-mean_phenotypes <- results %>% select(mean_phenotypes) %>% bind_cols(params_df_it) %>% unnest_wider(mean_phenotypes)
+#| class.source: fold-hide
+
+mean_phenotypes <- results %>% 
+  select(mean_phenotypes) %>% 
+  bind_cols(params_df_it) %>% 
+  unnest_wider(mean_phenotypes)
+
 phenotypes_longer <- mean_phenotypes %>% 
   pivot_longer(cols = matches("^G"), values_to = "Y mean", names_to = "Generation") %>% 
   summarise("Y sd"   = sd(`Y mean`), 
@@ -732,9 +1006,12 @@ labels <- phenotypes_longer |>
                    G = "BV[d]",
                    TBV = "BV[t]",
                    None = "Random"))
+```
 
-#phenotypes_longer[phenotypes_longer < 0] <- 0
-# p1 <- phenotypes_longer %>% filter(h2 > 0) |> 
+
+```{r}
+#| class.source: fold-hide
+
 p1 <- phenotypes_longer |> 
   ggplot(aes(x = Generation, y = `Y mean`, group = `Selection Type`, color = `Selection Type`)) + 
   geom_point(size = 0.5) + 
@@ -763,33 +1040,43 @@ p1 <- phenotypes_longer |>
   scale_fill_manual(values = colours) +
   coord_cartesian(clip = "off")
 p1
-ggsave("../man/figures/selection_mode.png", p1, width = 9, height = 6)
-
 ```
+
+  
+  
+```{r}
+#| echo: no
+
+ggsave("../man/figures/selection_mode.png", p1, width = 9, height = 6)
+```
+
 
 ![](../man/figures/selection_mode.png){width=80%}
-
-## **Global**
+For the selection criteria we have :  
+- <font color="#ce0104">Red line</font> = Selection on microbiota breeding values,   
+- <font color="#0237AE">Blue line</font> = Selection on direct breeding values,   
+- <font color="#8123d9">Purple line</font> = Selection on total breeding values,   
+- <font color="black">Black line</font> = Random selection      
+  
+# **Selection index based on a combination of trait and diversity metrics**  
+  
+As a first demonstration of the usefulness of RITHMS, we consider a practical case study of complex breeding program with a multi-trait objective: maximizing phenotypic change while perserving microbial $\alpha$-diversity.  
+  
+This section matches code of **Figure 6** of the paper.  
+  
 ```{r}
-#plot_grid(p2, gt, labels = c('A', 'B'), rel_widths = c(1,2))
-plot_grid(p2, p1, labels = c('A', 'B'), rel_widths = c(1,2))
+#| class.source: fold-hide
 
-ggsave("../man/figures/global_phenotype.png", plot_grid(p2, p1, labels = c('A', 'B'), rel_widths = c(1,2)), width = 10, height = 6)
-
-```
-
-
-![](../man/figures/global_phenotype.png){width=80%}
-
-# **Case study**
-```{r}
+#n_it = 25 was used to generate the figure of the article
 n_it = 1
 set.seed(40)
 vec_seed <- sample(100:10000,n_it)
 ```
 
 
-```{r, class.source = 'fold-show'}
+```{r}
+#| class.source: fold-show
+
 params_df <- tibble::tribble(
    ~div,  ~TBV,
    0,    1,
@@ -811,11 +1098,17 @@ noise = 0.6
 effect.size = 0.3
 lambda = 0.5
 
-mean_phenotypes_y <- data_frame()
-diversities_microbiomes <- data_frame()
+```
 
-for (i in 1:nrow(params_df)) {
- taxa_assign_g <- assign_taxa(founder_object)
+  
+For each iteration, we look at the diversity and the phenotype values.
+```{r}
+#| class.source: fold-show
+
+run_simulation_study <- function(i, it) {
+
+  set.seed(as.numeric(params_df[i,4]))
+  taxa_assign_g <- assign_taxa(founder_object)
   
   generations_simu <- holo_simu(h2 = 0.25,
                                 b2 = 0.25,
@@ -833,34 +1126,71 @@ for (i in 1:nrow(params_df)) {
                                 selection_type = "div.GB",
                                 w.param = c(as.numeric(params_df[i,2]), as.numeric(params_df[i,3])),
                                 seed = as.numeric(params_df[i,4]))
-  mean_phenotypes_y <- rbind(mean_phenotypes_y, 
-                             generations_simu[-1] %>% map(get_mean_phenotypes) %>% bind_rows(.id = "Generation"))
-  diversities_microbiomes <- rbind(diversities_microbiomes,
-                                   generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen) |> map(get_mean_diversity) %>% bind_rows(.id = "Generation"))
-  }
+  
+  tibble(mean_phenotypes_y = list(generations_simu[-1] %>% 
+                                    map(get_mean_phenotypes) %>% 
+                                    bind_rows(.id = "Generation")),
+         diversities_microbiomes = list(generations_simu[-1] %>%
+                                          map(get_microbiomes) %>% 
+                                          map(richness_from_abundances_gen) |> 
+                                          map(get_mean_diversity) %>% 
+                                          bind_rows(.id = "Generation"))
+         )
+  
+}
+```
 
+  
+If you want to parallelize the code, you could use `plan(multisession)`.  
+   
+```{r}
+#| class.source: fold-show
+
+plan(sequential)
+results <- future_map_dfr(
+  seq_len(nrow(params_df)),
+  function(i) {
+    map_dfr(seq_len(n_it), ~ run_simulation_study(i, .x))
+  }
+)
+plan(sequential)
+```
+
+
+We look at the differences for our two traits between the base population and the last generation but it could be any generation.  
+  
+```{r}
+#| class.source: fold-hide
+
+mean_phenotypes_y <- results$mean_phenotypes_y %>% bind_rows()
+diversities_microbiomes <- results$diversities_microbiomes %>% bind_rows()
 ```
 
 
 ```{r}
+#| class.source: fold-hide
+
 diff_y <- mean_phenotypes_y$G5 - mean_phenotypes_y$G0
 diff_div <- diversities_microbiomes$G5 - diversities_microbiomes$G0
-diff_data <- cbind(diff_y = diff_y,
-                   diff_div = diff_div) %>%
-  as.data.frame() %>%
-  mutate(category = params_df$concatenated)
+
+diff_data <- tibble(diff_y = diff_y,
+                    diff_div = diff_div,
+                    category = params_df$concatenated)
 
 diff_data_concat <- diff_data %>% summarise(mean_div = mean(diff_div), 
                                             mean_y = mean(diff_y), 
                                             sd_div = (1.96 * sd(diff_div)/sqrt(n())),
                                             sd_y = (1.96 * sd(diff_y)/sqrt(n())),
                                             .by = c(category))
+```
 
+
+```{r}
+#| class.source: fold-hide
 
 p <- diff_data %>%
   mutate(w = str_remove_all(category, "\\(|,.*") |> as.numeric()) |> 
   ggplot(aes(y = diff_y, x = diff_div, 
-             # colour = as.factor(category)
              colour = w
              )) +
   geom_point(alpha = 0.4, shape = 20, size = 3) +
@@ -886,8 +1216,6 @@ p <- diff_data %>%
     legend.justification.inside = c(0.5, 0), 
     legend.direction = "horizontal",
     legend.box = "horizontal",
-    #legend.text.position = "bottom", 
-    #legend.key.spacing.x = unit(0.01, "cm")
   ) +
   labs(
     y = "Mean phenotype change (over 5 generations)",
@@ -899,16 +1227,30 @@ p <- diff_data %>%
                         name = expression(w[div]),
                         labels = seq(0,1,0.1)) +
   coord_cartesian(clip = "off") +
-  # guides(colour = guide_legend(nrow = 1)) +
-  # guides(colour = guide_colorbar()) +
   theme(legend.key.width = unit(25, "mm"),
         legend.background = element_rect(fill = "transparent")) +
   NULL
 
 p
-ggsave("../man/figures/use_case.png", p, width = 9, height = 6)
-
 ```
 
 
+```{r}
+#| echo: no
+
+ggsave("../man/figures/use_case.png", p, width = 9, height = 6)
+```
+
+
+
 ![](../man/figures/use_case.png){width=80%}
+  
+# **Future work**  
+  
+It would be interesting to extend the RITHMS model to :  
+(i) account for **microbial interactions** with a non-diagonal covariance matrix for the noise component $\sigma_{m}$ of the taxa abundances,   
+(ii) allow for the inclusion of **more complex environmental effects**,    
+(iii) allow for the **use of semi-complete**, rather than fully paired, genomic and microbiota data to create the base population, which would enable RITHMS simulations to be calibrated on a datasets for which some samples lack genomic or microbiota data,  
+(iv) the use of RITHMS to alternative **hologenomic datasets**, notably for a variety of species and experimental designs, and additional use cases for the evaluation of complex breeding schemes.  
+  
+**For any ideas or collaboration relating to the package, feel free to contact : solene.pety@inrae.fr**
