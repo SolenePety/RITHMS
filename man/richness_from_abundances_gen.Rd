@@ -2,10 +2,48 @@
 % Please edit documentation in R/holo_simu.R
 \name{richness_from_abundances_gen}
 \alias{richness_from_abundances_gen}
-\title{If selection based on diversity, need to go back to counts using multinomial sampling from abundances.}
+\title{Estimate diversity metrics from relative abundances}
 \usage{
-richness_from_abundances_gen(microbiome_matrix, n_loop = 10, plot = T)
+richness_from_abundances_gen(
+  microbiome_matrix,
+  size_rmultinom = 10000,
+  n_loop = 10,
+  plot = T
+)
+}
+\arguments{
+\item{microbiome_matrix}{A matrix of relative abundances (individuals in rows and OTUs in columns, see \code{\link[=get_microbiome]{get_microbiome()}} output).}
+
+\item{size_rmultinom}{Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).}
+
+\item{n_loop}{Integer; number of multinomial resampling iterations to perform (default: 10).}
+
+\item{plot}{Logical; not currently implemented}
+}
+\value{
+A \code{data.frame}of average diversity metrics (Observed, Shannon, Inverse Simpson) for each sample.
 }
 \description{
-If selection based on diversity, need to go back to counts using multinomial sampling from abundances.
+This function estimate diversity metrics (Observed, Shannon, Inverse Simpson) from the matrix of relative abundances (see \code{\link[=get_microbiomes]{get_microbiomes()}}).
+It uses multinomial sampling to simulate read counts from abundances, and computes diversity metrics across \code{n_loop} in order to obtain robust estimation. This function is particularly useful when selection is based on diversity.
+}
+\examples{
+library(magrittr)
+library(purrr)
+datafile <- system.file("DeruPop.rds", package = "RITHMS")
+ToyData <- readRDS(datafile)
+taxa_assign_g <- assign_taxa(founder_object = ToyData)
+generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
+                              n_clust = taxa_assign_g, n_ind = 500,
+                              verbose = FALSE, seed = 1234)
+                              
+# Extract microbiomes matrix for each generations
+microbiomes <- generations_simu[-1] \%>\% map(get_microbiomes)
+
+# Estimate diversity metrics
+richness_from_abundances <- microbiomes \%>\% map(richness_from_abundances_gen)
+
+}
+\seealso{
+\code{\link[=get_microbiomes]{get_microbiomes()}}, \code{\link[phyloseq:estimate_richness]{phyloseq::estimate_richness()}}
 }

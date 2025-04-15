@@ -51,30 +51,32 @@ ToyData <- readRDS(datafile)
 ```{r function-formatting_data}
 #' Formatting data from file paths to base population object
 #'
+#' @importFrom data.table fread
+#' @importFrom dplyr filter
+#' @importFrom glue glue
+#' @importFrom magrittr %>%
+#'
 #' @param path_to_microbiome String giving the path to count table file
 #' @param path_to_pedmap String giving the path and prefix to ped and map file
 #' @param biome_id_column String specifying the name of the column containing the individual IDs for the microbiome matrix. Default is "ind_id".
 #' @param threshold Threshold for rarefaction, DEFAULT = 0.05
 #' @param ind_selected Vector of string values with individuals to keep, have to match rownames of count table file, DEFAULT = NULL
 #' 
-#' @importFrom data.table fread
-#' @importFrom dplyr filter
-#' @importFrom glue glue
-#' @importFrom magrittr %>%
-#' 
 #' @return
 #' A data.frame corresponding to (rarefied) microbiome with individuals in rows and taxa in columns. Genotypes data.frame is an attribute called "population" reachable using `attr(output_name,"population")`
+#' 
+#' @rdname read_input_data
 #' @export
 read_input_data <- function(path_to_microbiome,
                             path_to_pedmap,
-                            biome_id_columns = "ind_id",
+                            biome_id_column = "ind_id",
                             threshold = 0.05,
                             ind_selected = NULL){
   ########
   #read microbiome file and make genotypes and microbiome data match according to individuals
   ########
   microbiome <- data.table::fread(path_to_microbiome)
-  microbiome_filtered5 <- rarefied_microbiome(microbiome, id_columns = biome_id_columns, threshold = threshold)
+  microbiome_filtered5 <- rarefied_microbiome(microbiome, id_column = biome_id_column, threshold = threshold)
   if(!is.null(ind_selected)){
     microbiome_filtered5 <- microbiome_filtered5 %>% filter(rownames(.) %in% ind_selected)
   }
@@ -86,7 +88,7 @@ read_input_data <- function(path_to_microbiome,
 
 ```
 
-```{r example-formatting_data}
+```{r example-formatting_data, message=FALSE, warning=FALSE}
 # founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'prefix'",
 #                                   path_to_pedmap = "/path/to/pedmap/'prefix'",
 #                                   biome_id_column = "ind_id",
@@ -96,22 +98,23 @@ read_input_data <- function(path_to_microbiome,
 ```
 
 ```{r function-useful_formatting_data}
+#' Rarefaction step within read_input_data
+#' 
 #' @importFrom tibble as_tibble column_to_rownames tibble with
 #' @importFrom dplyr rename filter pull
 #' @importFrom MoBPS creating.diploid
 #' @importFrom magrittr %>%
 #' 
-#' Rarefaction step within read_input_data
+#' @inheritParams read_input_data
 #' 
 #' @param microbiome_matrix Microbiome counting table, OTUs in columns and a column specifying the IDs
 #' @param id_column String specifying the name of the column containing the individual IDs. Default is "ind_id"
 #' @param threshold Minimum prevalence threshold
-#' 
-#' @inheritParams read_input_data
-#' 
+#'
 #' @return
 #' The filtered microbiome matrix, without OTUs whose prevalence is lower than the set threshold
 #' 
+#' @rdname rarefied_microbiome
 rarefied_microbiome <- function(microbiome_matrix,
                                 id_column = "ind_id",
                                 threshold = 0.05){
@@ -124,14 +127,15 @@ rarefied_microbiome <- function(microbiome_matrix,
 }
 
 #' Formatting of ped and map files into haplotypes table and filter individuals
-#'
+#' 
 #' @param path String giving the path and prefix to ped and map file
 #' @param microbiome_matrix Filtered microbiome matrix, with OTUs in columns and individuals in rows
 #' 
 #' @return 
 #' Matrix of taxa (in columns) accross individuals (in rows), genotypes of each generation are reachable thanks to **"population"** attribute. Genotypes are encodes as 0,1,2 and generated using the [MoBPS](10.1534/g3.120.401193) package.
 #' 
-#' @inheritParams read_input_data
+#' @rdname generate_founder
+
 generate_founder <- function(path = NULL,
                              microbiome_matrix){
   # # Convert PED-file into haplotype dataset (one haplotype per colum)
@@ -166,7 +170,7 @@ generate_founder <- function(path = NULL,
 ```
 
 
-```{r function-useful_formatting_data}
+```{r examples-useful_formatting_data, message=FALSE, warning=FALSE}
 # microbiome <- data.table::fread("/path/to/microbiome/'prefix'")
 # microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
 
@@ -180,9 +184,6 @@ generate_founder <- function(path = NULL,
 #'
 #' @param founder_object Output of read_input_data function
 #' @param taxa_g Percentage of taxa under genetic control, DEFAULT = 0.1
-#' @inheritParams stats::hclust
-#' @inheritParams stats::cutree
-#' @inheritParams vegan::vegdist
 #' 
 #' @importFrom vegan vegdist
 #' @importFrom glue glue
@@ -218,10 +219,10 @@ assign_taxa <- function(founder_object,
 
 ```
 
-```{r examples-taxa_assignment}
+```{r examples-taxa_assignment, message=FALSE, warning=FALSE}
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
 ToyData <- readRDS(datafile)
-assign_taxa(founder_object = ToyData,
+taxa_assign_g <- assign_taxa(founder_object = ToyData,
             taxa_g = 0.2)
 ```
 
@@ -234,12 +235,6 @@ assign_taxa(founder_object = ToyData,
 ```{r function-genetic_effect}
 #' Calibration of genetic effect from founder population data 
 #'
-#' @param founder_object Output of generate_founder() function
-#' @param taxa_assign_g Factor vector giving cluster assignment for all taxa, typical output of assign_taxa()
-#' @param correlation Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5
-#' @param effect.size Vector giving the size of genetic effect to try 
-#' @param plot boolean, if plot generation is required, DEFAULT = TRUE
-#' 
 #' @importFrom compositions clr 
 #' @importFrom MoBPS get.geno
 #' @importFrom ggplot2 ggplot geom_boxplot labs theme aes element_text element_rect element_line
@@ -247,8 +242,16 @@ assign_taxa(founder_object = ToyData,
 #' @importFrom glue glue
 #' @importFrom magrittr %>%
 #' 
+#' @param founder_object Output of generate_founder() function
+#' @param taxa_assign_g Factor vector giving cluster assignment for all taxa, typical output of assign_taxa()
+#' @param correlation Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5
+#' @param effect.size Vector giving the size of genetic effect to try 
+#' @param plot boolean, if plot generation is required, DEFAULT = TRUE
+#' 
 #' @return
 #' A data.frame with three columns, giving the Taxa ID, the effect.size and the corresponding heritability
+#' 
+#' @rdname gen_effect_calibration
 #' @export
 gen_effect_calibration <- function(founder_object,
                                    taxa_assign_g,
@@ -342,7 +345,7 @@ gen_effect_calibration <- function(founder_object,
 }
 ```
 
-```{r examples-genetic_effect}
+```{r examples-genetic_effect, message=FALSE, warning=FALSE}
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
 ToyData <- readRDS(datafile)
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
@@ -358,14 +361,16 @@ out_data <- gen_effect_calibration(founder_object = ToyData,
 ```
 
 ```{r function-useful_genetic_effect}
+#' Generate beta matrix giving genetic effect per SNP on taxa abundances.
 #' @importFrom glue glue
 #' @importFrom tibble tibble
 #' @importFrom purrr map
 #' @importFrom magrittr %>%
 #' 
-#' #' Generate beta matrix giving genetic effect per SNP on taxa abundances.
-#' 
 #' @inheritParams gen_effect_calibration
+#' 
+#' @return A `matrix` of taxa (in rows) across SNPs (in columns) giving the multiplicative effetc of genotype on taxa abundances.
+#' @noRd
 compute_beta_matrix_cluster <- function(n_b,
                                         n_g,
                                         n_clust,
@@ -442,7 +447,9 @@ root <- function(rho) {
 ## Useful functions 
 
 ```{r function-useful_holo_simu}
-#' Calibration of coefficients to compute phenotypes
+#' Calibration coefficients to compute phenotypes
+#' 
+#' This function is part of the first step of [holo_simu()], focused on calibrating phynotypes parameters before looping on the generations. All coefficents are rescale during the process to ensure that standard deviation = 1 and the variance of microbiote effect and genetic effect satisfy the target microbiability and direct heritability.
 #' 
 #' @importFrom bazar stopif
 #' @importFrom dirmult rdirichlet
@@ -451,8 +458,48 @@ root <- function(rho) {
 #' @importFrom stringr str_extract
 #' @importFrom magrittr %>%
 #' 
-#'
 #' @inheritParams holo_simu
+#' 
+#' @param X0 Matrix of the primary generation genotypes, given from [MoPBS::get.geno()]. SNPs are in rows and individuals in columns.
+#' @param B0 Matrix of the primary generation microbiomes, as CLR abundances. OTUs are in rows and individuals in columns.
+#' @param otu_list List of causal OTUs for the phenotypes.
+#' @param Nqtl_y Integer; number of causal SNPs for the phenotypes.
+#' @param Notu_y Integer; number of causal OTUs for the phenotypes.
+#' 
+#' @examples
+#' library(magrittr)
+#' n_ind <- 10
+#' n_snp <- 50
+#' n_otu <- 50
+#' 
+#' # Simulate a small genotype matrix 
+#' set.seed(123)
+#' X0 <- matrix(sample(0:2, n_snp * n_ind, replace = TRUE), nrow = n_snp, ncol = n_ind)
+#' 
+#' # Simulate a small microbiome counts matrix
+#' B0_counts_table <- matrix(abs(rnorm(n_snp * n_ind, mean = 10, sd = 3)), nrow = n_otu, ncol = n_ind)
+#' 
+#' # Transform to relative abundances per individuals and then apply CLR transformation
+#' B0_abund <- apply(B0_counts_table, 2, function(x) x/sum(x))
+#' B0 <- compositions::clr(t(B0_abund)) %>% t()
+#' 
+#' # Randomly select causal OTUs
+#' rownames(B0) <- paste0("OTU", 1:n_otu)
+#' otu_list <- c(y = sample(rownames(B0), 10))
+#' 
+#' params <- calibrate_params_phenotypes(X0 = X0,
+#'                                       B0 = B0,
+#'                                       h2 = 0.25,
+#'                                       b2 = 0.25,
+#'                                       otu_list = otu_list,
+#'                                       Nqtl_y = 10,
+#'                                       Notu_y = length(otu_list))
+#' str(params)
+#'  
+#' @return A `list` of phenotype parameters such as \eqn{\alpha}, \eqn{\omega}, list of causal SNPs for the phenotypes, standard deviation (=1) of phenotypes
+#' 
+#' @rdname calibrate_params_phenotypes
+#' 
 calibrate_params_phenotypes <- function(X0,
                                         B0,
                                         h2,
@@ -607,7 +654,7 @@ compute_current_microbiome <- function(beta,
 
 #' Replace zero in the matrix by 1e-15 to avoid infinite values when CLR transformation is computed
 #'
-#' @inheritParams holo_simu
+#' @param x A matrix
 #' @export
 replace_zero <- function(x){
   W <- oneOrDataset(x)
@@ -717,6 +764,22 @@ select_individual <- function(phenotypes,
 #' @param env_gen vector of bool
 #' @param w.param in case div.GB selection mode is chosen
 #' 
+#' @examples
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' ToyData <- readRDS(datafile)
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' generations_simu <- holo_simu(h2 = 0.25,
+#'                               b2 = 0.25,
+#'                               founder_object = ToyData,
+#'                               n_clust = taxa_assign_g,
+#'                               n_ind = 500,
+#'                               verbose = FALSE,
+#'                               noise.microbiome = 0.5,
+#'                               effect.size = 0.3,
+#'                               lambda = 0.5,
+#'                               dir = TRUE,
+#'                               selection = FALSE,
+#'                               seed = 1234)
 #'
 #' @return
 #' A big list object with metada info such as beta matrix details and each generation at level 1. For each generation, the genotypes, the microbiomes, the phenotypes, the pedigree and the individuals selected can be reachable.
@@ -947,15 +1010,41 @@ holo_simu <- function(h2,
   return(list_output)
 }
 
-#' If selection based on diversity, need to go back to counts using multinomial sampling from abundances.
-#'
+#' Estimate diversity metrics from relative abundances
+#' 
+#' This function estimate diversity metrics (Observed, Shannon, Inverse Simpson) from the matrix of relative abundances (see [get_microbiomes()]).
+#' It uses multinomial sampling to simulate read counts from abundances, and computes diversity metrics across `n_loop` in order to obtain robust estimation. This function is particularly useful when selection is based on diversity.
+#' 
+#' @param microbiome_matrix A matrix of relative abundances (individuals in rows and OTUs in columns, see [get_microbiome()] output).
+#' @param size_rmultinom Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).
+#' @param n_loop Integer; number of multinomial resampling iterations to perform (default: 10).
+#' @param plot Logical; not currently implemented
+#' 
+#' @return A `data.frame`of average diversity metrics (Observed, Shannon, Inverse Simpson) for each sample.
+#' 
+#' @examples
+#' library(magrittr)
+#' library(purrr)
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' ToyData <- readRDS(datafile)
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
+#'                               n_clust = taxa_assign_g, n_ind = 500,
+#'                               verbose = FALSE, seed = 1234)
+#'                               
+#' # Extract microbiomes matrix for each generations
+#' microbiomes <- generations_simu[-1] %>% map(get_microbiomes)
+#' 
+#' # Estimate diversity metrics
+#' richness_from_abundances <- microbiomes %>% map(richness_from_abundances_gen)
+#' 
+#' @seealso [get_microbiomes()], [phyloseq::estimate_richness()]
 #' @export
-#' @inheritParams select_individual
-richness_from_abundances_gen <- function(microbiome_matrix, n_loop=10, plot=T){
+richness_from_abundances_gen <- function(microbiome_matrix, size_rmultinom = 10000, n_loop = 10, plot=T){
   microbiome_matrix[microbiome_matrix<0] <- 0
   for(i in 1:n_loop){
     microbiome_matrix <- apply(microbiome_matrix, 2, function(x){
-      rmultinom(1,10000,as.vector(x))
+      rmultinom(1,size_rmultinom,as.vector(x))
     })
     tmp_physeq <- phyloseq(otu_table(microbiome_matrix,taxa_are_rows = T))
     if(i==1){
@@ -969,7 +1058,7 @@ richness_from_abundances_gen <- function(microbiome_matrix, n_loop=10, plot=T){
 
 ```
 
-```{r examples-holo_simu}
+```{r examples-holo_simu, message=FALSE, warning=FALSE}
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
 ToyData <- readRDS(datafile)
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
@@ -993,15 +1082,48 @@ generations_simu <- holo_simu(h2 = 0.25,
 # Get functions 
 
 ```{r function-get}
+#' Useful function to extract microbiomes from RITHMS output
+#' 
+#' The gets functions use the output of [holo_simu()] to extract the information of interest from a given generation.
+#' `get_microbiomes` extract the microbiome abundance matrix from a generation object, with or without CLR transformation or transposition.
+#' 
 #' @importFrom compositions clr
 #' @importFrom purrr pluck
 #' @importFrom tibble as_tibble
 #' @importFrom magrittr %>%
 #' 
-#' Useful function to extract microbiomes from RITHMS output
+#' @param data List corresponding to one generation, as returned by `holo_simu()`. Containing simulation output.
+#' @param transpose Logical; if `TRUE`, transpose the microbiome matrix (OTUs in rows, individuals in columns).
+#' @param CLR Logical; if `TRUE`, applies a CLR transformation to the abundance data. This transformation requires `transpose = TRUE`.
 #' 
+#' @return A `data.frame`containing the microbiome abundances of individuals. Default, individuals are in rows and OTUs in columns. Change `transpose`parameter if needed.
+#' 
+#' @examples
+#' library(magrittr)
+#' library(purrr)
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' ToyData <- readRDS(datafile)
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
+#'                               n_clust = taxa_assign_g, n_ind = 500,
+#'                               verbose = FALSE, seed = 1234)
+#' 
+#' # Extract microbiome matrix for G1 generation
+#' G1_microbiome <- get_microbiomes(generations_simu$G1)
+#' 
+#' # Extract with transposition
+#' G1_t_microbiome <- get_microbiomes(generations_simu$G1, transpose = TRUE)
+#' 
+#' # Extract with CLR transformation
+#' G1_CLR_microbiome <- get_microbiomes(generations_simu$G1, transpose = TRUE, CLR = TRUE)
+#' 
+#' # Extract all microbiome matrices of all generations
+#' # substract metadata
+#' microbiomes <- generations_simu[-1] %>% map(get_microbiomes)
+#' 
+#' @seealso [get_mean_phenotypes()], [get_phenotypes_value()], [get_om_beta_g()], [get_selected_ind()], [get_phenotypes()]
+#' @rdname get_microbiomes
 #' @export
-#' 
 get_microbiomes <- function(data, transpose = F, CLR = F) {
   if(transpose){
     if(CLR){
@@ -1015,48 +1137,197 @@ get_microbiomes <- function(data, transpose = F, CLR = F) {
 
 #' Useful function to extract mean phenotype values from RITHMS output
 #'
-#'@export
+#' The gets functions use the output of [holo_simu()] to extract the information of interest from a given generation.
+#' `get_mean_phenotypes`extract average phenotype from a generation object.
+#'
+#' @param data List corresponding to one generation, as returned by [holo_simu()]. Containing simulation output.
+#' @return The mean phenotype value for a given generation.
+#' @examples
+#' library(purrr)
+#' library(magrittr)
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' ToyData <- readRDS(datafile)
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
+#'                               n_clust = taxa_assign_g, n_ind = 500,
+#'                               verbose = FALSE, seed = 1234)
+#'                               
+#' # Extract mean phenotype value for G1 generation
+#' G1_mean_phenotype <- get_mean_phenotypes(generations_simu$G1)
+#' 
+#' # Extract mean phenotype values of all generations
+#' ## Don't forget to substract the metadata
+#' mean_phenotypes <- generations_simu[-1] %>% map(get_mean_phenotypes)
+#' 
+#' @seealso [get_microbiomes()], [get_phenotypes_value()], [get_om_beta_g()], [get_selected_ind()], [get_phenotypes()]
+#' @rdname get_mean_phenotypes
+#' @export
 get_mean_phenotypes <- function(data) {
   data |> pluck("phenotypes","y") |> mean()
 }
 
 #' Useful function to extract phenotype values from RITHMS output ("gq" by default)
-#'
-#'@export
+#' 
+#' The gets functions use the output of [holo_simu()] to extract the information of interest from a given generation.
+#' `get_phenotypes_values` extract the set of phenotype values from a generation object.
+#' 
+#' @param data List corresponding to one generation, as returned by [holo_simu()]. Containing simulation output.
+#' @return A `data.frame` of phenotype values for each individuals of a given generation.
+#' 
+#' @examples
+#' library(magrittr)
+#' library(purrr)
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' ToyData <- readRDS(datafile)
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
+#'                               n_clust = taxa_assign_g, n_ind = 500,
+#'                               verbose = FALSE, seed = 1234)
+#'                               
+#'  #Extract phenotype values for each individuals of G1 generation
+#'  G1_phenotypes_values <- get_phenotypes_value(generations_simu$G1)
+#'  
+#'  #Extract phenotype values for each individuals of all generations
+#'  ## Don't forget to substract the metadata
+#'  phenotypes_values <- generations_simu[-1] %>% map(get_phenotypes_value)
+#'  
+#' @seealso [get_mean_phenotypes()], [get_microbiomes()], [get_om_beta_g()], [get_selected_ind()], [get_phenotypes()]
+#' @rdname get_phenotypes_value
+#' @export
 get_phenotypes_value <- function(data, value = "gq") {
   data |> pluck("phenotypes",value)
 }
 
 #' Useful function to extract omega beta G values from RITHMS output
-#'
-#'@export
+#' 
+#' The gets functions use the output of [holo_simu()] to extract the information of interest from a given generation.
+#' `get_om_beta_g`extract omega beta G values from a generation object.
+#' 
+#' @param data List corresponding to one generation, as returned by [holo_simu()]. Containing simulation output.
+#' @return A `data.frame` of omega beta G values for each individuals of a given generation.
+#' 
+#' @examples
+#' library(magrittr)
+#' library(purrr)
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' ToyData <- readRDS(datafile)
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
+#'                               n_clust = taxa_assign_g, n_ind = 500,
+#'                               verbose = FALSE, seed = 1234)
+#'                               
+#' #Extract omega beta G values for each individuals of G1 generation
+#' G1_om_beta_g <- get_om_beta_g(generations_simu$G1)
+#'  
+#' #Extract omega beta G values for each individuals of all generations
+#' ## Don't forget to substract the metadata
+#' om_beta_g <- generations_simu[-1] %>% map(get_om_beta_g)
+#'  
+#' @seealso [get_mean_phenotypes()], [get_phenotypes_value()], [get_microbiomes()], [get_selected_ind()], [get_phenotypes()]
+#' @rdname get_om_beta_g
+#' @export
 get_om_beta_g <- function(data) {
   data |> pluck("omega_beta_g")
 }
 
 #' Useful function to extract ID of selected individuals from RITHMS output
 #'
-#'@export
+#'The gets functions use the output of [holo_simu()] to extract the information of interest from a given generation.
+#' `get_selected_ind`extract selectd individuals IDs from a generation object.
+#' 
+#' @param data List corresponding to one generation, as returned by [holo_simu()]. Containing simulation output.
+#' 
+#' @return A`list` of the selected individuals of a given generation.
+#' @examples
+#' library(magrittr)
+#' library(purrr)
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' ToyData <- readRDS(datafile)
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
+#'                               n_clust = taxa_assign_g, n_ind = 500,
+#'                               verbose = FALSE, seed = 1234)
+#'                               
+#' #Extract selected individuals IDs for the G1 generation
+#' G1_selected_ind <- get_selected_ind(generations_simu$G1)
+#'  
+#' #Extract selected individuals IDs for all generations
+#' ## Don't forget to substract the metadata
+#' selected_ind <- generations_simu[-1] %>% map(get_selected_ind)
+#' 
+#' @seealso [get_mean_phenotypes()], [get_phenotypes_value()], [get_om_beta_g()], [get_microbiomes()], [get_phenotypes()]
+#' @rdname get_selected_ind
+#' @export
 get_selected_ind <- function(data) {
   data |> pluck("ID_selected")
 }
 
 #' Useful function to extract all phenotype values as data frame from RITHMS output
-#'
-#'@export
+#' 
+#' The gets functions use the output of [holo_simu()] to extract the information of interest from a given generation.
+#' `get_phenotypes`extract phenotype for each individuals as the combined effects of microbiota and direct genetic effects, from a generation object.
+#' 
+#' @param data List corresponding to one generation, as returned by [holo_simu()]. Containing simulation output.
+#' @return A `data.frame` of phenotype for each individuals of a given generation. Phenotype values are given as the result of the combined effects of the microbiota and direct genetic effects.
+#' 
+#' @examples
+#' library(magrittr)
+#' library(purrr)
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' ToyData <- readRDS(datafile)
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
+#'                               n_clust = taxa_assign_g, n_ind = 500,
+#'                               verbose = FALSE, seed = 1234)
+#'                               
+#' #Extract phenotypes of the G1 generation
+#' G1_phenotypes <- get_phenotypes(generations_simu$G1)
+#'  
+#' #Extract phenotypes for all generations
+#' ## Don't forget to substract the metadata
+#' phenotypes <- generations_simu[-1] %>% map(get_phenotypes)
+#' 
+#' @seealso [get_mean_phenotypes()], [get_phenotypes_value()], [get_om_beta_g()], [get_selected_ind()], [get_microbiomes()]
+#' @rdname get_phenotypes
+#' @export
 get_phenotypes <- function(data) {
   data |> pluck("phenotypes") |> as.data.frame() |> as_tibble(rownames = "ID") 
 }
 
 #' Useful function to extract Shannon diversity from RITHMS output
-#'
-#'@export
+#' 
+#' The gets functions use the output of [holo_simu()] to extract the information of interest from a given generation.
+#' `get_mean_diversity`extract the average Shannon diversity from a generation object.
+#' 
+#' @note This function requires a previous call to [richness_from_abundances_gen()] to compute different types of diversity within the generation.
+#' 
+#' @param data List corresponding to one generation, as returned by [holo_simu()]. Containing simulation output.
+#' @return The average Shannon diversity within a given generation.
+#' 
+#' @examples
+#' library(magrittr)
+#' library(purrr)
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' ToyData <- readRDS(datafile)
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
+#'                               n_clust = taxa_assign_g, n_ind = 500,
+#'                               verbose = FALSE, seed = 1234)
+#'                               
+#' # Extract Shannon diversity for each generations
+#' ## First step, compute richness from abundances
+#' richness_from_abundances <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen)
+#' mean_shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
+#' 
+#' @seealso [get_microbiomes()], [richness_from_abundances_gen()]
+#' @rdname get_mean_diversity
+#' @export
 get_mean_diversity <- function(data) {
   mean(data$Shannon)
 }
 ```
 
-```{r examples-get}
+```{r examples-get, message=FALSE, warning=FALSE}
 library(magrittr)
 library(purrr)
 

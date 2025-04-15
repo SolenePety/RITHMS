@@ -45,6 +45,9 @@ and `system.file()` to read it in your examples.
 ## Formatting data functions
 
 ```{r example-formatting_data}
+#| message: no
+#| warning: no
+
 # founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'prefix'",
 #                                   path_to_pedmap = "/path/to/pedmap/'prefix'",
 #                                   biome_id_column = "ind_id",
@@ -55,13 +58,26 @@ and `system.file()` to read it in your examples.
 
 
 
+```{r examples-useful_formatting_data}
+#| message: no
+#| warning: no
+
+# microbiome <- data.table::fread("/path/to/microbiome/'prefix'")
+# microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
+
+
+```
+
 
 ## Taxa assignation function
 
 ```{r examples-taxa_assignment}
+#| message: no
+#| warning: no
+
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
 ToyData <- readRDS(datafile)
-assign_taxa(founder_object = ToyData,
+taxa_assign_g <- assign_taxa(founder_object = ToyData,
             taxa_g = 0.2)
 ```
 
@@ -70,6 +86,9 @@ assign_taxa(founder_object = ToyData,
 ## Calibration of genetic effect
 
 ```{r examples-genetic_effect}
+#| message: no
+#| warning: no
+
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
 ToyData <- readRDS(datafile)
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
@@ -90,6 +109,9 @@ out_data <- gen_effect_calibration(founder_object = ToyData,
 ## Main function
 
 ```{r examples-holo_simu}
+#| message: no
+#| warning: no
+
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
 ToyData <- readRDS(datafile)
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
@@ -112,6 +134,9 @@ generations_simu <- holo_simu(h2 = 0.25,
 # Get functions 
 
 ```{r examples-get}
+#| message: no
+#| warning: no
+
 library(magrittr)
 library(purrr)
 

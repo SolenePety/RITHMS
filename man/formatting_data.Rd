@@ -20,6 +20,6 @@ Assign all taxa to a cluster, eventually under genetic control using hclust
 \examples{
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
 ToyData <- readRDS(datafile)
-assign_taxa(founder_object = ToyData,
+taxa_assign_g <- assign_taxa(founder_object = ToyData,
             taxa_g = 0.2)
 }

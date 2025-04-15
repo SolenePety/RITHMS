@@ -6,6 +6,35 @@
 \usage{
 get_mean_diversity(data)
 }
+\arguments{
+\item{data}{List corresponding to one generation, as returned by \code{\link[=holo_simu]{holo_simu()}}. Containing simulation output.}
+}
+\value{
+The average Shannon diversity within a given generation.
+}
 \description{
-Useful function to extract Shannon diversity from RITHMS output
+The gets functions use the output of \code{\link[=holo_simu]{holo_simu()}} to extract the information of interest from a given generation.
+\code{get_mean_diversity}extract the average Shannon diversity from a generation object.
+}
+\note{
+This function requires a previous call to \code{\link[=richness_from_abundances_gen]{richness_from_abundances_gen()}} to compute different types of diversity within the generation.
+}
+\examples{
+library(magrittr)
+library(purrr)
+datafile <- system.file("DeruPop.rds", package = "RITHMS")
+ToyData <- readRDS(datafile)
+taxa_assign_g <- assign_taxa(founder_object = ToyData)
+generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
+                              n_clust = taxa_assign_g, n_ind = 500,
+                              verbose = FALSE, seed = 1234)
+                              
+# Extract Shannon diversity for each generations
+## First step, compute richness from abundances
+richness_from_abundances <- generations_simu[-1] \%>\% map(get_microbiomes) \%>\% map(richness_from_abundances_gen)
+mean_shannon_diversity <- richness_from_abundances \%>\% map(get_mean_diversity)
+
+}
+\seealso{
+\code{\link[=get_microbiomes]{get_microbiomes()}}, \code{\link[=richness_from_abundances_gen]{richness_from_abundances_gen()}}
 }
