@@ -6,6 +6,9 @@
 \usage{
 replace_zero(x)
 }
+\arguments{
+\item{x}{A matrix}
+}
 \description{
 Replace zero in the matrix by 1e-15 to avoid infinite values when CLR transformation is computed
 }

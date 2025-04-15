@@ -6,6 +6,34 @@
 \usage{
 get_om_beta_g(data)
 }
+\arguments{
+\item{data}{List corresponding to one generation, as returned by \code{\link[=holo_simu]{holo_simu()}}. Containing simulation output.}
+}
+\value{
+A \code{data.frame} of omega beta G values for each individuals of a given generation.
+}
 \description{
-Useful function to extract omega beta G values from RITHMS output
+The gets functions use the output of \code{\link[=holo_simu]{holo_simu()}} to extract the information of interest from a given generation.
+\code{get_om_beta_g}extract omega beta G values from a generation object.
+}
+\examples{
+library(magrittr)
+library(purrr)
+datafile <- system.file("DeruPop.rds", package = "RITHMS")
+ToyData <- readRDS(datafile)
+taxa_assign_g <- assign_taxa(founder_object = ToyData)
+generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
+                              n_clust = taxa_assign_g, n_ind = 500,
+                              verbose = FALSE, seed = 1234)
+                              
+#Extract omega beta G values for each individuals of G1 generation
+G1_om_beta_g <- get_om_beta_g(generations_simu$G1)
+ 
+#Extract omega beta G values for each individuals of all generations
+## Don't forget to substract the metadata
+om_beta_g <- generations_simu[-1] \%>\% map(get_om_beta_g)
+ 
+}
+\seealso{
+\code{\link[=get_mean_phenotypes]{get_mean_phenotypes()}}, \code{\link[=get_phenotypes_value]{get_phenotypes_value()}}, \code{\link[=get_microbiomes]{get_microbiomes()}}, \code{\link[=get_selected_ind]{get_selected_ind()}}, \code{\link[=get_phenotypes]{get_phenotypes()}}
 }

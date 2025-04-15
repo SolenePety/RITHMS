@@ -4,9 +4,6 @@
 #'
 #' @param founder_object Output of read_input_data function
 #' @param taxa_g Percentage of taxa under genetic control, DEFAULT = 0.1
-#' @inheritParams stats::hclust
-#' @inheritParams stats::cutree
-#' @inheritParams vegan::vegdist
 #' 
 #' @importFrom vegan vegdist
 #' @importFrom glue glue
@@ -19,7 +16,7 @@
 #' @examples
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
 #' ToyData <- readRDS(datafile)
-#' assign_taxa(founder_object = ToyData,
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData,
 #'             taxa_g = 0.2)
 
 assign_taxa <- function(founder_object,

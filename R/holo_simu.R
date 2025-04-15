@@ -35,11 +35,6 @@
 #' @param env_gen vector of bool
 #' @param w.param in case div.GB selection mode is chosen
 #' 
-#'
-#' @return
-#' A big list object with metada info such as beta matrix details and each generation at level 1. For each generation, the genotypes, the microbiomes, the phenotypes, the pedigree and the individuals selected can be reachable.
-#' @rdname holo_simu
-#' @export
 #' @examples
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
 #' ToyData <- readRDS(datafile)
@@ -56,6 +51,26 @@
 #'                               dir = TRUE,
 #'                               selection = FALSE,
 #'                               seed = 1234)
+#'
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' ToyData <- readRDS(datafile)
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' generations_simu <- holo_simu(h2 = 0.25,
+#'                               b2 = 0.25,
+#'                               founder_object = ToyData,
+#'                               n_clust = taxa_assign_g,
+#'                               n_ind = 500,
+#'                               verbose = FALSE,
+#'                               noise.microbiome = 0.5,
+#'                               effect.size = 0.3,
+#'                               lambda = 0.5,
+#'                               dir = TRUE,
+#'                               selection = FALSE,
+#'                               seed = 1234)
+#' @return
+#' A big list object with metada info such as beta matrix details and each generation at level 1. For each generation, the genotypes, the microbiomes, the phenotypes, the pedigree and the individuals selected can be reachable.
+#' @rdname holo_simu
+#' @export
 holo_simu <- function(h2,
                       b2,
                       founder_object,
@@ -281,15 +296,41 @@ holo_simu <- function(h2,
   return(list_output)
 }
 
-#' If selection based on diversity, need to go back to counts using multinomial sampling from abundances.
-#'
+#' Estimate diversity metrics from relative abundances
+#' 
+#' This function estimate diversity metrics (Observed, Shannon, Inverse Simpson) from the matrix of relative abundances (see [get_microbiomes()]).
+#' It uses multinomial sampling to simulate read counts from abundances, and computes diversity metrics across `n_loop` in order to obtain robust estimation. This function is particularly useful when selection is based on diversity.
+#' 
+#' @param microbiome_matrix A matrix of relative abundances (individuals in rows and OTUs in columns, see [get_microbiome()] output).
+#' @param size_rmultinom Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).
+#' @param n_loop Integer; number of multinomial resampling iterations to perform (default: 10).
+#' @param plot Logical; not currently implemented
+#' 
+#' @return A `data.frame`of average diversity metrics (Observed, Shannon, Inverse Simpson) for each sample.
+#' 
+#' @examples
+#' library(magrittr)
+#' library(purrr)
+#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#' ToyData <- readRDS(datafile)
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
+#'                               n_clust = taxa_assign_g, n_ind = 500,
+#'                               verbose = FALSE, seed = 1234)
+#'                               
+#' # Extract microbiomes matrix for each generations
+#' microbiomes <- generations_simu[-1] %>% map(get_microbiomes)
+#' 
+#' # Estimate diversity metrics
+#' richness_from_abundances <- microbiomes %>% map(richness_from_abundances_gen)
+#' 
+#' @seealso [get_microbiomes()], [phyloseq::estimate_richness()]
 #' @export
-#' @inheritParams select_individual
-richness_from_abundances_gen <- function(microbiome_matrix, n_loop=10, plot=T){
+richness_from_abundances_gen <- function(microbiome_matrix, size_rmultinom = 10000, n_loop = 10, plot=T){
   microbiome_matrix[microbiome_matrix<0] <- 0
   for(i in 1:n_loop){
     microbiome_matrix <- apply(microbiome_matrix, 2, function(x){
-      rmultinom(1,10000,as.vector(x))
+      rmultinom(1,size_rmultinom,as.vector(x))
     })
     tmp_physeq <- phyloseq(otu_table(microbiome_matrix,taxa_are_rows = T))
     if(i==1){

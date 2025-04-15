@@ -7,7 +7,7 @@
 read_input_data(
   path_to_microbiome,
   path_to_pedmap,
-  biome_id_columns = "ind_id",
+  biome_id_column = "ind_id",
   threshold = 0.05,
   ind_selected = NULL
 )
@@ -17,11 +17,11 @@ read_input_data(
 
 \item{path_to_pedmap}{String giving the path and prefix to ped and map file}
 
+\item{biome_id_column}{String specifying the name of the column containing the individual IDs for the microbiome matrix. Default is "ind_id".}
+
 \item{threshold}{Threshold for rarefaction, DEFAULT = 0.05}
 
 \item{ind_selected}{Vector of string values with individuals to keep, have to match rownames of count table file, DEFAULT = NULL}
-
-\item{biome_id_column}{String specifying the name of the column containing the individual IDs for the microbiome matrix. Default is "ind_id".}
 }
 \value{
 A data.frame corresponding to (rarefied) microbiome with individuals in rows and taxa in columns. Genotypes data.frame is an attribute called "population" reachable using \code{attr(output_name,"population")}
