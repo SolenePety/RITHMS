@@ -23,8 +23,6 @@ If it is the first time you use {fusen}, after 'description', you can directly r
 pkgload::load_all(export_all = FALSE)
 ```
 
-# Include some data examples in your package
-
 <!-- 
  Store your dataset in a directory named "inst/" at the root of your project.
  Use it for your tests in this Rmd thanks to `pkgload::load_all()` to make it available
@@ -1395,14 +1393,3 @@ These are only included in the present flat template file, their content will no
 # Execute in the console directly
 fusen::inflate(flat_file = "dev/flat_first.Rmd", vignette_name = "Get started")
 ```
-
-
-# Inflate your package
-
-You're one inflate from paper to box.
-Build your package from this very Rmd using `fusen::inflate()`
-
-- Verify your `"DESCRIPTION"` file has been updated
-- Verify your function is in `"R/"` directory
-- Verify your test is in `"tests/testthat/"` directory
-- Verify this Rmd appears in `"vignettes/"` directory
