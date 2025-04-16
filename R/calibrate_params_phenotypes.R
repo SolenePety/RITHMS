@@ -4,13 +4,6 @@
 #' 
 #' This function is part of the first step of [holo_simu()], focused on calibrating phynotypes parameters before looping on the generations. All coefficents are rescale during the process to ensure that standard deviation = 1 and the variance of microbiote effect and genetic effect satisfy the target microbiability and direct heritability.
 #' 
-#' @importFrom bazar stopif
-#' @importFrom dirmult rdirichlet
-#' @importFrom compositions clr oneOrDataset is.NMV
-#' @importFrom dplyr select
-#' @importFrom stringr str_extract
-#' @importFrom magrittr %>%
-#' 
 #' @inheritParams holo_simu
 #' 
 #' @param X0 Matrix of the primary generation genotypes, given from [MoPBS::get.geno()]. SNPs are in rows and individuals in columns.
@@ -40,7 +33,7 @@
 #' rownames(B0) <- paste0("OTU", 1:n_otu)
 #' otu_list <- c(y = sample(rownames(B0), 10))
 #' 
-#' params <- calibrate_params_phenotypes(X0 = X0,
+#' params <- RITHMS:::calibrate_params_phenotypes(X0 = X0,
 #'                                       B0 = B0,
 #'                                       h2 = 0.25,
 #'                                       b2 = 0.25,
@@ -49,11 +42,11 @@
 #'                                       Notu_y = length(otu_list))
 #' str(params)
 #'  
-#' @return A `list` of phenotype parameters such as \eqn{\alpha}, \eqn{\omega}, list of causal SNPs for the phenotypes, standard deviation (=1) of phenotypes
+#' @return A `list` of phenotype parameters such as alpha, omega, list of causal SNPs for the phenotypes, standard deviation (=1) of phenotypes
 #' 
+#' @seealso [compute_phenotypes()]
 #' @rdname calibrate_params_phenotypes
-#' 
-#' @noRd
+
 calibrate_params_phenotypes <- function(X0,
                                         B0,
                                         h2,
@@ -123,158 +116,3 @@ calibrate_params_phenotypes <- function(X0,
   ))
 }
 
-#' Compute phenotype values based on generated object of current generation
-#'
-#' @inheritParams holo_simu
-compute_phenotypes <- function(X,     #Genotypes matrix with 0,1,2 encoding
-                               B,     #Microbiome matrix, CLR abundances
-                               otu_list,
-                               qtl_list, 
-                               beta_qtl,
-                               beta_otu,
-                               Nqtl_y,
-                               Notu_y,
-                               se){
-  
-  # SNP part
-  if (Nqtl_y>0) { #arrow from G to y
-    #print(beta_qtl %>% head())
-    X <- as.matrix(X)
-    gq = t(X[qtl_list,]) %*% beta_qtl
-  }
-  
-  # OTU part  
-  if(Notu_y>0){ #arrow from B to y
-    #print(beta_otu %>% head())
-    B <- as.matrix(B)
-    Botu = B[otu_list,]
-    gb = t(Botu) %*% beta_otu
-  }
-  
-  y = gq + gb + rnorm(length(gq), 0, se)
-  return(list('y'=y, 'gq'=gq, 'gb'=gb))
-  
-}
-
-#' apply mean on rows for each taxa across population
-#'
-#' @inheritParams holo_simu
-compute_mean_microbiome <- function(microbiome, dir = F, n_ind = NULL, ao, mix.params){
-  mean_microbiome <- rowMeans(microbiome)
-  if(dir){
-    stopif(is.null(n_ind))
-    dir_mean <- rdirichlet(n_ind,as.numeric(mean_microbiome)*ao) %>% t()
-    mix_mean <- (mix.params[1] * dir_mean + mix.params[2] * matrix(mean_microbiome,nrow=nrow(dir_mean),ncol=ncol(dir_mean),byrow=F))
-    attr(mix_mean, "dirichlet") <- dir_mean
-    return(mix_mean)
-  }else{
-    mean_microbiome
-  }
-}
-
-#' Compute microbiomes for all individuals of current generation gathering all relevant object already computed.
-#'
-#' @inheritParams holo_simu
-compute_current_microbiome <- function(beta,
-                                       current_genotypes,
-                                       mother_microbiomes,
-                                       mean_microbiome,
-                                       noise=0.1,
-                                       taxa_scale, 
-                                       lambda=0.5,
-                                       dir = F,
-                                       thetaX){
-  
-  beta_g_eps <- compute_beta_g(beta = beta, genotypes = current_genotypes, noise = noise, taxa_scale = taxa_scale)
-  if(dir){
-    internal_compute <- lambda*(mother_microbiomes) + (1-lambda)*mean_microbiome
-  }else{
-    internal_compute <- lambda*(mother_microbiomes) + (1-lambda)*matrix(mean_microbiome,nrow=nrow(beta_g_eps),ncol=ncol(beta_g_eps),byrow=F)
-  }
-  #TODO : check dimensions of thetaX
-  if(!is.null(thetaX)){
-    microbiome <- t(clr(t(internal_compute)%>% replace_zero())) + beta_g_eps + thetaX
-  }else{
-    microbiome <- t(clr(t(internal_compute)%>% replace_zero())) + beta_g_eps
-  }
-  colnames(microbiome) <- colnames(beta_g_eps)
-  
-  attr(microbiome,"noise_microbiome") <- list('attr'=attr(beta_g_eps,"noise"), 
-                                              'clr_mic' = t(clr(t(internal_compute)%>% replace_zero())),
-                                              'env_eff' = thetaX)
-  #return CLR(microbiome)
-  return(microbiome)
-}
-
-#' Replace zero in the matrix by 1e-15 to avoid infinite values when CLR transformation is computed
-#'
-#' @param x A matrix
-#' @export
-replace_zero <- function(x){
-  W <- oneOrDataset(x)
-  nmv <- is.NMV(W)
-  ifelse(nmv, W, 1e-15)
-}
-
-#' Obtain id of the parents selected for the next generation based on the criteria chosen by the user
-#'
-#' @inheritParams holo_simu
-select_individual <- function(phenotypes,
-                              microbiomes,
-                              genotypes,
-                              beta,
-                              beta_otu,
-                              selection, 
-                              size_selection_F, 
-                              size_selection_M, 
-                              selection_type,
-                              w.param){
-  #extract id of individuals of interest
-  n_F <- (size_selection_F * length(grep("^F",colnames(genotypes)))) |> round()
-  n_M <- (size_selection_M * length(grep("^M",colnames(genotypes)))) |> round()
-  
-  #being able to select between GB, B, G, diversity or diversity + GB
-  if(selection){
-    ######
-    #Few tests on parameters values
-    #####
-    if(is.null(size_selection_F) || is.null(size_selection_M)){
-      print("Please check you provided size_selection_F and size_selection_M argument (int) for selection step")
-    }
-   if(!selection_type %in% c("GB", "B", "G", "diversity", "div.GB")){
-     print("Selection type must be one of 'GB', 'B', 'G', 'diversity' or 'div.GB'")
-   }
-    if(selection_type == "GB"){
-      score <- phenotypes$gq + as.vector(beta_otu %*% (beta[rowSums(beta) != 0, ] %*% genotypes))
-      #score <- phenotypes$gq + as.vector((beta[rowSums(beta) != 0, ] %*% genotypes))
-      #score <- phenotypes$gq + phenotypes$gb
-    }else if(selection_type == "G"){
-      score <- phenotypes$gq
-    }else if(selection_type == "B"){
-      score <- phenotypes$gb
-    }else if(selection_type == "diversity"){
-      score <- microbiomes %>% richness_from_abundances_gen() %>% select(Shannon) %>% as.matrix()
-    }else{
-      diversity <- microbiomes %>% richness_from_abundances_gen() %>% select(Shannon) %>% as.matrix()
-      TBV <- phenotypes$gq + as.vector(beta_otu %*% (beta[rowSums(beta) != 0, ] %*% genotypes))
-      score = w.param[1] * diversity + w.param[2] * TBV
-    }
-    
-    #extract individuals ID
-    F_id <- score[grep("^F",rownames(score)),] %>% sort(decreasing = T) %>% names() %>% str_extract("[0-9]+") %>% head(n_F)
-    M_id <- score[grep("^M",rownames(score)),] %>% sort(decreasing = T) %>% names() %>% str_extract("[0-9]+") %>% head(n_M)
-    
-  }else{
-    if(!is.null(size_selection_F) || !is.null(size_selection_M)){
-      print("Warning : Selection is set to False but size_selection_F or size_selection_M is not NULL")
-    }
-    
-    n_F <- (0.3 * length(grep("^F",colnames(genotypes)))) |> round()
-    n_M <- (0.3 * length(grep("^M",colnames(genotypes)))) |> round()
-    #extract individuals ID
-    F_id <- colnames(genotypes)[grep("^F",colnames(genotypes))] %>% str_extract("[0-9]+") %>% sample(n_F)
-    M_id <- colnames(genotypes)[grep("^M",colnames(genotypes))] %>% str_extract("[0-9]+") %>% sample(n_M)
-  }
-
-  return(list(F_id = F_id, M_id = M_id))
-}

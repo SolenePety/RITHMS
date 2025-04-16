@@ -90,31 +90,18 @@ datafile <- system.file("DeruPop.rds", package = "RITHMS")
 ToyData <- readRDS(datafile)
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
 generations_simu <- holo_simu(h2 = 0.25,
-                              b2 = 0.25,
-                              founder_object = ToyData,
-                              n_clust = taxa_assign_g,
-                              n_ind = 500,
-                              verbose = FALSE,
-                              noise.microbiome = 0.5,
-                              effect.size = 0.3,
-                              lambda = 0.5,
-                              dir = TRUE,
-                              selection = FALSE,
-                              seed = 1234)
-
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
-taxa_assign_g <- assign_taxa(founder_object = ToyData)
-generations_simu <- holo_simu(h2 = 0.25,
-                              b2 = 0.25,
-                              founder_object = ToyData,
-                              n_clust = taxa_assign_g,
-                              n_ind = 500,
-                              verbose = FALSE,
-                              noise.microbiome = 0.5,
-                              effect.size = 0.3,
-                              lambda = 0.5,
-                              dir = TRUE,
-                              selection = FALSE,
-                              seed = 1234)
+                               b2 = 0.25,
+                               founder_object = ToyData,
+                               n_clust = taxa_assign_g,
+                               n_ind = 500,
+                               verbose = FALSE,
+                               noise.microbiome = 0.5,
+                               effect.size = 0.3,
+                               lambda = 0.5,
+                               dir = TRUE,
+                               selection = FALSE,
+                               seed = 1234)
+}
+\seealso{
+\code{\link[=compute_beta_matrix_cluster]{compute_beta_matrix_cluster()}}, \code{\link[=compute_mean_microbiome]{compute_mean_microbiome()}}, \code{\link[=compute_current_microbiome]{compute_current_microbiome()}}, \code{\link[=compute_phenotypes]{compute_phenotypes()}}
 }

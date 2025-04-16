@@ -4,16 +4,30 @@ flat_first.Rmd:
   R:
   - R/formatting_data.R
   - R/calibrate_params_phenotypes.R
+  - R/compute_beta_g.R
+  - R/compute_beta_matrix_cluster.R
+  - R/compute_current_microbiome.R
+  - R/compute_mean_microbiome.R
+  - R/compute_phenotypes.R
   - R/gen_effect_calibration.R
+  - R/generate_founder.R
+  - R/get_mean_diversity.R
+  - R/get_mean_phenotypes.R
   - R/get_microbiomes.R
+  - R/get_om_beta_g.R
+  - R/get_phenotypes.R
+  - R/get_phenotypes_value.R
+  - R/get_selected_ind.R
   - R/holo_simu.R
   - R/rarefied_microbiome.R
   - R/read_input_data.R
+  - R/root.R
+  - R/select_individual.R
   tests: tests/testthat/test-formatting_data.R
-  vignettes: vignettes/get-started.Rmd
+  vignettes: []
   inflate:
     flat_file: dev/flat_first.Rmd
-    vignette_name: Get started
+    vignette_name: ~
     open_vignette: true
     check: true
     document: true

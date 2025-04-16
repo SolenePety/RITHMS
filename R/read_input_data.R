@@ -16,15 +16,18 @@
 #' @return
 #' A data.frame corresponding to (rarefied) microbiome with individuals in rows and taxa in columns. Genotypes data.frame is an attribute called "population" reachable using `attr(output_name,"population")`
 #' 
+#' @seealso [generate_founder()], [rarefied_microbiome()]
+#' 
 #' @rdname read_input_data
 #' @export
 #' @examples
-#' # founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'prefix'",
-#' #                                   path_to_pedmap = "/path/to/pedmap/'prefix'",
-#' #                                   biome_id_column = "ind_id",
-#' #                                   threshold = 0.05,
-#' #                                   ind_selected = NULL)
-#'
+#' \dontrun{
+#' founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'prefix'",
+#'                                   path_to_pedmap = "/path/to/pedmap/'prefix'",
+#'                                   biome_id_column = "ind_id",
+#'                                   threshold = 0.05,
+#'                                   ind_selected = NULL)
+#' }
 read_input_data <- function(path_to_microbiome,
                             path_to_pedmap,
                             biome_id_column = "ind_id",
@@ -42,5 +45,4 @@ read_input_data <- function(path_to_microbiome,
                                      microbiome_filtered5)
   return(founder_object)
 }
-
 
