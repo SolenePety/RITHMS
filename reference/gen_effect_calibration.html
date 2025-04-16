@@ -19,7 +19,6 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/generate-figures.html">Generate figures</a></li>
-    <li><a class="dropdown-item" href="../articles/get-started.html">Get started</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -81,6 +80,22 @@
     <p>A data.frame with three columns, giving the Taxa ID, the effect.size and the corresponding heritability</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">datafile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"DeruPop.rds"</span>, package <span class="op">=</span> <span class="st">"RITHMS"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ToyData</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">datafile</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">taxa_assign_g</span> <span class="op">&lt;-</span> <span class="fu"><a href="formatting_data.html">assign_taxa</a></span><span class="op">(</span>founder_object <span class="op">=</span> <span class="va">ToyData</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">effect_size_vector</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">1</span>, by <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">out_data</span> <span class="op">&lt;-</span> <span class="fu">gen_effect_calibration</span><span class="op">(</span>founder_object <span class="op">=</span> <span class="va">ToyData</span>,</span></span>
+<span class="r-in"><span>                                   taxa_assign_g <span class="op">=</span> <span class="va">taxa_assign_g</span>,</span></span>
+<span class="r-in"><span>                                   correlation <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
+<span class="r-in"><span>                                   effect.size <span class="op">=</span> <span class="va">effect_size_vector</span>,</span></span>
+<span class="r-in"><span>                                   plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="gen_effect_calibration-1.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Picking joint bandwidth of 0.0381</span>
+<span class="r-plt img"><img src="gen_effect_calibration-2.png" alt="" width="700" height="433"></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
