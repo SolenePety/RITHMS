@@ -30,10 +30,14 @@ A data.frame corresponding to (rarefied) microbiome with individuals in rows and
 Formatting data from file paths to base population object
 }
 \examples{
-# founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'prefix'",
-#                                   path_to_pedmap = "/path/to/pedmap/'prefix'",
-#                                   biome_id_column = "ind_id",
-#                                   threshold = 0.05,
-#                                   ind_selected = NULL)
-
+\dontrun{
+founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'prefix'",
+                                  path_to_pedmap = "/path/to/pedmap/'prefix'",
+                                  biome_id_column = "ind_id",
+                                  threshold = 0.05,
+                                  ind_selected = NULL)
+}
+}
+\seealso{
+\code{\link[=generate_founder]{generate_founder()}}, \code{\link[=rarefied_microbiome]{rarefied_microbiome()}}
 }

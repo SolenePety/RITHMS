@@ -34,15 +34,14 @@ datafile <- system.file("DeruPop.rds", package = "RITHMS")
 ToyData <- readRDS(datafile)
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
 generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
-                              n_clust = taxa_assign_g, n_ind = 500,
-                              verbose = FALSE, seed = 1234)
-                              
+                               n_clust = taxa_assign_g, n_ind = 500,
+                               verbose = FALSE, seed = 1234)
+                               
 # Extract microbiomes matrix for each generations
 microbiomes <- generations_simu[-1] \%>\% map(get_microbiomes)
-
+ 
 # Estimate diversity metrics
 richness_from_abundances <- microbiomes \%>\% map(richness_from_abundances_gen)
-
 }
 \seealso{
 \code{\link[=get_microbiomes]{get_microbiomes()}}, \code{\link[phyloseq:estimate_richness]{phyloseq::estimate_richness()}}

@@ -4,3 +4,62 @@ template:
   params:
     mathjax: true
 
+reference:
+- title: 'Formatting data functions'
+  desc: >
+    Set of useful functions for preparing input data
+  contents:
+    - '`read_input_data`'
+    - '`rarefied_microbiome`'
+    - '`generate_founder`'
+
+- title: 'Taxa assignation function'
+  desc: >
+    Assign all taxa to a cluster
+  contents:
+    - '`assign_taxa`'
+
+- title: 'Calibration of genetic effect'
+  desc: ~
+  contents:
+    - '`gen_effect_calibration`'
+
+- title: 'HoloSimu'
+  desc: >
+    The main function
+  contents:
+    - '`holo_simu`'
+
+- title: 'Useful function relative to HoloSimu'
+  desc: >
+    Set of functions used within HoloSimu to generate the components of each generation, such as phenotypes and microbiomes.
+  contents:
+    - '`compute_beta_g`'
+    - '`compute_current_microbiome`'
+    - '`compute_mean_microbiome`'
+    - '`compute_phenotypes`'
+    - '`calibrate_params_phenotypes`'
+    - '`compute_beta_matrix_cluster`'
+- title: 'Get functions'
+  desc: >
+    Useful get functions for accessing the components of each generation from HoloSimu output.
+  contents:
+    - '`get_microbiomes`'
+    - '`get_mean_phenotypes`'
+    - '`get_phenotypes_value`'
+    - '`get_phenotypes`'
+    - '`get_om_beta_g`'
+    - '`get_selected_ind`'
+    - '`get_mean_diversity`'
+
+- title: 'Estimate diversity metrics'
+  desc: ~
+  contents:
+    - '`richness_from_abundances_gen`'
+
+- title: 'Another little useful functions across the HoloSimu process'
+  desc: ~
+  contents:
+    - '`replace_zero`'
+    - '`root`'
+    - '`select_individual`'
