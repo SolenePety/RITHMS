@@ -3,4 +3,5 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   generate-figures: generate-figures.html
-last_built: 2025-04-16T17:11Z
+  get-started: get-started.html
+last_built: 2025-04-17T12:27Z
