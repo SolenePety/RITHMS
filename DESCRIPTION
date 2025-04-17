@@ -30,7 +30,7 @@ Imports:
     ggridges,
     glue,
     magrittr,
-    MoBPS (<= 1.11.03),
+    MoBPS (== 1.10.49),
     phyloseq,
     purrr,
     stringr,
