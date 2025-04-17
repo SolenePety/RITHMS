@@ -50,6 +50,7 @@ Suggests:
     tidyr
 VignetteBuilder: 
     knitr
+BiocViews:
 Config/fusen/version: 0.7.1
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
