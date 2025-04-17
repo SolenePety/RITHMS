@@ -19,6 +19,7 @@ Description: RITHMS, an R Implementation of a Transgenerational
     modulation due to the environment and host genetics.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
+Depends: R (>= 4.4.0)
 Imports: 
     bazar,
     compositions,
@@ -34,7 +35,10 @@ Imports:
     purrr,
     stringr,
     tibble,
-    vegan
+    vegan,
+    Matrix,
+    MASS,
+    mgcv
 Suggests: 
     circlize,
     ComplexHeatmap,
