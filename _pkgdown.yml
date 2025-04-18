@@ -4,6 +4,23 @@ template:
   params:
     mathjax: true
 
+navbar:
+  structure:
+    left: [home, reference, articles]
+    right: [github]
+  components:
+    home: ~
+    articles:
+      text: "Vignettes"
+      menu:
+      - text: "Generate figures"
+        href: articles/generate-figures.html
+      - text: "Data Importation"
+        href: articles/import-data.html
+    github:
+      icon: fab fa-github
+      href: https://github.com/SolenePety/RITHMS
+
 reference:
 - title: 'Formatting data functions'
   desc: >
@@ -63,3 +80,4 @@ reference:
     - '`replace_zero`'
     - '`root`'
     - '`select_individual`'
+    - '`transform_geno_into_vcf`'

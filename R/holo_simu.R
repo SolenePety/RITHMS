@@ -42,21 +42,23 @@
 #' @rdname holo_simu
 #' @export
 #' @examples
-#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
-#' ToyData <- readRDS(datafile)
-#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
-#' generations_simu <- holo_simu(h2 = 0.25,
-#'                                b2 = 0.25,
-#'                                founder_object = ToyData,
-#'                                n_clust = taxa_assign_g,
-#'                                n_ind = 500,
-#'                                verbose = FALSE,
-#'                                noise.microbiome = 0.5,
-#'                                effect.size = 0.3,
-#'                                lambda = 0.5,
-#'                                dir = TRUE,
-#'                                selection = FALSE,
-#'                                seed = 1234)
+#' \dontrun{
+#'   datafile <- system.file("DeruPop.rds", package = "RITHMS")
+#'   ToyData <- readRDS(datafile)
+#'   taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#'   generations_simu <- holo_simu(h2 = 0.25,
+#'                                  b2 = 0.25,
+#'                                  founder_object = ToyData,
+#'                                  n_clust = taxa_assign_g,
+#'                                  n_ind = 500,
+#'                                  verbose = FALSE,
+#'                                  noise.microbiome = 0.5,
+#'                                  effect.size = 0.3,
+#'                                  lambda = 0.5,
+#'                                  dir = TRUE,
+#'                                  selection = FALSE,
+#'                                  seed = 1234)
+#' }  
 holo_simu <- function(h2,
                       b2,
                       founder_object,

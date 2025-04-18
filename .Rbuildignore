@@ -11,3 +11,5 @@
 ^docs$
 ^pkgdown$
 ^rithms\.Rproj$
+^doc$
+^Meta$

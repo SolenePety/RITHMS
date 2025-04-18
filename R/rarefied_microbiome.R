@@ -13,19 +13,17 @@
 #' @param id_column String specifying the name of the column containing the individual IDs. Default is "ind_id"
 #' @param threshold Minimum prevalence threshold
 #' 
-#' @examples
-#' # microbiome <- data.table::fread("/path/to/microbiome/'prefix'")
-#' # microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
-#' \dontrun{
-#'   microbiome <- data.table::fread("/path/to/microbiome/'prefix'")
-#'   microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
-#' }
 #' @return
 #' The filtered microbiome matrix, without OTUs whose prevalence is lower than the set threshold
 #' 
 #' @seealso [read_input_data()], [generate_founder()]
 #' 
 #' @rdname rarefied_microbiome
+#' @examples
+#' \dontrun{
+#'   microbiome <- data.table::fread("/path/to/microbiome/'prefix'")
+#'   microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
+#' }
 
 rarefied_microbiome <- function(microbiome_matrix,
                                 id_column = "ind_id",

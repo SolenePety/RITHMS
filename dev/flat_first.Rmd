@@ -5,6 +5,14 @@ editor_options:
   chunk_output_type: console
 ---
 
+```{r}
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+
 <!-- Run this 'development' chunk -->
 <!-- Store every call to library() that you need to explore your functions -->
 
@@ -54,8 +62,8 @@ ToyData <- readRDS(datafile)
 #' @importFrom glue glue
 #' @importFrom magrittr %>%
 #'
-#' @param path_to_microbiome String giving the path to count table file
-#' @param path_to_pedmap String giving the path and prefix to ped and map file
+#' @param path_to_microbiome String giving the path to count table file. `"path/to/microbiome.{extension}"`
+#' @param path_to_genotype String giving the path and prefix to the genotype file. This should be one of `"pedmap"` or `"vcf"`. (default: `"pedmap"`). For a `"example_pedmap.ped"` file enter only `"path/to/example_pedmap"`.
 #' @param biome_id_column String specifying the name of the column containing the individual IDs for the microbiome matrix. Default is "ind_id".
 #' @param threshold Threshold for rarefaction, DEFAULT = 0.05
 #' @param ind_selected Vector of string values with individuals to keep, have to match rownames of count table file, DEFAULT = NULL
@@ -63,12 +71,16 @@ ToyData <- readRDS(datafile)
 #' @return
 #' A data.frame corresponding to (rarefied) microbiome with individuals in rows and taxa in columns. Genotypes data.frame is an attribute called "population" reachable using `attr(output_name,"population")`
 #' 
+#' @note
+#' The number of individuals in the microbiome an genotype data must be equivalent.
+#' 
 #' @seealso [generate_founder()], [rarefied_microbiome()]
 #' 
 #' @rdname read_input_data
 #' @export
 read_input_data <- function(path_to_microbiome,
-                            path_to_pedmap,
+                            path_to_genotype,
+                            file_type = "pedmap",
                             biome_id_column = "ind_id",
                             threshold = 0.05,
                             ind_selected = NULL){
@@ -80,8 +92,14 @@ read_input_data <- function(path_to_microbiome,
   if(!is.null(ind_selected)){
     microbiome_filtered5 <- microbiome_filtered5 %>% filter(rownames(.) %in% ind_selected)
   }
-  founder_object <- generate_founder(path = glue::glue("{path_to_pedmap}"),
-                                     microbiome_filtered5)
+  
+  if(!file_type %in% c("pedmap", "vcf")){
+    print("The genotype file type must be one of 'pedmap' or 'vcf'.")
+  } else {
+    founder_object <- generate_founder(path = glue::glue("{path_to_genotype}"), microbiome_filtered5, file_type = file_type)
+
+  }
+  
   return(founder_object)
 }
 
@@ -89,11 +107,21 @@ read_input_data <- function(path_to_microbiome,
 
 ```{r example-formatting_data, message=FALSE, warning=FALSE}
 \dontrun{
-founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'prefix'",
+# Create founder object from PED/MAP set
+founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
                                   path_to_pedmap = "/path/to/pedmap/'prefix'",
                                   biome_id_column = "ind_id",
                                   threshold = 0.05,
-                                  ind_selected = NULL)
+                                  ind_selected = NULL,
+                                  file_type = "pedmap")
+
+# Create founder object from VCF
+founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
+                                  path_to_pedmap = "/path/to/vcf/'prefix'",
+                                  biome_id_column = "ind_id",
+                                  threshold = 0.05,
+                                  ind_selected = NULL,
+                                  file_type = "vcf")
 }
 ```
 
@@ -111,9 +139,6 @@ founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'pre
 #' @param id_column String specifying the name of the column containing the individual IDs. Default is "ind_id"
 #' @param threshold Minimum prevalence threshold
 #' 
-#' @examples
-#' # microbiome <- data.table::fread("/path/to/microbiome/'prefix'")
-#' # microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
 #' @return
 #' The filtered microbiome matrix, without OTUs whose prevalence is lower than the set threshold
 #' 
@@ -155,35 +180,45 @@ rarefied_microbiome <- function(microbiome_matrix,
 
 
 generate_founder <- function(path = NULL,
-                             microbiome_matrix){
+                             microbiome_matrix, file_type = "pedmap"){
   # # Convert PED-file into haplotype dataset (one haplotype per colum)
   if(is.null(path)){
     stop("path must be a valid string like : '/path/to/directory/prefix")
   }else{
-    if(FALSE %in% file_test("-f", c(glue("{path}.ped"),
-                                    glue("{path}.map")))){
-      stop(glue("Files {path}.ped and/or {path}.map don't exist, please check your path argument"))
-    }else{
-      map <- as.matrix(read.table(glue("{path}.map")))
-      ped <- as.matrix(read.table(glue("{path}.ped")))
-      #Step to filter ped map based on microbiome matrix,
-      #rownames microbiote_matrix must be ind ID to match column 2 of ped file
-      ped_ind <- ped[,2] %>% gsub("\\s","",.)
-      microbiote_ind <- rownames(microbiote_matrix)
-      microbiote_filtered <- microbiote_matrix[microbiote_ind %in% ped_ind,]
-      ped <- ped[ped_ind %in% microbiote_ind,]
-      ####
-      nsnp <- (ncol(ped)-6)/2
-      haplo1 <- ped[,1:nsnp*2+6-1] #all odd numbers
-      haplo2 <- ped[,1:nsnp*2+6] #all uneven numbers
-      haplo <- t(rbind(haplo1, haplo2)[c(0,nrow(haplo1)) + sort(rep(1:nrow(haplo1),2)),])
-      #haplo <- ifelse(haplo == "0", NA,haplo)
-      population <- creating.diploid(dataset = haplo, map = map, verbose=verbose)
-      attr(microbiote_filtered,"population") <- population
-      return(microbiote_filtered)
+    if(file_type == "pedmap"){
+      if(FALSE %in% file_test("-f", c(glue("{path}.ped"), glue("{path}.map")))){
+        stop(glue("Files {path}.ped and/or {path}.map don't exist, please check your path argument"))
+      }else{
+        map <- as.matrix(read.table(glue("{path}.map")))
+        ped <- as.matrix(read.table(glue("{path}.ped")))
+        
+        #Step to filter ped map based on microbiome matrix,
+        #rownames microbiote_matrix must be ind ID to match column 2 of ped file
+        # ped_ind <- ped[,2] %>% gsub("\\s","",.)
+        # microbiote_ind <- rownames(microbiote_matrix)
+        # microbiote_filtered <- microbiote_matrix[microbiote_ind %in% ped_ind,]
+        # ped <- ped[ped_ind %in% microbiote_ind,]
+        ####
+        nsnp <- (ncol(ped)-6)/2
+        haplo1 <- ped[,1:nsnp*2+6-1] #all odd numbers
+        haplo2 <- ped[,1:nsnp*2+6] #all uneven numbers
+        haplo <- t(rbind(haplo1, haplo2)[c(0,nrow(haplo1)) + sort(rep(1:nrow(haplo1),2)),])
+        #haplo <- ifelse(haplo == "0", NA,haplo)
+        population <- creating.diploid(dataset = haplo, map = map, verbose=TRUE)
+        
+      }
+    } else if(file_type == "vcf"){
+        path_to_vcf <- glue("{path}.vcf")
+        population <- creating.diploid(vcf = path_to_vcf, verbose=TRUE)
+        
     }
-  }
+      
+      attr(microbiome_matrix,"population") <- population
+      return(microbiome_matrix)
+    }
+  
 }
+
 
 ```
 
@@ -545,13 +580,14 @@ root <- function(rho) {
 #' rownames(B0) <- paste0("OTU", 1:n_otu)
 #' otu_list <- c(y = sample(rownames(B0), 10))
 #' 
-#' params <- RITHMS:::calibrate_params_phenotypes(X0 = X0,
+#' 
+#' params <- suppressWarnings(RITHMS:::calibrate_params_phenotypes(X0 = X0,
 #'                                       B0 = B0,
 #'                                       h2 = 0.25,
 #'                                       b2 = 0.25,
 #'                                       otu_list = otu_list,
 #'                                       Nqtl_y = 10,
-#'                                       Notu_y = length(otu_list))
+#'                                       Notu_y = length(otu_list)))
 #' str(params)
 #'  
 #' @return A `list` of phenotype parameters such as alpha, omega, list of causal SNPs for the phenotypes, standard deviation (=1) of phenotypes
@@ -1125,21 +1161,23 @@ holo_simu <- function(h2,
 ```
 
 ```{r examples-holo_simu, warning=FALSE, message=FALSE}
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
-taxa_assign_g <- assign_taxa(founder_object = ToyData)
-generations_simu <- holo_simu(h2 = 0.25,
-                               b2 = 0.25,
-                               founder_object = ToyData,
-                               n_clust = taxa_assign_g,
-                               n_ind = 500,
-                               verbose = FALSE,
-                               noise.microbiome = 0.5,
-                               effect.size = 0.3,
-                               lambda = 0.5,
-                               dir = TRUE,
-                               selection = FALSE,
-                               seed = 1234)
+\dontrun{
+  datafile <- system.file("DeruPop.rds", package = "RITHMS")
+  ToyData <- readRDS(datafile)
+  taxa_assign_g <- assign_taxa(founder_object = ToyData)
+  generations_simu <- holo_simu(h2 = 0.25,
+                                 b2 = 0.25,
+                                 founder_object = ToyData,
+                                 n_clust = taxa_assign_g,
+                                 n_ind = 500,
+                                 verbose = FALSE,
+                                 noise.microbiome = 0.5,
+                                 effect.size = 0.3,
+                                 lambda = 0.5,
+                                 dir = TRUE,
+                                 selection = FALSE,
+                                 seed = 1234)
+}  
 ```
 
 
@@ -1525,6 +1563,80 @@ selected_inds <- generations_simu[-1] %>% map(get_selected_ind)
 richness_from_abundances <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen)
 shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
 ```
+
+
+# Additionnal functions
+
+```{r function-transform_geno_into_vcf}
+#' Convert a 0/1/2 genotype matrix into a VCF-like format
+#'
+#' This function converts a genotype matrix encoded as 0,1,2 into a VCF-like format. It can either return the VCF content as a `data.frame`, write it to a .vcf file or do both.
+#'
+#' @param geno_matrix A matrix of genotypes with values 0, 1, 2. SNPs are in rows and individuals in columns.
+#' @param output_type A character, that specifies the output type. Choose between `"file"` (write `.vcf`),
+#'                    `"dataframe"` (return `data.frame`), or `"both"` (do both).
+#' @param output_path A character string that specifies the output path. Requiered if `output_type` is "file" or "both".
+#' 
+#' @return A `data.frame` if `output_type = "dataframe" or "both"`, or just write the `.vcf` file if `output_type = "file" or "both"`.
+#' 
+#' @rdname transform_geno_into_vcf
+#' @export
+
+transform_geno_into_vcf <- function(geno_matrix, output_type = c("file", "dataframe", "both"), output_path = NULL){
+  
+    n_ind = ncol(geno_matrix)
+    n_snp = nrow(geno_matrix)
+    
+    convert_to_haplo <- function(x) {
+    if(is.na(x)) return(".")
+    if (x == 0) return("0/0")
+    if (x == 1) return("0/1")
+    if (x == 2) return("1/1")
+    }
+  
+    geno_matrix_haplo <- apply(geno_matrix, c(1,2), convert_to_haplo)
+  
+    vcf_header <- c(
+      "##fileformat=VCFv4.2",
+      paste0("##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">"),
+      paste("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", paste0("Indiv_", 1:n_ind), sep="\t")
+    )
+  
+    vcf_snps <- data.frame(
+      CHROM = "1", 
+      POS = 1:n_snp, 
+      ID = paste0("rs", 1:n_snp), 
+      REF = "A", ALT = "T", 
+      QUAL = ".", FILTER = ".", INFO = ".", FORMAT = "GT",
+      geno_matrix_haplo
+    )
+    
+    if(output_type %in% c("file", "both")){
+      write.table(vcf_snps, file = output_path, sep = "\t", quote = FALSE, row.names = TRUE, col.names = TRUE)
+      
+    } else if(output_type %in% c("dataframe", "both")){
+      return(vcf_snps)
+    } else{
+      print("The output type must be one of 'file' or 'dataframe'.")
+    }
+}
+```
+
+
+```{r examples-transform_geno_into_vcf}
+n_ind <- 50
+n_snp <- 50
+
+# Create a little genotype matrix
+set.seed(123)
+geno_matrix <- matrix(sample(0:2, size = n_ind*n_snp, replace = TRUE),
+                      nrow = n_snp, ncol = n_ind)
+
+# Transform genotype matrix into VCF
+vcf <- transform_geno_into_vcf(geno_matrix, output_type = "dataframe")
+head(vcf[1:3,1:7])
+```
+
 
 <!--
 # There can be development actions

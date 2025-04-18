@@ -20,8 +20,6 @@ The filtered microbiome matrix, without OTUs whose prevalence is lower than the 
 Rarefaction step within read_input_data
 }
 \examples{
-# microbiome <- data.table::fread("/path/to/microbiome/'prefix'")
-# microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
 \dontrun{
   microbiome <- data.table::fread("/path/to/microbiome/'prefix'")
   microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
