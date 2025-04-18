@@ -24,12 +24,25 @@ Here is a little summary of how RITHMS work, but you can read the
 ## Installation
 
 You can install the development version of RITHMS from GitHub using
-`devtools` with:
+`devtools` as shown below.
+
+Note: Before installing the **`RITHMS`** package, please make sure that
+version `1.10.49` of the `MoBPS` package is manually installed from the
+following link:
 
 ``` r
+
+if (!requireNamespace("MoBPS", quietly = TRUE) || packageVersion("MoBPS") != "1.10.49") {
+    message("Installing MoBPS 1.10.49...")
+    devtools::install_url("https://github.com/tpook92/MoBPS/raw/master/Previous%20versions/MoBPS_1.10.49.tar.gz")
+}
+
 # install.packages("devtools")
 devtools::install_github("SolenePety/RITHMS")
 ```
+
+*This requirement will be handled more automatically in a future version
+of **`RITHMS`**.*
 
 ## Toy dataset
 
@@ -45,7 +58,7 @@ ToyData <- readRDS(datafile)
 ```
 
 To import your own dataset, you can refer to the following
-[vignette](https://solenepety.github.io/RITHMS/articles/import-data.html).
+[vignette](https://solenepety.github.io/RITHMS/docs/articles/import-data.html).
 
 ## Quick Start from the toy dataset
 
@@ -62,7 +75,8 @@ founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'pre
                                   biome_id_column = "ind_id")
 
 taxa_assign_g <- assign_taxa(founder_object)
-generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = founder_object, n_clust = taxa_assign_g)
+generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = founder_object, n_clust = taxa_assign_g, n_ind = 500)
+# Choose n_ind such that it is consistent with the initial dimensions of your data set
 ```
 
 ## To go further
