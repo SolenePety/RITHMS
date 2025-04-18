@@ -23,6 +23,7 @@ flat_first.Rmd:
   - R/read_input_data.R
   - R/root.R
   - R/select_individual.R
+  - R/transform_geno_into_vcf.R
   tests: tests/testthat/test-formatting_data.R
   vignettes: []
   inflate:
@@ -48,3 +49,18 @@ generate-figures.Rmd:
     document: true
     overwrite: ask
     clean: ask
+import-data.Rmd:
+  path: dev/import-data.Rmd
+  state: active
+  R: []
+  tests: []
+  vignettes: vignettes/import-data.Rmd
+  inflate:
+    flat_file: dev/import-data.Rmd
+    vignette_name: Import Data
+    open_vignette: true
+    check: true
+    document: true
+    overwrite: ask
+    clean: ask
+    codecov: false

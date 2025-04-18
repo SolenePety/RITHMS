@@ -7,8 +7,8 @@
 #' @importFrom glue glue
 #' @importFrom magrittr %>%
 #'
-#' @param path_to_microbiome String giving the path to count table file
-#' @param path_to_pedmap String giving the path and prefix to ped and map file
+#' @param path_to_microbiome String giving the path to count table file. `"path/to/microbiome.{extension}"`
+#' @param path_to_genotype String giving the path and prefix to the genotype file. This should be one of `"pedmap"` or `"vcf"`. (default: `"pedmap"`). For a `"example_pedmap.ped"` file enter only `"path/to/example_pedmap"`.
 #' @param biome_id_column String specifying the name of the column containing the individual IDs for the microbiome matrix. Default is "ind_id".
 #' @param threshold Threshold for rarefaction, DEFAULT = 0.05
 #' @param ind_selected Vector of string values with individuals to keep, have to match rownames of count table file, DEFAULT = NULL
@@ -16,20 +16,34 @@
 #' @return
 #' A data.frame corresponding to (rarefied) microbiome with individuals in rows and taxa in columns. Genotypes data.frame is an attribute called "population" reachable using `attr(output_name,"population")`
 #' 
+#' @note
+#' The number of individuals in the microbiome an genotype data must be equivalent.
+#' 
 #' @seealso [generate_founder()], [rarefied_microbiome()]
 #' 
 #' @rdname read_input_data
 #' @export
 #' @examples
 #' \dontrun{
-#' founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'prefix'",
+#' # Create founder object from PED/MAP set
+#' founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
 #'                                   path_to_pedmap = "/path/to/pedmap/'prefix'",
 #'                                   biome_id_column = "ind_id",
 #'                                   threshold = 0.05,
-#'                                   ind_selected = NULL)
+#'                                   ind_selected = NULL,
+#'                                   file_type = "pedmap")
+#'
+#' # Create founder object from VCF
+#' founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
+#'                                   path_to_pedmap = "/path/to/vcf/'prefix'",
+#'                                   biome_id_column = "ind_id",
+#'                                   threshold = 0.05,
+#'                                   ind_selected = NULL,
+#'                                   file_type = "vcf")
 #' }
 read_input_data <- function(path_to_microbiome,
-                            path_to_pedmap,
+                            path_to_genotype,
+                            file_type = "pedmap",
                             biome_id_column = "ind_id",
                             threshold = 0.05,
                             ind_selected = NULL){
@@ -41,8 +55,14 @@ read_input_data <- function(path_to_microbiome,
   if(!is.null(ind_selected)){
     microbiome_filtered5 <- microbiome_filtered5 %>% filter(rownames(.) %in% ind_selected)
   }
-  founder_object <- generate_founder(path = glue::glue("{path_to_pedmap}"),
-                                     microbiome_filtered5)
+  
+  if(!file_type %in% c("pedmap", "vcf")){
+    print("The genotype file type must be one of 'pedmap' or 'vcf'.")
+  } else {
+    founder_object <- generate_founder(path = glue::glue("{path_to_genotype}"), microbiome_filtered5, file_type = file_type)
+
+  }
+  
   return(founder_object)
 }
 

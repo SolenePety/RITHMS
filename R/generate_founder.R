@@ -20,33 +20,43 @@
 
 
 generate_founder <- function(path = NULL,
-                             microbiome_matrix){
+                             microbiome_matrix, file_type = "pedmap"){
   # # Convert PED-file into haplotype dataset (one haplotype per colum)
   if(is.null(path)){
     stop("path must be a valid string like : '/path/to/directory/prefix")
   }else{
-    if(FALSE %in% file_test("-f", c(glue("{path}.ped"),
-                                    glue("{path}.map")))){
-      stop(glue("Files {path}.ped and/or {path}.map don't exist, please check your path argument"))
-    }else{
-      map <- as.matrix(read.table(glue("{path}.map")))
-      ped <- as.matrix(read.table(glue("{path}.ped")))
-      #Step to filter ped map based on microbiome matrix,
-      #rownames microbiote_matrix must be ind ID to match column 2 of ped file
-      ped_ind <- ped[,2] %>% gsub("\\s","",.)
-      microbiote_ind <- rownames(microbiote_matrix)
-      microbiote_filtered <- microbiote_matrix[microbiote_ind %in% ped_ind,]
-      ped <- ped[ped_ind %in% microbiote_ind,]
-      ####
-      nsnp <- (ncol(ped)-6)/2
-      haplo1 <- ped[,1:nsnp*2+6-1] #all odd numbers
-      haplo2 <- ped[,1:nsnp*2+6] #all uneven numbers
-      haplo <- t(rbind(haplo1, haplo2)[c(0,nrow(haplo1)) + sort(rep(1:nrow(haplo1),2)),])
-      #haplo <- ifelse(haplo == "0", NA,haplo)
-      population <- creating.diploid(dataset = haplo, map = map, verbose=verbose)
-      attr(microbiote_filtered,"population") <- population
-      return(microbiote_filtered)
+    if(file_type == "pedmap"){
+      if(FALSE %in% file_test("-f", c(glue("{path}.ped"), glue("{path}.map")))){
+        stop(glue("Files {path}.ped and/or {path}.map don't exist, please check your path argument"))
+      }else{
+        map <- as.matrix(read.table(glue("{path}.map")))
+        ped <- as.matrix(read.table(glue("{path}.ped")))
+        
+        #Step to filter ped map based on microbiome matrix,
+        #rownames microbiote_matrix must be ind ID to match column 2 of ped file
+        # ped_ind <- ped[,2] %>% gsub("\\s","",.)
+        # microbiote_ind <- rownames(microbiote_matrix)
+        # microbiote_filtered <- microbiote_matrix[microbiote_ind %in% ped_ind,]
+        # ped <- ped[ped_ind %in% microbiote_ind,]
+        ####
+        nsnp <- (ncol(ped)-6)/2
+        haplo1 <- ped[,1:nsnp*2+6-1] #all odd numbers
+        haplo2 <- ped[,1:nsnp*2+6] #all uneven numbers
+        haplo <- t(rbind(haplo1, haplo2)[c(0,nrow(haplo1)) + sort(rep(1:nrow(haplo1),2)),])
+        #haplo <- ifelse(haplo == "0", NA,haplo)
+        population <- creating.diploid(dataset = haplo, map = map, verbose=TRUE)
+        
+      }
+    } else if(file_type == "vcf"){
+        path_to_vcf <- glue("{path}.vcf")
+        population <- creating.diploid(vcf = path_to_vcf, verbose=TRUE)
+        
     }
-  }
+      
+      attr(microbiome_matrix,"population") <- population
+      return(microbiome_matrix)
+    }
+  
 }
+
 

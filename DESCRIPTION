@@ -17,9 +17,9 @@ Description: RITHMS, an R Implementation of a Transgenerational
     upon the MoBPS package and incorporates the distinctive architecture
     of the microbiota, notably vertical and horizontal transfer as well as
     modulation due to the environment and host genetics.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
-Depends: R (>= 4.4.0)
+License: GPL (>= 3)
+Depends: 
+    R (>= 4.4.0)
 Imports: 
     bazar,
     compositions,
@@ -35,10 +35,7 @@ Imports:
     purrr,
     stringr,
     tibble,
-    vegan,
-    Matrix,
-    MASS,
-    mgcv
+    vegan
 Suggests: 
     circlize,
     ComplexHeatmap,
@@ -54,10 +51,10 @@ Suggests:
     tidyr
 VignetteBuilder: 
     knitr
+Remotes: 
+    url::https://github.com/tpook92/MoBPS/raw/master/Previous%20versions/MoBPS_1.10.49.tar.gz
 BiocViews:
 Config/fusen/version: 0.7.1
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Remotes:  
-    url::https://github.com/tpook92/MoBPS/raw/master/Previous%20versions/MoBPS_1.10.49.tar.gz

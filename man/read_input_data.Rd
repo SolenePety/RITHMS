@@ -6,16 +6,17 @@
 \usage{
 read_input_data(
   path_to_microbiome,
-  path_to_pedmap,
+  path_to_genotype,
+  file_type = "pedmap",
   biome_id_column = "ind_id",
   threshold = 0.05,
   ind_selected = NULL
 )
 }
 \arguments{
-\item{path_to_microbiome}{String giving the path to count table file}
+\item{path_to_microbiome}{String giving the path to count table file. \code{"path/to/microbiome.{extension}"}}
 
-\item{path_to_pedmap}{String giving the path and prefix to ped and map file}
+\item{path_to_genotype}{String giving the path and prefix to the genotype file. This should be one of \code{"pedmap"} or \code{"vcf"}. (default: \code{"pedmap"}). For a \code{"example_pedmap.ped"} file enter only \code{"path/to/example_pedmap"}.}
 
 \item{biome_id_column}{String specifying the name of the column containing the individual IDs for the microbiome matrix. Default is "ind_id".}
 
@@ -29,13 +30,26 @@ A data.frame corresponding to (rarefied) microbiome with individuals in rows and
 \description{
 Formatting data from file paths to base population object
 }
+\note{
+The number of individuals in the microbiome an genotype data must be equivalent.
+}
 \examples{
 \dontrun{
-founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'prefix'",
+# Create founder object from PED/MAP set
+founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
                                   path_to_pedmap = "/path/to/pedmap/'prefix'",
                                   biome_id_column = "ind_id",
                                   threshold = 0.05,
-                                  ind_selected = NULL)
+                                  ind_selected = NULL,
+                                  file_type = "pedmap")
+
+# Create founder object from VCF
+founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
+                                  path_to_pedmap = "/path/to/vcf/'prefix'",
+                                  biome_id_column = "ind_id",
+                                  threshold = 0.05,
+                                  ind_selected = NULL,
+                                  file_type = "vcf")
 }
 }
 \seealso{

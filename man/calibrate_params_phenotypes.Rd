@@ -56,13 +56,14 @@ B0 <- compositions::clr(t(B0_abund)) \%>\% t()
 rownames(B0) <- paste0("OTU", 1:n_otu)
 otu_list <- c(y = sample(rownames(B0), 10))
 
-params <- RITHMS:::calibrate_params_phenotypes(X0 = X0,
+
+params <- suppressWarnings(RITHMS:::calibrate_params_phenotypes(X0 = X0,
                                       B0 = B0,
                                       h2 = 0.25,
                                       b2 = 0.25,
                                       otu_list = otu_list,
                                       Nqtl_y = 10,
-                                      Notu_y = length(otu_list))
+                                      Notu_y = length(otu_list)))
 str(params)
  
 }

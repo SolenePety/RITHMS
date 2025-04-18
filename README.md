@@ -44,6 +44,27 @@ datafile <- system.file("DeruPop.rds", package = "RITHMS")
 ToyData <- readRDS(datafile)
 ```
 
+To import your own dataset, you can refer to the following
+[vignette](https://solenepety.github.io/RITHMS/articles/import-data.html).
+
+## Quick Start from the toy dataset
+
+``` r
+taxa_assign_g <- assign_taxa(ToyData)
+generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData, n_clust = taxa_assign_g)
+```
+
+## Quick Start from Ped/Map format
+
+``` r
+founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'prefix'",
+                                  path_to_pedmap = "/path/to/pedmap/'prefix'",
+                                  biome_id_column = "ind_id")
+
+taxa_assign_g <- assign_taxa(founder_object)
+generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = founder_object, n_clust = taxa_assign_g)
+```
+
 ## To go further
 
 If you’re interested into reproducing the figures of the article you can

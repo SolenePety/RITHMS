@@ -4,7 +4,7 @@
 \alias{generate_founder}
 \title{Formatting of ped and map files into haplotypes table and filter individuals}
 \usage{
-generate_founder(path = NULL, microbiome_matrix)
+generate_founder(path = NULL, microbiome_matrix, file_type = "pedmap")
 }
 \arguments{
 \item{path}{String giving the path and prefix to ped and map file}
