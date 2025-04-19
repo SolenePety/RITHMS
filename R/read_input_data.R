@@ -8,7 +8,8 @@
 #' @importFrom magrittr %>%
 #'
 #' @param path_to_microbiome String giving the path to count table file. `"path/to/microbiome.{extension}"`
-#' @param path_to_genotype String giving the path and prefix to the genotype file. This should be one of `"pedmap"` or `"vcf"`. (default: `"pedmap"`). For a `"example_pedmap.ped"` file enter only `"path/to/example_pedmap"`.
+#' @param path_to_genotype String giving the path and prefix to the genotype file. This should be one of `"pedmap"` or `"vcf"`. (default: `"pedmap"`), see `file_type` param. For a `"example_pedmap.ped"` file enter only `"path/to/example_pedmap"`.
+#' @param file_type String specifying the file type used to load genotype data. This should be one of `"pedmap"` or `"vcf"`. (default: `"pedmap"`).
 #' @param biome_id_column String specifying the name of the column containing the individual IDs for the microbiome matrix. Default is "ind_id".
 #' @param threshold Threshold for rarefaction, DEFAULT = 0.05
 #' @param ind_selected Vector of string values with individuals to keep, have to match rownames of count table file, DEFAULT = NULL

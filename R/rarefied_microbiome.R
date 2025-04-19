@@ -21,7 +21,7 @@
 #' @rdname rarefied_microbiome
 #' @examples
 #' \dontrun{
-#'   microbiome <- data.table::fread("/path/to/microbiome/'prefix'")
+#'   microbiome <- data.table::fread("/path/to/microbiome.txt")
 #'   microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
 #' }
 

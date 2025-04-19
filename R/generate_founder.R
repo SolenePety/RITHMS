@@ -13,7 +13,7 @@
 #' @rdname generate_founder
 #' @examples
 #' \dontrun{
-#'   microbiome <- data.table::fread("/path/to/microbiome")
+#'   microbiome <- data.table::fread("/path/to/microbiome.txt")
 #'   founder_object <- generate_founder(path = "/path/to/pedmap", microbiome) 
 #' }
 #'

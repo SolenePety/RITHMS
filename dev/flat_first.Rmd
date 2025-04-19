@@ -63,7 +63,8 @@ ToyData <- readRDS(datafile)
 #' @importFrom magrittr %>%
 #'
 #' @param path_to_microbiome String giving the path to count table file. `"path/to/microbiome.{extension}"`
-#' @param path_to_genotype String giving the path and prefix to the genotype file. This should be one of `"pedmap"` or `"vcf"`. (default: `"pedmap"`). For a `"example_pedmap.ped"` file enter only `"path/to/example_pedmap"`.
+#' @param path_to_genotype String giving the path and prefix to the genotype file. This should be one of `"pedmap"` or `"vcf"`. (default: `"pedmap"`), see `file_type` param. For a `"example_pedmap.ped"` file enter only `"path/to/example_pedmap"`.
+#' @param file_type String specifying the file type used to load genotype data. This should be one of `"pedmap"` or `"vcf"`. (default: `"pedmap"`).
 #' @param biome_id_column String specifying the name of the column containing the individual IDs for the microbiome matrix. Default is "ind_id".
 #' @param threshold Threshold for rarefaction, DEFAULT = 0.05
 #' @param ind_selected Vector of string values with individuals to keep, have to match rownames of count table file, DEFAULT = NULL
@@ -160,7 +161,7 @@ rarefied_microbiome <- function(microbiome_matrix,
 
 ```{r examples-rarefied_microbiome}
 \dontrun{
-  microbiome <- data.table::fread("/path/to/microbiome/'prefix'")
+  microbiome <- data.table::fread("/path/to/microbiome.txt")
   microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
 }
 ```
@@ -224,7 +225,7 @@ generate_founder <- function(path = NULL,
 
 ```{r examples-generate_founder}
 \dontrun{
-  microbiome <- data.table::fread("/path/to/microbiome")
+  microbiome <- data.table::fread("/path/to/microbiome.txt")
   founder_object <- generate_founder(path = "/path/to/pedmap", microbiome) 
 }
 
@@ -553,7 +554,7 @@ root <- function(rho) {
 #' 
 #' @inheritParams holo_simu
 #' 
-#' @param X0 Matrix of the primary generation genotypes, given from [MoPBS::get.geno()]. SNPs are in rows and individuals in columns.
+#' @param X0 Matrix of the primary generation genotypes, given from `MoPBS::get.geno()`. SNPs are in rows and individuals in columns.
 #' @param B0 Matrix of the primary generation microbiomes, as CLR abundances. OTUs are in rows and individuals in columns.
 #' @param otu_list List of causal OTUs for the phenotypes.
 #' @param Nqtl_y Integer; number of causal SNPs for the phenotypes.
