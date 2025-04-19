@@ -70,7 +70,7 @@ generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData, n_
 ## Quick Start from Ped/Map format
 
 ``` r
-founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome/'prefix'",
+founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
                                   path_to_pedmap = "/path/to/pedmap/'prefix'",
                                   biome_id_column = "ind_id")
 

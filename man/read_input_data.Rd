@@ -16,7 +16,9 @@ read_input_data(
 \arguments{
 \item{path_to_microbiome}{String giving the path to count table file. \code{"path/to/microbiome.{extension}"}}
 
-\item{path_to_genotype}{String giving the path and prefix to the genotype file. This should be one of \code{"pedmap"} or \code{"vcf"}. (default: \code{"pedmap"}). For a \code{"example_pedmap.ped"} file enter only \code{"path/to/example_pedmap"}.}
+\item{path_to_genotype}{String giving the path and prefix to the genotype file. This should be one of \code{"pedmap"} or \code{"vcf"}. (default: \code{"pedmap"}), see \code{file_type} param. For a \code{"example_pedmap.ped"} file enter only \code{"path/to/example_pedmap"}.}
+
+\item{file_type}{String specifying the file type used to load genotype data. This should be one of \code{"pedmap"} or \code{"vcf"}. (default: \code{"pedmap"}).}
 
 \item{biome_id_column}{String specifying the name of the column containing the individual IDs for the microbiome matrix. Default is "ind_id".}
 
