@@ -3,5 +3,5 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   generate-figures: generate-figures.html
-  import-data: import-data.html
-last_built: 2025-04-19T08:02Z
+  get-started: get-started.html
+last_built: 2025-04-19T20:55Z
