@@ -51,7 +51,7 @@ Suggests:
 VignetteBuilder: 
     knitr
 Remotes: 
-    url::https://github.com/tpook92/MoBPS/raw/master/Previous%20versions/MoBPS_1.10.49.tar.gz
+    MoBPS=url::https://github.com/tpook92/MoBPS/raw/master/Previous%20versions/MoBPS_1.10.49.tar.gz
 BiocViews:
 Config/fusen/version: 0.7.1
 Encoding: UTF-8
