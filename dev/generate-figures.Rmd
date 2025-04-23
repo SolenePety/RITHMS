@@ -23,25 +23,19 @@ knitr::opts_chunk$set(message=FALSE,
 #| class.source: fold-show
 #| eval: yes
 
+library(magrittr)
 library(MoBPS)
-library(dplyr)
-library(compositions)
-library(glue)
-library(purrr)
-library(bazar)
-library(dirmult)
-library(stringr)
 library(ComplexHeatmap)
 library(circlize)
-library(ggplot2)
 library(cowplot)
-library(phyloseq)
-library(tidyr)
+library(tidyverse)
 library(ggrepel)
 library(ggridges)
+library(phyloseq)
 library(ggh4x)
-library(furrr)
+library(ggplot2)
 library(peakRAM)
+library(glue)
 ```
 
 
@@ -860,7 +854,7 @@ run_simulation <- function(i, it) {
   
   ram_result <- peakRAM({
     taxa_assign_g <- assign_taxa(founder_object)
-    
+    selection = if (params_df$`Selection Type`[i] == "Random") FALSE else TRUE
     generations_simu <- holo_simu(
       h2 = params_df$h2[i],
       b2 = params_df$b2[i],
@@ -872,9 +866,9 @@ run_simulation <- function(i, it) {
       effect.size = effect.size,
       lambda = lambda,
       dir = dir,
-      selection = if (params_df$`Selection Type`[i] == "Random") FALSE else TRUE,
-      size_selection_F = 0.3,
-      size_selection_M = 0.3,
+      selection = selection,
+      size_selection_F = if (selection == "FALSE") NULL else 0.3,
+      size_selection_M = if (selection == "FALSE") NULL else 0.3,
       selection_type = if (params_df$`Selection Type`[i] == "Random") NULL else params_df$`Selection Type`[i],
       seed = vec_seed[it]
     )
