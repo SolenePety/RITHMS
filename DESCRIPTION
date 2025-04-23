@@ -30,6 +30,7 @@ Imports:
     ggridges,
     glue,
     magrittr,
+    MoBPS,
     phyloseq,
     purrr,
     stringr,
@@ -39,7 +40,6 @@ Suggests:
     circlize,
     ComplexHeatmap,
     cowplot,
-    furrr,
     ggh4x,
     ggrepel,
     knitr,
@@ -47,7 +47,7 @@ Suggests:
     RColorBrewer,
     rmarkdown,
     testthat,
-    tidyr
+    tidyverse
 VignetteBuilder: 
     knitr
 Remotes: 
