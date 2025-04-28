@@ -25,12 +25,12 @@
 #' @param verbose bool, DEFAULT = T
 #' @param lambda proportion of microbiome of offspring coming from vertical transmission, DEFAULT = 0.5
 #' @param correlation Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5
-#' @param mix.params Vector of two values giving the weights for the regularisation of the base population microbiome. mix.params[1] = weight for raw microbiome and mix.params[2] = weight for mean microbiome. DEFAULT = c(0.75,0.25)
-#' @param mix.params.M
-#' @param effect.size
+#' @param mix.params Vector of two numeric values giving the weights for the regularisation of the base population microbiome. `mix.params[1]` = weight for raw microbiome and `mix.params[2]` = weight for mean microbiome. DEFAULT = c(0.75,0.25).
+#' @param mix.params.M A vector of two numeric values specifying weights between Dirichlet samples and the original mean. DEFAULT = c(0.75,0.25). With `mix.params.M[1]` the dirichlet microbiome coefficient and `mix.params.M[2]` the mean microbiome coefficient.
+#' @param effect.size Vector giving the size of genetic effect to try
 #' @param noise.microbiome sd of microbiome noise, DEFAULT = 0.1
-#' @param dir bool
-#' @param ao for dirichlet sampling parameter
+#' @param dir Logical; Mentions if the ambient microbiome is generated via a Dirichlet law or a only the `mean_microbiome`
+#' @param ao A numeric scalar used as the concentration parameter for the Dirichlet distribution.
 #' @param thetaX if environmental effect
 #' @param env_gen vector of bool
 #' @param w.param in case div.GB selection mode is chosen
@@ -293,7 +293,7 @@ holo_simu <- function(h2,
 #' 
 #' @importFrom phyloseq phyloseq estimate_richness otu_table
 #' 
-#' @param microbiome_matrix A matrix of relative abundances (individuals in rows and OTUs in columns, see [get_microbiome()] output).
+#' @param microbiome_matrix A matrix of relative abundances (individuals in rows and OTUs in columns, see [get_microbiomes()] output).
 #' @param size_rmultinom Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).
 #' @param n_loop Integer; number of multinomial resampling iterations to perform (default: 10).
 #' @param plot Logical; not currently implemented

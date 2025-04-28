@@ -12,7 +12,7 @@ richness_from_abundances_gen(
 )
 }
 \arguments{
-\item{microbiome_matrix}{A matrix of relative abundances (individuals in rows and OTUs in columns, see \code{\link[=get_microbiome]{get_microbiome()}} output).}
+\item{microbiome_matrix}{A matrix of relative abundances (individuals in rows and OTUs in columns, see \code{\link[=get_microbiomes]{get_microbiomes()}} output).}
 
 \item{size_rmultinom}{Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).}
 

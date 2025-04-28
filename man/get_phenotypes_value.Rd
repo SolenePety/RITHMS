@@ -8,6 +8,8 @@ get_phenotypes_value(data, value = "gq")
 }
 \arguments{
 \item{data}{List corresponding to one generation, as returned by \code{\link[=holo_simu]{holo_simu()}}. Containing simulation output.}
+
+\item{value}{A String caracter that precise the object to extract from the generation object. Must be "gq" to extract phenotype values.}
 }
 \value{
 A \code{data.frame} of phenotype values for each individuals of a given generation.

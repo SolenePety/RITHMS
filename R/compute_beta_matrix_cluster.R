@@ -8,7 +8,16 @@
 #' 
 #' @inheritParams gen_effect_calibration
 #' 
-#' @return A `matrix` of taxa (in rows) across SNPs (in columns) giving the multiplicative effetc of genotype on taxa abundances.
+#' @param n_b Number of taxa
+#' @param n_g Number of SNPs
+#' @param n_clust A vector with a length matching the total number of taxa with values from 0 to the number of clusters. Typically the [assign_taxa()] output.
+#' @param n_qtl_o Number of causative QTL on taxa abundances (per taxon)
+#' @param n_otus Number of taxa under genetic control.
+#' @param effect_size Vector giving the size of genetic effect to try
+#' @param correlation A numeric value between 0 and 1 representing the target correlation between taxa within the same cluster.
+#' @param beta_info Informations from Beta matrix of genetic effects
+#' 
+#' @return A `matrix` of taxa (in rows) across SNPs (in columns) giving the multiplicative effect of genotype on taxa abundances.
 #' 
 #' @seealso [compute_beta_g()], [holo_simu()]
 #' 

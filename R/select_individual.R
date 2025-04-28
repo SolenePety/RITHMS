@@ -6,6 +6,12 @@
 #' @importFrom dplyr select
 #' @importFrom stringr str_extract
 #' 
+#' @param phenotypes Phenotype values of the current generation given as the result of the combined effects of the microbiota and direct genetic effects. Typically [get_phenotypes()] output or [compute_phenotypes()].
+#' @param microbiomes Abundances for each individual of the current generation. Note: It is necessary to transform the abundances if they are CLR-transformed with the following command. `microbiomes_clr |>  t() |> clrInv() |> t()`
+#' @param genotypes Genotypes values of the current generation. Typically from the MoBPS `get.geno()` function.
+#' @param beta Beta matrix from [compute_beta_matrix_cluster()] output.
+#' @param beta_otu Omega parameter from [calibrate_params_phenotypes()] output.
+#' 
 #' @inheritParams holo_simu
 #' @rdname select_individual
 

@@ -10,7 +10,7 @@
 #' @importFrom magrittr %>%
 #'
 #' @return
-#' A vector with a length matching the total number of taxa with values from 0 to the number of taxa, 0 corresponding to the non under genetic control cluster
+#' A vector with a length matching the total number of taxa with values from 0 to the number of clusters, 0 corresponding to the non under genetic control cluster
 #' @rdname formatting_data
 #' @export
 #' @examples
