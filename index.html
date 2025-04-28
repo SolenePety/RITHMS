@@ -61,17 +61,18 @@ Last code version on: <a href="https://github.com/SolenePety/RITHMS" class="exte
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of RITHMS from GitHub using <code>devtools</code> as shown below.</p>
+<p>You can install the development version of RITHMS from GitHub using <code>remotes</code> as shown below.</p>
 <p>Note: Before installing the <strong><code>RITHMS</code></strong> package, please make sure that version <code>1.10.49</code> of the <code>MoBPS</code> package is manually installed from the following link:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
+<span><span class="co"># install.packages("remotes")</span></span>
+<span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"MoBPS"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"MoBPS"</span><span class="op">)</span> <span class="op">!=</span> <span class="st">"1.10.49"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Installing MoBPS 1.10.49..."</span><span class="op">)</span></span>
-<span>    <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_url</span><span class="op">(</span><span class="st">"https://github.com/tpook92/MoBPS/raw/master/Previous%20versions/MoBPS_1.10.49.tar.gz"</span><span class="op">)</span></span>
+<span>    <span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_url</span><span class="op">(</span><span class="st">"https://github.com/tpook92/MoBPS/raw/master/Previous%20versions/MoBPS_1.10.49.tar.gz"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"SolenePety/RITHMS"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"SolenePety/RITHMS"</span><span class="op">)</span></span></code></pre></div>
 <p><em>This requirement will be handled more automatically in a future version of <strong><code>RITHMS</code></strong>.</em></p>
 </div>
 <div class="section level2">
