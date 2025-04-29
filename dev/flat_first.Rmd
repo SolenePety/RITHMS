@@ -171,6 +171,7 @@ rarefied_microbiome <- function(microbiome_matrix,
 #' 
 #' @param path String giving the path and prefix to ped and map file
 #' @param microbiome_matrix Filtered microbiome matrix, with OTUs in columns and individuals in rows
+#' @param file_type String specifying the file type used to load genotype data. This should be one of `"pedmap"` or `"vcf"`. (default: `"pedmap"`).
 #' 
 #' @return 
 #' Matrix of taxa (in columns) accross individuals (in rows), genotypes of each generation are reachable thanks to **"population"** attribute. Genotypes are encodes as 0,1,2 and generated using the [MoBPS](https://pubmed.ncbi.nlm.nih.gov/32229505/) package.
@@ -234,7 +235,7 @@ generate_founder <- function(path = NULL,
 
 ## Taxa assignation function
 
-```{r function-taxa_assignment}
+```{r function-assign_taxa}
 #' Assign all taxa to a cluster, eventually under genetic control using hclust
 #'
 #' @param founder_object Output of read_input_data function
@@ -245,7 +246,7 @@ generate_founder <- function(path = NULL,
 #' @importFrom magrittr %>%
 #'
 #' @return
-#' A vector with a length matching the total number of taxa with values from 0 to the number of taxa, 0 corresponding to the non under genetic control cluster
+#' A vector with a length matching the total number of taxa with values from 0 to the number of clusters, 0 corresponding to the non under genetic control cluster
 #' @rdname formatting_data
 #' @export
 
@@ -274,14 +275,14 @@ assign_taxa <- function(founder_object,
 
 ```
 
-```{r examples-taxa_assignment, message=FALSE, warning=FALSE}
+```{r examples-assign_taxa, message=FALSE, warning=FALSE}
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
 ToyData <- readRDS(datafile)
 taxa_assign_g <- assign_taxa(founder_object = ToyData,
             taxa_g = 0.2)
 ```
 
-```{r tests-taxa_assignment}
+```{r tests-assign_taxa}
 #test length of assignment vector
 ```
 
@@ -424,7 +425,16 @@ out_data <- gen_effect_calibration(founder_object = ToyData,
 #' 
 #' @inheritParams gen_effect_calibration
 #' 
-#' @return A `matrix` of taxa (in rows) across SNPs (in columns) giving the multiplicative effetc of genotype on taxa abundances.
+#' @param n_b Number of taxa
+#' @param n_g Number of SNPs
+#' @param n_clust A vector with a length matching the total number of taxa with values from 0 to the number of clusters. Typically the [assign_taxa()] output.
+#' @param n_qtl_o Number of causative QTL on taxa abundances (per taxon)
+#' @param n_otus Number of taxa under genetic control.
+#' @param effect_size Vector giving the size of genetic effect to try
+#' @param correlation A numeric value between 0 and 1 representing the target correlation between taxa within the same cluster.
+#' @param beta_info Informations from Beta matrix of genetic effects
+#' 
+#' @return A `matrix` of taxa (in rows) across SNPs (in columns) giving the multiplicative effect of genotype on taxa abundances.
 #' 
 #' @seealso [compute_beta_g()], [holo_simu()]
 #' 
@@ -532,8 +542,7 @@ beta_g <- RITHMS:::compute_beta_g(beta = beta,
 ```{r function-root}
 #' Compute root value for beta matrix construction
 #' 
-#' This function computes the parameter used to build a beta matrix with a given correlation
-#' structure between taxa. It is used in the beta matrix construction.
+#' This function computes the parameter used to build a beta matrix with a given correlation structure between taxa. It is used in the beta matrix construction.
 #' 
 #' @param rho A numeric value between 0 and 1 representing the target correlation between taxa within the same cluster. This parameter is used to induce correlation in the beta matrix.
 #' @rdname root
@@ -669,7 +678,7 @@ calibrate_params_phenotypes <- function(X0,
 
 ```{r function-compute_phenotypes}
 
-#' Compute phenotype values based on generated object of current generation
+#' Compute phenotype values based on generated objects of the current generation
 #'
 #' @param X A `matrix` of the current generation genotypes, encoding with 0, 1 and 2.
 #' @param B A `matrix` of the CLR-transformed abundances of the current generation microbiome.
@@ -826,6 +835,12 @@ replace_zero <- function(x){
 #' @importFrom dplyr select
 #' @importFrom stringr str_extract
 #' 
+#' @param phenotypes Phenotype values of the current generation given as the result of the combined effects of the microbiota and direct genetic effects. Typically [get_phenotypes()] output or [compute_phenotypes()].
+#' @param microbiomes Abundances for each individual of the current generation. Note: It is necessary to transform the abundances if they are CLR-transformed with the following command. `microbiomes_clr |>  t() |> clrInv() |> t()`
+#' @param genotypes Genotypes values of the current generation. Typically from the MoBPS `get.geno()` function.
+#' @param beta Beta matrix from [compute_beta_matrix_cluster()] output.
+#' @param beta_otu Omega parameter from [calibrate_params_phenotypes()] output.
+#' 
 #' @inheritParams holo_simu
 #' @rdname select_individual
 
@@ -918,12 +933,12 @@ select_individual <- function(phenotypes,
 #' @param verbose bool, DEFAULT = T
 #' @param lambda proportion of microbiome of offspring coming from vertical transmission, DEFAULT = 0.5
 #' @param correlation Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5
-#' @param mix.params Vector of two values giving the weights for the regularisation of the base population microbiome. mix.params[1] = weight for raw microbiome and mix.params[2] = weight for mean microbiome. DEFAULT = c(0.75,0.25)
-#' @param mix.params.M
-#' @param effect.size
+#' @param mix.params Vector of two numeric values giving the weights for the regularisation of the base population microbiome. `mix.params[1]` = weight for raw microbiome and `mix.params[2]` = weight for mean microbiome. DEFAULT = c(0.75,0.25).
+#' @param mix.params.M A vector of two numeric values specifying weights between Dirichlet samples and the original mean. DEFAULT = c(0.75,0.25). With `mix.params.M[1]` the dirichlet microbiome coefficient and `mix.params.M[2]` the mean microbiome coefficient.
+#' @param effect.size Vector giving the size of genetic effect to try
 #' @param noise.microbiome sd of microbiome noise, DEFAULT = 0.1
-#' @param dir bool
-#' @param ao for dirichlet sampling parameter
+#' @param dir Logical; Mentions if the ambient microbiome is generated via a Dirichlet law or a only the `mean_microbiome`
+#' @param ao A numeric scalar used as the concentration parameter for the Dirichlet distribution.
 #' @param thetaX if environmental effect
 #' @param env_gen vector of bool
 #' @param w.param in case div.GB selection mode is chosen
@@ -1191,7 +1206,7 @@ holo_simu <- function(h2,
 #' 
 #' @importFrom phyloseq phyloseq estimate_richness otu_table
 #' 
-#' @param microbiome_matrix A matrix of relative abundances (individuals in rows and OTUs in columns, see [get_microbiome()] output).
+#' @param microbiome_matrix A matrix of relative abundances (individuals in rows and OTUs in columns, see [get_microbiomes()] output).
 #' @param size_rmultinom Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).
 #' @param n_loop Integer; number of multinomial resampling iterations to perform (default: 10).
 #' @param plot Logical; not currently implemented
@@ -1342,6 +1357,7 @@ get_mean_phenotypes <- function(data) {
 #' @importFrom magrittr %>%
 #' 
 #' @param data List corresponding to one generation, as returned by [holo_simu()]. Containing simulation output.
+#' @param value A String caracter that precise the object to extract from the generation object. Must be "gq" to extract phenotype values.
 #' @return A `data.frame` of phenotype values for each individuals of a given generation.
 #' 
 #' @examples

@@ -10,6 +10,8 @@ generate_founder(path = NULL, microbiome_matrix, file_type = "pedmap")
 \item{path}{String giving the path and prefix to ped and map file}
 
 \item{microbiome_matrix}{Filtered microbiome matrix, with OTUs in columns and individuals in rows}
+
+\item{file_type}{String specifying the file type used to load genotype data. This should be one of \code{"pedmap"} or \code{"vcf"}. (default: \code{"pedmap"}).}
 }
 \value{
 Matrix of taxa (in columns) accross individuals (in rows), genotypes of each generation are reachable thanks to \strong{"population"} attribute. Genotypes are encodes as 0,1,2 and generated using the \href{https://pubmed.ncbi.nlm.nih.gov/32229505/}{MoBPS} package.

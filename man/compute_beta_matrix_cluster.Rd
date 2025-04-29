@@ -16,10 +16,24 @@ compute_beta_matrix_cluster(
 )
 }
 \arguments{
-\item{correlation}{Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5}
+\item{n_b}{Number of taxa}
+
+\item{n_g}{Number of SNPs}
+
+\item{n_clust}{A vector with a length matching the total number of taxa with values from 0 to the number of clusters. Typically the \code{\link[=assign_taxa]{assign_taxa()}} output.}
+
+\item{n_qtl_o}{Number of causative QTL on taxa abundances (per taxon)}
+
+\item{n_otus}{Number of taxa under genetic control.}
+
+\item{effect_size}{Vector giving the size of genetic effect to try}
+
+\item{correlation}{A numeric value between 0 and 1 representing the target correlation between taxa within the same cluster.}
+
+\item{beta_info}{Informations from Beta matrix of genetic effects}
 }
 \value{
-A \code{matrix} of taxa (in rows) across SNPs (in columns) giving the multiplicative effetc of genotype on taxa abundances.
+A \code{matrix} of taxa (in rows) across SNPs (in columns) giving the multiplicative effect of genotype on taxa abundances.
 }
 \description{
 Generate beta matrix giving genetic effect per SNP on taxa abundances.

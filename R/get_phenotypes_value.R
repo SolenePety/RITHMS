@@ -9,6 +9,7 @@
 #' @importFrom magrittr %>%
 #' 
 #' @param data List corresponding to one generation, as returned by [holo_simu()]. Containing simulation output.
+#' @param value A String caracter that precise the object to extract from the generation object. Must be "gq" to extract phenotype values.
 #' @return A `data.frame` of phenotype values for each individuals of a given generation.
 #' 
 #' @examples

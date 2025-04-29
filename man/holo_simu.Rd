@@ -65,13 +65,17 @@ holo_simu(
 
 \item{correlation}{Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5}
 
-\item{mix.params}{Vector of two values giving the weights for the regularisation of the base population microbiome. mix.params\link{1} = weight for raw microbiome and mix.params\link{2} = weight for mean microbiome. DEFAULT = c(0.75,0.25)}
+\item{mix.params}{Vector of two numeric values giving the weights for the regularisation of the base population microbiome. \code{mix.params[1]} = weight for raw microbiome and \code{mix.params[2]} = weight for mean microbiome. DEFAULT = c(0.75,0.25).}
+
+\item{mix.params.M}{A vector of two numeric values specifying weights between Dirichlet samples and the original mean. DEFAULT = c(0.75,0.25). With \code{mix.params.M[1]} the dirichlet microbiome coefficient and \code{mix.params.M[2]} the mean microbiome coefficient.}
+
+\item{effect.size}{Vector giving the size of genetic effect to try}
 
 \item{noise.microbiome}{sd of microbiome noise, DEFAULT = 0.1}
 
-\item{dir}{bool}
+\item{dir}{Logical; Mentions if the ambient microbiome is generated via a Dirichlet law or a only the \code{mean_microbiome}}
 
-\item{ao}{for dirichlet sampling parameter}
+\item{ao}{A numeric scalar used as the concentration parameter for the Dirichlet distribution.}
 
 \item{thetaX}{if environmental effect}
 

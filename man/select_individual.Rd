@@ -18,6 +18,16 @@ select_individual(
 )
 }
 \arguments{
+\item{phenotypes}{Phenotype values of the current generation given as the result of the combined effects of the microbiota and direct genetic effects. Typically \code{\link[=get_phenotypes]{get_phenotypes()}} output or \code{\link[=compute_phenotypes]{compute_phenotypes()}}.}
+
+\item{microbiomes}{Abundances for each individual of the current generation. Note: It is necessary to transform the abundances if they are CLR-transformed with the following command. \code{microbiomes_clr |>  t() |> clrInv() |> t()}}
+
+\item{genotypes}{Genotypes values of the current generation. Typically from the MoBPS \code{get.geno()} function.}
+
+\item{beta}{Beta matrix from \code{\link[=compute_beta_matrix_cluster]{compute_beta_matrix_cluster()}} output.}
+
+\item{beta_otu}{Omega parameter from \code{\link[=calibrate_params_phenotypes]{calibrate_params_phenotypes()}} output.}
+
 \item{selection}{bool, if selection process needed, DEFAULT = FALSE}
 
 \item{size_selection_F}{percentage of female to select}
