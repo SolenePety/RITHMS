@@ -1639,6 +1639,28 @@ head(vcf[1:3,1:7])
 ```
 
 
+```{r function-Deru}
+#' Deru Dataset
+#' 
+#' A subset of data from [Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/) containing hologenomic data from 750 pigs fed a conventional diet. Genotypes are accessible thanks to the "population" attribute.
+#' 
+#' @format A matrix with 780 rows (individuals) and 1845 taxa, where each element represents the abundance of a specific taxon in a specific individual. Additionnally, there is an attribute "population" wich provides the genotypes of each individual, encoded as 0, 1 ,2.
+#' 
+#' @source [Déru et al.](https://pmc.ncbi.nlm.nih.gov/articles/PMC9194801/) for microbiota data and [Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/) for genotypes data.
+#' 
+#' @examples
+#' # Access the dataset
+#' data("Deru")
+#' 
+#' # View the first few rows of the taxa matrix
+#' head(Deru)
+#' 
+#' # Access the population attribute to view genotypes
+#' attr(Deru, "population")
+"Deru"
+```
+
+
 <!--
 # There can be development actions
 
