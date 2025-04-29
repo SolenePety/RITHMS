@@ -167,7 +167,7 @@ rarefied_microbiome <- function(microbiome_matrix,
 ```
 
 ```{r function-generate_founder}
-#' Formatting of ped and map files into haplotypes table and filter individuals
+#' Formatting of ped/map files or vcf into haplotypes table and create it as "population" attr.
 #' 
 #' @param path String giving the path and prefix to ped and map file
 #' @param microbiome_matrix Filtered microbiome matrix, with OTUs in columns and individuals in rows
@@ -853,6 +853,7 @@ select_individual <- function(phenotypes,
                               size_selection_F, 
                               size_selection_M, 
                               selection_type,
+                              size_rmultinom,
                               w.param){
   #extract id of individuals of interest
   n_F <- (size_selection_F * length(grep("^F",colnames(genotypes)))) |> round()
@@ -878,9 +879,9 @@ select_individual <- function(phenotypes,
     }else if(selection_type == "B"){
       score <- phenotypes$gb
     }else if(selection_type == "diversity"){
-      score <- microbiomes %>% richness_from_abundances_gen() %>% select(Shannon) %>% as.matrix()
+      score <- microbiomes %>% richness_from_abundances_gen(size_rmultinom = size_rmultinom) %>% select(Shannon) %>% as.matrix()
     }else{
-      diversity <- microbiomes %>% richness_from_abundances_gen() %>% select(Shannon) %>% as.matrix()
+      diversity <- microbiomes %>% richness_from_abundances_gen(size_rmultinom = size_rmultinom) %>% select(Shannon) %>% as.matrix()
       TBV <- phenotypes$gq + as.vector(beta_otu %*% (beta[rowSums(beta) != 0, ] %*% genotypes))
       score = w.param[1] * diversity + w.param[2] * TBV
     }
@@ -923,8 +924,9 @@ select_individual <- function(phenotypes,
 #' @param otu_g percentage of taxa under genetic control, between 0 and 1, DEFAULT = 0.05
 #' @param qtn_y number of causal SNPs for the phenotypes
 #' @param n_ind number of individual per generation
-#' @param n_gen number of generation, DEFAULT = 5
 #' @param n_clust vector with taxa assignment, typical output of assign_taxa
+#' @param size_rmultinom Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).
+#' @param n_gen number of generation, DEFAULT = 5
 #' @param selection bool, if selection process needed, DEFAULT = FALSE
 #' @param size_selection_F percentage of female to select
 #' @param size_selection_M percentage of male to select
@@ -954,9 +956,10 @@ holo_simu <- function(h2,
                       founder_object,
                       otu_g = 0.05,       
                       qtn_y = NULL,        
-                      n_ind = NULL,       
+                      n_ind = NULL,
+                      n_clust = NULL,
+                      size_rmultinom = 10000,
                       n_gen = 5,         
-                      n_clust = NULL,    
                       selection = F,       
                       size_selection_F = NULL,
                       size_selection_M = NULL,
@@ -1153,6 +1156,7 @@ holo_simu <- function(h2,
                                      size_selection_F = size_selection_F,
                                      size_selection_M = size_selection_M,
                                      selection_type = selection_type,
+                                     size_rmultinom = size_rmultinom,
                                      w.param = w.param) 
 
     ###
@@ -1247,7 +1251,8 @@ generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
 microbiomes <- generations_simu[-1] %>% map(get_microbiomes)
  
 # Estimate diversity metrics
-richness_from_abundances <- microbiomes %>% map(richness_from_abundances_gen)
+richness_from_abundances <- microbiomes %>% map(richness_from_abundances_gen, size_rmultinom = 10000) 
+## size_rmultinom = 10000 according to DeruPops dataset
 ```
 
 ```{r tests-holo_simu}
@@ -1522,7 +1527,9 @@ get_phenotypes <- function(data) {
 #'                               
 #' # Extract Shannon diversity for each generations
 #' ## First step, compute richness from abundances
-#' richness_from_abundances <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen)
+#' richness_from_abundances <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen, size_rmultinom = 10000)
+#' ## size_rmultinom = 10000 according to DeruPops dataset
+#' 
 #' mean_shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
 #' 
 #' @seealso [get_microbiomes()], [richness_from_abundances_gen()]

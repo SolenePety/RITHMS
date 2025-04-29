@@ -64,7 +64,7 @@ To import your own dataset, you can refer to the following
 
 ``` r
 taxa_assign_g <- assign_taxa(ToyData)
-generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData, n_clust = taxa_assign_g)
+generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData, n_clust = taxa_assign_g, n_ind = 500)
 ```
 
 ## Quick Start from Ped/Map format
