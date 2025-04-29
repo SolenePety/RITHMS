@@ -58,7 +58,7 @@ ToyData <- readRDS(datafile)
 ```
 
 To import your own dataset, you can refer to the following
-[vignette](https://solenepety.github.io/RITHMS/docs/articles/import-data.html).
+[vignette](https://solenepety.github.io/RITHMS/articles/import-data.html).
 
 ## Quick Start from the toy dataset
 
