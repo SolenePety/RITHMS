@@ -21,9 +21,9 @@ A subset of data from \href{https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/}{D
 data("Deru")
 
 # View the first few rows of the taxa matrix
-head(Deru)
+head(Deru[1:5,1:5])
 
 # Access the population attribute to view genotypes
-attr(Deru, "population")
+population <- attr(Deru, "population")
 }
 \keyword{datasets}
