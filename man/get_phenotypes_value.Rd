@@ -19,6 +19,7 @@ The gets functions use the output of \code{\link[=holo_simu]{holo_simu()}} to ex
 \code{get_phenotypes_values} extract the set of phenotype values from a generation object.
 }
 \examples{
+\dontrun{
 library(magrittr)
 library(purrr)
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -34,6 +35,7 @@ generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
  #Extract phenotype values for each individuals of all generations
  ## Don't forget to substract the metadata
  phenotypes_values <- generations_simu[-1] \%>\% map(get_phenotypes_value)
+ }
  
 }
 \seealso{

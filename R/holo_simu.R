@@ -8,32 +8,33 @@
 #' @importFrom phyloseq phyloseq estimate_richness otu_table
 #' @importFrom purrr list_c
 #' @importFrom magrittr %>%
-#'
-#' @param h2 direct heritability value, between 0 and 1 
-#' @param b2 microbiability value, between 0 and 1
-#' @param founder_object output of generate_founder() function
-#' @param otu_g percentage of taxa under genetic control, between 0 and 1, DEFAULT = 0.05
-#' @param qtn_y number of causal SNPs for the phenotypes
-#' @param n_ind number of individual per generation
+#' 
+#' @param h2 direct heritability value, between 0 and 1. 
+#' @param b2 microbiability value, between 0 and 1.
+#' @param founder_object output of `generate_founder()` function.
+#' @param n_ind number of individual per generation.
+#' @param n_clust vector with taxa assignment, typical output of `assign_taxa()`
 #' @param n_gen number of generation, DEFAULT = 5
-#' @param n_clust vector with taxa assignment, typical output of assign_taxa
-#' @param selection bool, if selection process needed, DEFAULT = FALSE
-#' @param size_selection_F percentage of female to select
-#' @param size_selection_M percentage of male to select
-#' @param selection_type mode of selection to be used, value in ("GB", "B", "G", "diversity", "div.GB"), DEFAULT = "GB"
-#' @param seed seed value for samplings in the function
-#' @param verbose bool, DEFAULT = T
-#' @param lambda proportion of microbiome of offspring coming from vertical transmission, DEFAULT = 0.5
+#' @param qtn_y number of causal SNPs for the phenotypes.
 #' @param correlation Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5
+#' @param otu_g percentage of taxa under genetic control, between 0 and 1, DEFAULT = 0.05
+#' @param lambda proportion of microbiome of offspring coming from vertical transmission, DEFAULT = 0.5
+#' @param effect.size Vector giving the size of genetic effect to try.
 #' @param mix.params Vector of two numeric values giving the weights for the regularisation of the base population microbiome. `mix.params[1]` = weight for raw microbiome and `mix.params[2]` = weight for mean microbiome. DEFAULT = c(0.75,0.25).
 #' @param mix.params.M A vector of two numeric values specifying weights between Dirichlet samples and the original mean. DEFAULT = c(0.75,0.25). With `mix.params.M[1]` the dirichlet microbiome coefficient and `mix.params.M[2]` the mean microbiome coefficient.
-#' @param effect.size Vector giving the size of genetic effect to try
 #' @param noise.microbiome sd of microbiome noise, DEFAULT = 0.1
-#' @param dir Logical; Mentions if the ambient microbiome is generated via a Dirichlet law or a only the `mean_microbiome`
+#' @param dir Logical; Mentions if the ambient microbiome is generated via a Dirichlet law or a only the `mean_microbiome`. DEFAULT = T
 #' @param ao A numeric scalar used as the concentration parameter for the Dirichlet distribution.
-#' @param thetaX if environmental effect
-#' @param env_gen vector of bool
-#' @param w.param in case div.GB selection mode is chosen
+#' @param size_rmultinom Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).
+#' @param selection bool, if selection process needed, DEFAULT = FALSE
+#' @param size_selection_F percentage of female to select.
+#' @param size_selection_M percentage of male to select.
+#' @param selection_type mode of selection to be used, value in ("GB", "B", "G", "diversity", "div.GB"), DEFAULT = "GB"
+#' @param w.param in case div.GB selection mode is chosen.
+#' @param thetaX if environmental effect.
+#' @param env_gen vector of booleans.
+#' @param seed seed value for samplings in the function.
+#' @param verbose bool, DEFAULT = T
 #'
 #' @return
 #' A big list object with metada info such as beta matrix details and each generation at level 1. For each generation, the genotypes, the microbiomes, the phenotypes, the pedigree and the individuals selected can be reachable.
@@ -59,31 +60,53 @@
 #'                                  selection = FALSE,
 #'                                  seed = 1234)
 #' }  
-holo_simu <- function(h2,
+holo_simu <- function(### Required parameters ###
+                      h2,
                       b2,
                       founder_object,
-                      otu_g = 0.05,       
+                      n_ind = NULL,
+                      n_clust = NULL,
+                      ###
+                      
+                      ### Generations parameters ###
+                      n_gen = 5,
+                      ###
+                      
+                      ### Genotypes parameters ###
                       qtn_y = NULL,        
-                      n_ind = NULL,       
-                      n_gen = 5,         
-                      n_clust = NULL,    
+                      ###
+                      
+                      ### Microbiome-related parameters ###
+                      correlation = 0.5,
+                      otu_g = 0.05,
+                      lambda = 0.5,
+                      effect.size = 0.1,
+                      mix.params = c(0.75,0.25),
+                      mix.params.M = c(0.75,0.25),
+                      noise.microbiome = 0.1,
+                      dir = T,
+                      ao = 25,
+                      ###
+                      
+                      ### Selection-related parameters ###
+                      size_rmultinom = 10000,
                       selection = F,       
                       size_selection_F = NULL,
                       size_selection_M = NULL,
                       selection_type = "GB",
-                      seed=1234,
-                      verbose = T,
-                      lambda = 0.5,
-                      correlation = 0.5,
-                      mix.params = c(0.75,0.25),
-                      mix.params.M = c(0.75,0.25),
-                      effect.size = 0.1,
-                      noise.microbiome = 0.1,
-                      dir = F,
-                      ao = 25,
+                      w.param = c(0.5,0.5),
+                      ###
+                      
+                      ### Environmental-effects-related parameters ###
                       thetaX = NULL,
                       env_gen = NULL,
-                      w.param = c(0.5,0.5)){
+                      ###
+                      
+                      ### Additional parameters ###
+                      seed=1234,
+                      verbose = T
+                      ###
+                      ){
   set.seed(seed)
   
   population <- attr(founder_object,"population")
@@ -263,6 +286,7 @@ holo_simu <- function(h2,
                                      size_selection_F = size_selection_F,
                                      size_selection_M = size_selection_M,
                                      selection_type = selection_type,
+                                     size_rmultinom = size_rmultinom,
                                      w.param = w.param) 
 
     ###
@@ -303,6 +327,7 @@ holo_simu <- function(h2,
 #' @seealso [get_microbiomes()], [phyloseq::estimate_richness()]
 #' @export
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #' library(purrr)
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -316,7 +341,9 @@ holo_simu <- function(h2,
 #' microbiomes <- generations_simu[-1] %>% map(get_microbiomes)
 #'  
 #' # Estimate diversity metrics
-#' richness_from_abundances <- microbiomes %>% map(richness_from_abundances_gen)
+#' richness_from_abundances <- microbiomes %>% map(richness_from_abundances_gen, size_rmultinom = 10000) 
+#' ## size_rmultinom = 10000 according to DeruPops dataset
+#' }
 richness_from_abundances_gen <- function(microbiome_matrix, size_rmultinom = 10000, n_loop = 10, plot=T){
   microbiome_matrix[microbiome_matrix<0] <- 0
   for(i in 1:n_loop){

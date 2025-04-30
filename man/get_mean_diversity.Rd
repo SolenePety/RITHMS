@@ -20,6 +20,7 @@ The gets functions use the output of \code{\link[=holo_simu]{holo_simu()}} to ex
 This function requires a previous call to \code{\link[=richness_from_abundances_gen]{richness_from_abundances_gen()}} to compute different types of diversity within the generation.
 }
 \examples{
+\dontrun{
 library(magrittr)
 library(purrr)
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -31,9 +32,12 @@ generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
                               
 # Extract Shannon diversity for each generations
 ## First step, compute richness from abundances
-richness_from_abundances <- generations_simu[-1] \%>\% map(get_microbiomes) \%>\% map(richness_from_abundances_gen)
-mean_shannon_diversity <- richness_from_abundances \%>\% map(get_mean_diversity)
+richness_from_abundances <- generations_simu[-1] \%>\% map(get_microbiomes) \%>\% map(richness_from_abundances_gen, size_rmultinom = 10000)
+## size_rmultinom = 10000 according to DeruPops dataset
 
+mean_shannon_diversity <- richness_from_abundances \%>\% map(get_mean_diversity)
+}
+\dontrun{
 library(magrittr)
 library(purrr)
 
@@ -79,6 +83,7 @@ selected_inds <- generations_simu[-1] \%>\% map(get_selected_ind)
 # First step, compute richness from abundances
 richness_from_abundances <- generations_simu[-1] \%>\% map(get_microbiomes) \%>\% map(richness_from_abundances_gen)
 shannon_diversity <- richness_from_abundances \%>\% map(get_mean_diversity)
+}
 }
 \seealso{
 \code{\link[=get_microbiomes]{get_microbiomes()}}, \code{\link[=richness_from_abundances_gen]{richness_from_abundances_gen()}}

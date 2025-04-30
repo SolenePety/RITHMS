@@ -17,6 +17,7 @@ The gets functions use the output of \code{\link[=holo_simu]{holo_simu()}} to ex
 \code{get_selected_ind}extract selectd individuals IDs from a generation object.
 }
 \examples{
+\dontrun{
 library(magrittr)
 library(purrr)
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -32,6 +33,7 @@ G1_selected_ind <- get_selected_ind(generations_simu$G1)
 #Extract selected individuals IDs for all generations
 ## Don't forget to substract the metadata
 selected_ind <- generations_simu[-1] \%>\% map(get_selected_ind)
+}
 
 }
 \seealso{

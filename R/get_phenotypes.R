@@ -12,6 +12,7 @@
 #' @return A `data.frame` of phenotype for each individuals of a given generation. Phenotype values are given as the result of the combined effects of the microbiota and direct genetic effects.
 #' 
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #' library(purrr)
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -27,6 +28,7 @@
 #' #Extract phenotypes for all generations
 #' ## Don't forget to substract the metadata
 #' phenotypes <- generations_simu[-1] %>% map(get_phenotypes)
+#' }
 #'
 #' @seealso [get_mean_phenotypes()], [get_phenotypes_value()], [get_om_beta_g()], [get_selected_ind()], [get_microbiomes()]
 #' @rdname get_phenotypes

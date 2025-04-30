@@ -13,6 +13,7 @@
 #' @return A `data.frame` of phenotype values for each individuals of a given generation.
 #' 
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #' library(purrr)
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -28,6 +29,7 @@
 #'  #Extract phenotype values for each individuals of all generations
 #'  ## Don't forget to substract the metadata
 #'  phenotypes_values <- generations_simu[-1] %>% map(get_phenotypes_value)
+#'  }
 #'  
 #' @seealso [get_mean_phenotypes()], [get_microbiomes()], [get_om_beta_g()], [get_selected_ind()], [get_phenotypes()]
 #' @rdname get_phenotypes_value

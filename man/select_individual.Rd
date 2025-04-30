@@ -14,6 +14,7 @@ select_individual(
   size_selection_F,
   size_selection_M,
   selection_type,
+  size_rmultinom,
   w.param
 )
 }
@@ -30,13 +31,15 @@ select_individual(
 
 \item{selection}{bool, if selection process needed, DEFAULT = FALSE}
 
-\item{size_selection_F}{percentage of female to select}
+\item{size_selection_F}{percentage of female to select.}
 
-\item{size_selection_M}{percentage of male to select}
+\item{size_selection_M}{percentage of male to select.}
 
 \item{selection_type}{mode of selection to be used, value in ("GB", "B", "G", "diversity", "div.GB"), DEFAULT = "GB"}
 
-\item{w.param}{in case div.GB selection mode is chosen}
+\item{size_rmultinom}{Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).}
+
+\item{w.param}{in case div.GB selection mode is chosen.}
 }
 \description{
 Obtain id of the parents selected for the next generation based on the criteria chosen by the user

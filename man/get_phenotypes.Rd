@@ -17,6 +17,7 @@ The gets functions use the output of \code{\link[=holo_simu]{holo_simu()}} to ex
 \code{get_phenotypes}extract phenotype for each individuals as the combined effects of microbiota and direct genetic effects, from a generation object.
 }
 \examples{
+\dontrun{
 library(magrittr)
 library(purrr)
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -32,6 +33,7 @@ G1_phenotypes <- get_phenotypes(generations_simu$G1)
 #Extract phenotypes for all generations
 ## Don't forget to substract the metadata
 phenotypes <- generations_simu[-1] \%>\% map(get_phenotypes)
+}
 
 }
 \seealso{

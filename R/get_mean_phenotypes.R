@@ -11,6 +11,7 @@
 #' @param data List corresponding to one generation, as returned by [holo_simu()]. Containing simulation output.
 #' @return The mean phenotype value for a given generation.
 #' @examples
+#' \dontrun{
 #' library(purrr)
 #' library(magrittr)
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -26,6 +27,7 @@
 #' # Extract mean phenotype values of all generations
 #' ## Don't forget to substract the metadata
 #' mean_phenotypes <- generations_simu[-1] %>% map(get_mean_phenotypes)
+#' }
 #'
 #' @seealso [get_microbiomes()], [get_phenotypes_value()], [get_om_beta_g()], [get_selected_ind()], [get_phenotypes()]
 #' @rdname get_mean_phenotypes

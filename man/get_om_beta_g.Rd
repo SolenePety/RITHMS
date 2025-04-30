@@ -17,6 +17,7 @@ The gets functions use the output of \code{\link[=holo_simu]{holo_simu()}} to ex
 \code{get_om_beta_g}extract omega beta G values from a generation object.
 }
 \examples{
+\dontrun{
 library(magrittr)
 library(purrr)
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -32,6 +33,7 @@ G1_om_beta_g <- get_om_beta_g(generations_simu$G1)
 #Extract omega beta G values for each individuals of all generations
 ## Don't forget to substract the metadata
 om_beta_g <- generations_simu[-1] \%>\% map(get_om_beta_g)
+}
  
 }
 \seealso{

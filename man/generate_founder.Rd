@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_founder.R
 \name{generate_founder}
 \alias{generate_founder}
-\title{Formatting of ped and map files into haplotypes table and filter individuals}
+\title{Formatting of ped/map files or vcf into haplotypes table and create it as "population" attr.}
 \usage{
 generate_founder(path = NULL, microbiome_matrix, file_type = "pedmap")
 }
@@ -17,7 +17,7 @@ generate_founder(path = NULL, microbiome_matrix, file_type = "pedmap")
 Matrix of taxa (in columns) accross individuals (in rows), genotypes of each generation are reachable thanks to \strong{"population"} attribute. Genotypes are encodes as 0,1,2 and generated using the \href{https://pubmed.ncbi.nlm.nih.gov/32229505/}{MoBPS} package.
 }
 \description{
-Formatting of ped and map files into haplotypes table and filter individuals
+Formatting of ped/map files or vcf into haplotypes table and create it as "population" attr.
 }
 \examples{
 \dontrun{

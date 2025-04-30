@@ -1259,6 +1259,7 @@ richness_from_abundances_gen <- function(microbiome_matrix, size_rmultinom = 100
 ```
 
 ```{r examples-richness_from_abundances_gen, message=FALSE, warning=FALSE}
+\dontrun{
 library(magrittr)
 library(purrr)
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -1274,6 +1275,7 @@ microbiomes <- generations_simu[-1] %>% map(get_microbiomes)
 # Estimate diversity metrics
 richness_from_abundances <- microbiomes %>% map(richness_from_abundances_gen, size_rmultinom = 10000) 
 ## size_rmultinom = 10000 according to DeruPops dataset
+}
 ```
 
 ```{r tests-holo_simu}
@@ -1299,6 +1301,7 @@ richness_from_abundances <- microbiomes %>% map(richness_from_abundances_gen, si
 #' @return A `data.frame`containing the microbiome abundances of individuals. Default, individuals are in rows and OTUs in columns. Change `transpose`parameter if needed.
 #' 
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #' library(purrr)
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -1320,6 +1323,7 @@ richness_from_abundances <- microbiomes %>% map(richness_from_abundances_gen, si
 #' # Extract all microbiome matrices of all generations
 #' # substract metadata
 #' microbiomes <- generations_simu[-1] %>% map(get_microbiomes)
+#' }
 #' 
 #' @seealso [get_mean_phenotypes()], [get_phenotypes_value()], [get_om_beta_g()], [get_selected_ind()], [get_phenotypes()]
 #' @rdname get_microbiomes
@@ -1348,6 +1352,7 @@ get_microbiomes <- function(data, transpose = F, CLR = F) {
 #' @param data List corresponding to one generation, as returned by [holo_simu()]. Containing simulation output.
 #' @return The mean phenotype value for a given generation.
 #' @examples
+#' \dontrun{
 #' library(purrr)
 #' library(magrittr)
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -1363,6 +1368,7 @@ get_microbiomes <- function(data, transpose = F, CLR = F) {
 #' # Extract mean phenotype values of all generations
 #' ## Don't forget to substract the metadata
 #' mean_phenotypes <- generations_simu[-1] %>% map(get_mean_phenotypes)
+#' }
 #' 
 #' @seealso [get_microbiomes()], [get_phenotypes_value()], [get_om_beta_g()], [get_selected_ind()], [get_phenotypes()]
 #' @rdname get_mean_phenotypes
@@ -1387,6 +1393,7 @@ get_mean_phenotypes <- function(data) {
 #' @return A `data.frame` of phenotype values for each individuals of a given generation.
 #' 
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #' library(purrr)
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -1402,6 +1409,7 @@ get_mean_phenotypes <- function(data) {
 #'  #Extract phenotype values for each individuals of all generations
 #'  ## Don't forget to substract the metadata
 #'  phenotypes_values <- generations_simu[-1] %>% map(get_phenotypes_value)
+#'  }
 #'  
 #' @seealso [get_mean_phenotypes()], [get_microbiomes()], [get_om_beta_g()], [get_selected_ind()], [get_phenotypes()]
 #' @rdname get_phenotypes_value
@@ -1424,6 +1432,7 @@ get_phenotypes_value <- function(data, value = "gq") {
 #' @return A `data.frame` of omega beta G values for each individuals of a given generation.
 #' 
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #' library(purrr)
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -1439,6 +1448,7 @@ get_phenotypes_value <- function(data, value = "gq") {
 #' #Extract omega beta G values for each individuals of all generations
 #' ## Don't forget to substract the metadata
 #' om_beta_g <- generations_simu[-1] %>% map(get_om_beta_g)
+#'}
 #'  
 #' @seealso [get_mean_phenotypes()], [get_phenotypes_value()], [get_microbiomes()], [get_selected_ind()], [get_phenotypes()]
 #' @rdname get_om_beta_g
@@ -1461,6 +1471,7 @@ get_om_beta_g <- function(data) {
 #' 
 #' @return A`list` of the selected individuals of a given generation.
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #' library(purrr)
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -1476,6 +1487,7 @@ get_om_beta_g <- function(data) {
 #' #Extract selected individuals IDs for all generations
 #' ## Don't forget to substract the metadata
 #' selected_ind <- generations_simu[-1] %>% map(get_selected_ind)
+#' }
 #' 
 #' @seealso [get_mean_phenotypes()], [get_phenotypes_value()], [get_om_beta_g()], [get_microbiomes()], [get_phenotypes()]
 #' @rdname get_selected_ind
@@ -1498,6 +1510,7 @@ get_selected_ind <- function(data) {
 #' @return A `data.frame` of phenotype for each individuals of a given generation. Phenotype values are given as the result of the combined effects of the microbiota and direct genetic effects.
 #' 
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #' library(purrr)
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -1513,6 +1526,7 @@ get_selected_ind <- function(data) {
 #' #Extract phenotypes for all generations
 #' ## Don't forget to substract the metadata
 #' phenotypes <- generations_simu[-1] %>% map(get_phenotypes)
+#' }
 #' 
 #' @seealso [get_mean_phenotypes()], [get_phenotypes_value()], [get_om_beta_g()], [get_selected_ind()], [get_microbiomes()]
 #' @rdname get_phenotypes
@@ -1537,6 +1551,7 @@ get_phenotypes <- function(data) {
 #' @return The average Shannon diversity within a given generation.
 #' 
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #' library(purrr)
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -1552,7 +1567,7 @@ get_phenotypes <- function(data) {
 #' ## size_rmultinom = 10000 according to DeruPops dataset
 #' 
 #' mean_shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
-#' 
+#' }
 #' @seealso [get_microbiomes()], [richness_from_abundances_gen()]
 #' @rdname get_mean_diversity
 #' @export
@@ -1562,6 +1577,7 @@ get_mean_diversity <- function(data) {
 ```
 
 ```{r examples-get, message=FALSE, warning=FALSE}
+\dontrun{
 library(magrittr)
 library(purrr)
 
@@ -1607,6 +1623,7 @@ selected_inds <- generations_simu[-1] %>% map(get_selected_ind)
 # First step, compute richness from abundances
 richness_from_abundances <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen)
 shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
+}
 ```
 
 

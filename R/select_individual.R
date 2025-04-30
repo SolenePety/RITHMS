@@ -24,6 +24,7 @@ select_individual <- function(phenotypes,
                               size_selection_F, 
                               size_selection_M, 
                               selection_type,
+                              size_rmultinom,
                               w.param){
   #extract id of individuals of interest
   n_F <- (size_selection_F * length(grep("^F",colnames(genotypes)))) |> round()
@@ -49,9 +50,9 @@ select_individual <- function(phenotypes,
     }else if(selection_type == "B"){
       score <- phenotypes$gb
     }else if(selection_type == "diversity"){
-      score <- microbiomes %>% richness_from_abundances_gen() %>% select(Shannon) %>% as.matrix()
+      score <- microbiomes %>% richness_from_abundances_gen(size_rmultinom = size_rmultinom) %>% select(Shannon) %>% as.matrix()
     }else{
-      diversity <- microbiomes %>% richness_from_abundances_gen() %>% select(Shannon) %>% as.matrix()
+      diversity <- microbiomes %>% richness_from_abundances_gen(size_rmultinom = size_rmultinom) %>% select(Shannon) %>% as.matrix()
       TBV <- phenotypes$gq + as.vector(beta_otu %*% (beta[rowSums(beta) != 0, ] %*% genotypes))
       score = w.param[1] * diversity + w.param[2] * TBV
     }

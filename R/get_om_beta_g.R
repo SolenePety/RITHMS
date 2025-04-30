@@ -12,6 +12,7 @@
 #' @return A `data.frame` of omega beta G values for each individuals of a given generation.
 #' 
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #' library(purrr)
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -27,6 +28,7 @@
 #' #Extract omega beta G values for each individuals of all generations
 #' ## Don't forget to substract the metadata
 #' om_beta_g <- generations_simu[-1] %>% map(get_om_beta_g)
+#'}
 #'  
 #' @seealso [get_mean_phenotypes()], [get_phenotypes_value()], [get_microbiomes()], [get_selected_ind()], [get_phenotypes()]
 #' @rdname get_om_beta_g

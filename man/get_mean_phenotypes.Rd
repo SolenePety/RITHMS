@@ -17,6 +17,7 @@ The gets functions use the output of \code{\link[=holo_simu]{holo_simu()}} to ex
 \code{get_mean_phenotypes}extract average phenotype from a generation object.
 }
 \examples{
+\dontrun{
 library(purrr)
 library(magrittr)
 datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -32,6 +33,7 @@ G1_mean_phenotype <- get_mean_phenotypes(generations_simu$G1)
 # Extract mean phenotype values of all generations
 ## Don't forget to substract the metadata
 mean_phenotypes <- generations_simu[-1] \%>\% map(get_mean_phenotypes)
+}
 
 }
 \seealso{

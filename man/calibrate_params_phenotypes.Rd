@@ -19,9 +19,9 @@ calibrate_params_phenotypes(
 
 \item{B0}{Matrix of the primary generation microbiomes, as CLR abundances. OTUs are in rows and individuals in columns.}
 
-\item{h2}{direct heritability value, between 0 and 1}
+\item{h2}{direct heritability value, between 0 and 1.}
 
-\item{b2}{microbiability value, between 0 and 1}
+\item{b2}{microbiability value, between 0 and 1.}
 
 \item{otu_list}{List of causal OTUs for the phenotypes.}
 

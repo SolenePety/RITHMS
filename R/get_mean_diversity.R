@@ -14,6 +14,7 @@
 #' @return The average Shannon diversity within a given generation.
 #' 
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #' library(purrr)
 #' datafile <- system.file("DeruPop.rds", package = "RITHMS")
@@ -25,9 +26,12 @@
 #'                               
 #' # Extract Shannon diversity for each generations
 #' ## First step, compute richness from abundances
-#' richness_from_abundances <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen)
-#' mean_shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
+#' richness_from_abundances <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen, size_rmultinom = 10000)
+#' ## size_rmultinom = 10000 according to DeruPops dataset
 #'
+#' mean_shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
+#' }
+#' \dontrun{
 #' library(magrittr)
 #' library(purrr)
 #'
@@ -73,6 +77,7 @@
 #' # First step, compute richness from abundances
 #' richness_from_abundances <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen)
 #' shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
+#' }
 #' @seealso [get_microbiomes()], [richness_from_abundances_gen()]
 #' @rdname get_mean_diversity
 #' @export
