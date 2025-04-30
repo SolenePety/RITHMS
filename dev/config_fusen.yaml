@@ -24,7 +24,7 @@ flat_first.Rmd:
   - R/root.R
   - R/select_individual.R
   - R/transform_geno_into_vcf.R
-  - R/additionnal-functions.R
+  - R/deru.R
   tests: tests/testthat/test-formatting_data.R
   vignettes: []
   inflate:
