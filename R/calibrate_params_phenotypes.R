@@ -6,7 +6,7 @@
 #' 
 #' @inheritParams holo_simu
 #' 
-#' @param X0 Matrix of the primary generation genotypes, given from [MoPBS::get.geno()]. SNPs are in rows and individuals in columns.
+#' @param X0 Matrix of the primary generation genotypes, given from \link[MoBPS:get.geno]{get.geno()} MoBPS function. SNPs are in rows and individuals in columns.
 #' @param B0 Matrix of the primary generation microbiomes, as CLR abundances. OTUs are in rows and individuals in columns.
 #' @param otu_list List of causal OTUs for the phenotypes.
 #' @param Nqtl_y Integer; number of causal SNPs for the phenotypes.
