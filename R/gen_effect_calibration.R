@@ -21,8 +21,8 @@
 #' @rdname gen_effect_calibration
 #' @export
 #' @examples
-#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
-#' ToyData <- readRDS(datafile)
+#' data("Deru")
+#' ToyData <- Deru
 #' taxa_assign_g <- assign_taxa(founder_object = ToyData)
 #' effect_size_vector <- c(seq(0.1,1, by = 0.2))
 #' out_data <- gen_effect_calibration(founder_object = ToyData,

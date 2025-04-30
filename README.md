@@ -24,7 +24,7 @@ Here is a little summary of how RITHMS work, but you can read the
 ## Installation
 
 You can install the development version of RITHMS from GitHub using
-`devtools` as shown below.
+`remotes` as shown below.
 
 Note: Before installing the **`RITHMS`** package, please make sure that
 version `1.10.49` of the `MoBPS` package is manually installed from the
@@ -32,13 +32,14 @@ following link:
 
 ``` r
 
+# install.packages("remotes")
+
 if (!requireNamespace("MoBPS", quietly = TRUE) || packageVersion("MoBPS") != "1.10.49") {
     message("Installing MoBPS 1.10.49...")
-    devtools::install_url("https://github.com/tpook92/MoBPS/raw/master/Previous%20versions/MoBPS_1.10.49.tar.gz")
+    remotes::install_url("https://github.com/tpook92/MoBPS/raw/master/Previous%20versions/MoBPS_1.10.49.tar.gz")
 }
 
-# install.packages("devtools")
-devtools::install_github("SolenePety/RITHMS")
+remotes::install_github("SolenePety/RITHMS")
 ```
 
 *This requirement will be handled more automatically in a future version
@@ -53,8 +54,8 @@ structure of input data :
 
 ``` r
 library(RITHMS)
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
+data("Deru")
+ToyData <- Deru
 ```
 
 To import your own dataset, you can refer to the following

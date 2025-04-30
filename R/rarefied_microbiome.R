@@ -2,7 +2,7 @@
 
 #' Rarefaction step within read_input_data
 #' 
-#' @importFrom tibble as_tibble column_to_rownames tibble with
+#' @importFrom tibble as_tibble column_to_rownames tibble
 #' @importFrom dplyr rename filter pull
 #' @importFrom MoBPS creating.diploid
 #' @importFrom magrittr %>%

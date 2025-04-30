@@ -81,3 +81,8 @@ reference:
     - '`root`'
     - '`select_individual`'
     - '`transform_geno_into_vcf`'
+
+- title: 'Dataset'
+  desc: ~
+  contents:
+    - '`Deru`'

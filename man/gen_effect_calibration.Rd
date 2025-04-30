@@ -30,8 +30,8 @@ A data.frame with three columns, giving the Taxa ID, the effect.size and the cor
 Calibration of genetic effect from founder population data
 }
 \examples{
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
+data("Deru")
+ToyData <- Deru
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
 effect_size_vector <- c(seq(0.1,1, by = 0.2))
 out_data <- gen_effect_calibration(founder_object = ToyData,

@@ -18,8 +18,8 @@ A vector with a length matching the total number of taxa with values from 0 to t
 Assign all taxa to a cluster, eventually under genetic control using hclust
 }
 \examples{
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
+data("Deru")
+ToyData <- Deru
 taxa_assign_g <- assign_taxa(founder_object = ToyData,
             taxa_g = 0.2)
 }

@@ -46,8 +46,8 @@ and `system.file()` to read it in your examples.
 pkgload::load_all(path = here::here(), export_all = FALSE)
 
 # You will be able to read your example data file in each of your function examples and tests as follows - see chunks below
-datafile <- system.file("BasePopTest.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
+data("Deru")
+ToyData <- Deru
 ```
 
 # Pre-Simulation functions 
@@ -129,7 +129,7 @@ founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt"
 ```{r function-rarefied_microbiome}
 #' Rarefaction step within read_input_data
 #' 
-#' @importFrom tibble as_tibble column_to_rownames tibble with
+#' @importFrom tibble as_tibble column_to_rownames tibble
 #' @importFrom dplyr rename filter pull
 #' @importFrom MoBPS creating.diploid
 #' @importFrom magrittr %>%
@@ -276,8 +276,8 @@ assign_taxa <- function(founder_object,
 ```
 
 ```{r examples-assign_taxa, message=FALSE, warning=FALSE}
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
+data("Deru")
+ToyData <- Deru
 taxa_assign_g <- assign_taxa(founder_object = ToyData,
             taxa_g = 0.2)
 ```
@@ -402,8 +402,8 @@ gen_effect_calibration <- function(founder_object,
 ```
 
 ```{r examples-gen_effect_calibration, message=FALSE, warning=FALSE}
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
+data("Deru")
+ToyData <- Deru
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
 effect_size_vector <- c(seq(0.1,1, by = 0.2))
 out_data <- gen_effect_calibration(founder_object = ToyData,
@@ -563,7 +563,7 @@ root <- function(rho) {
 #' 
 #' @inheritParams holo_simu
 #' 
-#' @param X0 Matrix of the primary generation genotypes, given from `MoPBS::get.geno()`. SNPs are in rows and individuals in columns.
+#' @param X0 Matrix of the primary generation genotypes, given from \link[MoBPS:get.geno]{get.geno()} MoBPS function. SNPs are in rows and individuals in columns.
 #' @param B0 Matrix of the primary generation microbiomes, as CLR abundances. OTUs are in rows and individuals in columns.
 #' @param otu_list List of causal OTUs for the phenotypes.
 #' @param Nqtl_y Integer; number of causal SNPs for the phenotypes.
@@ -1203,8 +1203,8 @@ holo_simu <- function(### Required parameters ###
 
 ```{r examples-holo_simu, warning=FALSE, message=FALSE}
 \dontrun{
-  datafile <- system.file("DeruPop.rds", package = "RITHMS")
-  ToyData <- readRDS(datafile)
+  data("Deru")
+  ToyData <- Deru
   taxa_assign_g <- assign_taxa(founder_object = ToyData)
   generations_simu <- holo_simu(h2 = 0.25,
                                  b2 = 0.25,
@@ -1262,8 +1262,8 @@ richness_from_abundances_gen <- function(microbiome_matrix, size_rmultinom = 100
 \dontrun{
 library(magrittr)
 library(purrr)
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
+data("Deru")
+ToyData <- Deru
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
 generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
                                n_clust = taxa_assign_g, n_ind = 500,
@@ -1304,8 +1304,8 @@ richness_from_abundances <- microbiomes %>% map(richness_from_abundances_gen, si
 #' \dontrun{
 #' library(magrittr)
 #' library(purrr)
-#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
-#' ToyData <- readRDS(datafile)
+#' data("Deru")
+#' ToyData <- Deru
 #' taxa_assign_g <- assign_taxa(founder_object = ToyData)
 #' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
 #'                               n_clust = taxa_assign_g, n_ind = 500,
@@ -1355,8 +1355,8 @@ get_microbiomes <- function(data, transpose = F, CLR = F) {
 #' \dontrun{
 #' library(purrr)
 #' library(magrittr)
-#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
-#' ToyData <- readRDS(datafile)
+#' data("Deru")
+#' ToyData <- Deru
 #' taxa_assign_g <- assign_taxa(founder_object = ToyData)
 #' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
 #'                               n_clust = taxa_assign_g, n_ind = 500,
@@ -1396,8 +1396,8 @@ get_mean_phenotypes <- function(data) {
 #' \dontrun{
 #' library(magrittr)
 #' library(purrr)
-#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
-#' ToyData <- readRDS(datafile)
+#' data("Deru")
+#' ToyData <- Deru
 #' taxa_assign_g <- assign_taxa(founder_object = ToyData)
 #' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
 #'                               n_clust = taxa_assign_g, n_ind = 500,
@@ -1435,8 +1435,8 @@ get_phenotypes_value <- function(data, value = "gq") {
 #' \dontrun{
 #' library(magrittr)
 #' library(purrr)
-#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
-#' ToyData <- readRDS(datafile)
+#' data("Deru")
+#' ToyData <- Deru
 #' taxa_assign_g <- assign_taxa(founder_object = ToyData)
 #' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
 #'                               n_clust = taxa_assign_g, n_ind = 500,
@@ -1474,8 +1474,8 @@ get_om_beta_g <- function(data) {
 #' \dontrun{
 #' library(magrittr)
 #' library(purrr)
-#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
-#' ToyData <- readRDS(datafile)
+#' data("Deru")
+#' ToyData <- Deru
 #' taxa_assign_g <- assign_taxa(founder_object = ToyData)
 #' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
 #'                               n_clust = taxa_assign_g, n_ind = 500,
@@ -1513,8 +1513,8 @@ get_selected_ind <- function(data) {
 #' \dontrun{
 #' library(magrittr)
 #' library(purrr)
-#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
-#' ToyData <- readRDS(datafile)
+#' data("Deru")
+#' ToyData <- Deru
 #' taxa_assign_g <- assign_taxa(founder_object = ToyData)
 #' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
 #'                               n_clust = taxa_assign_g, n_ind = 500,
@@ -1554,8 +1554,8 @@ get_phenotypes <- function(data) {
 #' \dontrun{
 #' library(magrittr)
 #' library(purrr)
-#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
-#' ToyData <- readRDS(datafile)
+#' data("Deru")
+#' ToyData <- Deru
 #' taxa_assign_g <- assign_taxa(founder_object = ToyData)
 #' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
 #'                               n_clust = taxa_assign_g, n_ind = 500,
@@ -1581,8 +1581,8 @@ get_mean_diversity <- function(data) {
 library(magrittr)
 library(purrr)
 
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
+data("Deru")
+ToyData <- Deru
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
 generations_simu <- holo_simu(h2 = 0.25,
                               b2 = 0.25,
@@ -1627,7 +1627,7 @@ shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
 ```
 
 
-# Additionnal functions
+# Additional functions
 
 ```{r function-transform_geno_into_vcf}
 #' Convert a 0/1/2 genotype matrix into a VCF-like format
@@ -1697,6 +1697,29 @@ geno_matrix <- matrix(sample(0:2, size = n_ind*n_snp, replace = TRUE),
 # Transform genotype matrix into VCF
 vcf <- transform_geno_into_vcf(geno_matrix, output_type = "dataframe")
 head(vcf[1:3,1:7])
+```
+
+# Deru
+
+```{r function-Deru}
+#' Deru Dataset
+#' 
+#' A subset of data from [Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/) containing hologenomic data from 750 pigs fed a conventional diet. Genotypes are accessible thanks to the "population" attribute.
+#' 
+#' @format A matrix with 780 rows (individuals) and 1845 taxa, where each element represents the abundance of a specific taxon in a specific individual. Additionnally, there is an attribute "population" wich provides the genotypes of each individual, encoded as 0, 1 ,2.
+#' 
+#' @source [Déru et al.](https://pmc.ncbi.nlm.nih.gov/articles/PMC9194801/) for microbiota data and [Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/) for genotypes data.
+#' 
+#' @examples
+#' # Access the dataset
+#' data("Deru")
+#' 
+#' # View the first few rows of the taxa matrix
+#' head(Deru[1:5,1:5])
+#' 
+#' # Access the population attribute to view genotypes
+#' population <- attr(Deru, "population")
+"Deru"
 ```
 
 

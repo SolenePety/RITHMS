@@ -31,8 +31,8 @@ It uses multinomial sampling to simulate read counts from abundances, and comput
 \dontrun{
 library(magrittr)
 library(purrr)
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
+data("Deru")
+ToyData <- Deru
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
 generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
                                n_clust = taxa_assign_g, n_ind = 500,

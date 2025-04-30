@@ -15,7 +15,7 @@ calibrate_params_phenotypes(
 )
 }
 \arguments{
-\item{X0}{Matrix of the primary generation genotypes, given from \code{MoPBS::get.geno()}. SNPs are in rows and individuals in columns.}
+\item{X0}{Matrix of the primary generation genotypes, given from \link[MoBPS:get.geno]{get.geno()} MoBPS function. SNPs are in rows and individuals in columns.}
 
 \item{B0}{Matrix of the primary generation microbiomes, as CLR abundances. OTUs are in rows and individuals in columns.}
 

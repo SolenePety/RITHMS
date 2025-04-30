@@ -89,9 +89,8 @@ The data matrix loaded is the count matrix of taxa (in columns) across individua
 #| class.source: fold-show
 #| eval: yes
 
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-founder_object <- readRDS(datafile)
-
+data("Deru")
+founder_object <- Deru
 founder_object[1:5,1:5]
 ```
 
