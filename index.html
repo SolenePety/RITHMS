@@ -81,16 +81,16 @@ Last code version on: <a href="https://github.com/SolenePety/RITHMS" class="exte
 <p>You already have a toy dataset, a subset from <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/" class="external-link">Déru et al. 2020</a>, there are <strong>1845 species</strong> and <strong>780 individuals</strong>, that show you the expected structure of input data :</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">RITHMS</span><span class="op">)</span></span>
-<span><span class="va">datafile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"DeruPop.rds"</span>, package <span class="op">=</span> <span class="st">"RITHMS"</span><span class="op">)</span></span>
-<span><span class="va">ToyData</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">datafile</span><span class="op">)</span></span></code></pre></div>
-<p>To import your own dataset, you can refer to the following <a href="https://solenepety.github.io/RITHMS/docs/articles/import-data.html" class="external-link">vignette</a>.</p>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Deru"</span><span class="op">)</span></span>
+<span><span class="va">ToyData</span> <span class="op">&lt;-</span> <span class="va">Deru</span></span></code></pre></div>
+<p>To import your own dataset, you can refer to the following <a href="https://solenepety.github.io/RITHMS/articles/import-data.html" class="external-link">vignette</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="quick-start-from-the-toy-dataset">Quick Start from the toy dataset<a class="anchor" aria-label="anchor" href="#quick-start-from-the-toy-dataset"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">taxa_assign_g</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/formatting_data.html">assign_taxa</a></span><span class="op">(</span><span class="va">ToyData</span><span class="op">)</span></span>
-<span><span class="va">generations_simu</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/holo_simu.html">holo_simu</a></span><span class="op">(</span>h2 <span class="op">=</span> <span class="fl">0.25</span>, b2 <span class="op">=</span> <span class="fl">0.25</span>, founder_object <span class="op">=</span> <span class="va">ToyData</span>, n_clust <span class="op">=</span> <span class="va">taxa_assign_g</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">generations_simu</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/holo_simu.html">holo_simu</a></span><span class="op">(</span>h2 <span class="op">=</span> <span class="fl">0.25</span>, b2 <span class="op">=</span> <span class="fl">0.25</span>, founder_object <span class="op">=</span> <span class="va">ToyData</span>, n_clust <span class="op">=</span> <span class="va">taxa_assign_g</span>, n_ind <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="quick-start-from-pedmap-format">Quick Start from Ped/Map format<a class="anchor" aria-label="anchor" href="#quick-start-from-pedmap-format"></a>
@@ -135,10 +135,11 @@ Last code version on: <a href="https://github.com/SolenePety/RITHMS" class="exte
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Solène Pety <br><small class="roles"> Author, maintainer, copyright holder </small> <a href="https://orcid.org/0000-0002-1245-7425" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Ingrid David <br><small class="roles"> Author, thesis advisor </small> <a href="https://orcid.org/0000-0002-2514-6693" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Mahendra Mariadassou <br><small class="roles"> Author, thesis advisor </small> <a href="https://orcid.org/0000-0003-2986-354X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Andrea Rau <br><small class="roles"> Author, thesis advisor </small> <a href="https://orcid.org/0000-0001-6469-488X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Solène Pety <br><small class="roles"> Author, maintainer, copyright holder </small> <a href="https://orcid.org/0000-0002-1245-7425" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Ingrid David <br><small class="roles"> Author, thesis advisor </small> <a href="https://orcid.org/0000-0002-2514-6693" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Mahendra Mariadassou <br><small class="roles"> Author, thesis advisor </small> <a href="https://orcid.org/0000-0003-2986-354X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Andrea Rau <br><small class="roles"> Author, thesis advisor </small> <a href="https://orcid.org/0000-0001-6469-488X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Youna Maillié <br><small class="roles"> Author </small>   </li>
 </ul>
 </div>
 
@@ -149,11 +150,11 @@ Last code version on: <a href="https://github.com/SolenePety/RITHMS" class="exte
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Solène Pety, Ingrid David, Mahendra Mariadassou, Andrea Rau.</p>
+  <p>Developed by Solène Pety, Ingrid David, Mahendra Mariadassou, Andrea Rau, Youna Maillié.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>

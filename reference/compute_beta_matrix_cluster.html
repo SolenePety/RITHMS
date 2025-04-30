@@ -57,13 +57,41 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-correlation">correlation<a class="anchor" aria-label="anchor" href="#arg-correlation"></a></dt>
-<dd><p>Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5</p></dd>
+<dl><dt id="arg-n-b">n_b<a class="anchor" aria-label="anchor" href="#arg-n-b"></a></dt>
+<dd><p>Number of taxa</p></dd>
+
+
+<dt id="arg-n-g">n_g<a class="anchor" aria-label="anchor" href="#arg-n-g"></a></dt>
+<dd><p>Number of SNPs</p></dd>
+
+
+<dt id="arg-n-clust">n_clust<a class="anchor" aria-label="anchor" href="#arg-n-clust"></a></dt>
+<dd><p>A vector with a length matching the total number of taxa with values from 0 to the number of clusters. Typically the <code><a href="formatting_data.html">assign_taxa()</a></code> output.</p></dd>
+
+
+<dt id="arg-n-qtl-o">n_qtl_o<a class="anchor" aria-label="anchor" href="#arg-n-qtl-o"></a></dt>
+<dd><p>Number of causative QTL on taxa abundances (per taxon)</p></dd>
+
+
+<dt id="arg-n-otus">n_otus<a class="anchor" aria-label="anchor" href="#arg-n-otus"></a></dt>
+<dd><p>Number of taxa under genetic control.</p></dd>
+
+
+<dt id="arg-effect-size">effect_size<a class="anchor" aria-label="anchor" href="#arg-effect-size"></a></dt>
+<dd><p>Vector giving the size of genetic effect to try</p></dd>
+
+
+<dt id="arg-correlation">correlation<a class="anchor" aria-label="anchor" href="#arg-correlation"></a></dt>
+<dd><p>A numeric value between 0 and 1 representing the target correlation between taxa within the same cluster.</p></dd>
+
+
+<dt id="arg-beta-info">beta_info<a class="anchor" aria-label="anchor" href="#arg-beta-info"></a></dt>
+<dd><p>Informations from Beta matrix of genetic effects</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>matrix</code> of taxa (in rows) across SNPs (in columns) giving the multiplicative effetc of genotype on taxa abundances.</p>
+    <p>A <code>matrix</code> of taxa (in rows) across SNPs (in columns) giving the multiplicative effect of genotype on taxa abundances.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -75,11 +103,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Solène Pety, Ingrid David, Mahendra Mariadassou, Andrea Rau.</p>
+  <p>Developed by Solène Pety, Ingrid David, Mahendra Mariadassou, Andrea Rau, Youna Maillié.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>

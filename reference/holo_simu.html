@@ -45,28 +45,29 @@
 <span>  <span class="va">h2</span>,</span>
 <span>  <span class="va">b2</span>,</span>
 <span>  <span class="va">founder_object</span>,</span>
-<span>  otu_g <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span>  qtn_y <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_ind <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  n_gen <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  n_clust <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  n_gen <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  qtn_y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  correlation <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  otu_g <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  lambda <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  effect.size <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>  mix.params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.75</span>, <span class="fl">0.25</span><span class="op">)</span>,</span>
+<span>  mix.params.M <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.75</span>, <span class="fl">0.25</span><span class="op">)</span>,</span>
+<span>  noise.microbiome <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>  dir <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>  ao <span class="op">=</span> <span class="fl">25</span>,</span>
+<span>  size_rmultinom <span class="op">=</span> <span class="fl">10000</span>,</span>
 <span>  selection <span class="op">=</span> <span class="cn">F</span>,</span>
 <span>  size_selection_F <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  size_selection_M <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  selection_type <span class="op">=</span> <span class="st">"GB"</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">1234</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">T</span>,</span>
-<span>  lambda <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  correlation <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  mix.params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.75</span>, <span class="fl">0.25</span><span class="op">)</span>,</span>
-<span>  mix.params.M <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.75</span>, <span class="fl">0.25</span><span class="op">)</span>,</span>
-<span>  effect.size <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  noise.microbiome <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  dir <span class="op">=</span> <span class="cn">F</span>,</span>
-<span>  ao <span class="op">=</span> <span class="fl">25</span>,</span>
+<span>  w.param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
 <span>  thetaX <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  env_gen <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  w.param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span></span>
+<span>  seed <span class="op">=</span> <span class="fl">1234</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">T</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -75,71 +76,55 @@
 
 
 <dl><dt id="arg-h-">h2<a class="anchor" aria-label="anchor" href="#arg-h-"></a></dt>
-<dd><p>direct heritability value, between 0 and 1</p></dd>
+<dd><p>direct heritability value, between 0 and 1.</p></dd>
 
 
 <dt id="arg-b-">b2<a class="anchor" aria-label="anchor" href="#arg-b-"></a></dt>
-<dd><p>microbiability value, between 0 and 1</p></dd>
+<dd><p>microbiability value, between 0 and 1.</p></dd>
 
 
 <dt id="arg-founder-object">founder_object<a class="anchor" aria-label="anchor" href="#arg-founder-object"></a></dt>
-<dd><p>output of generate_founder() function</p></dd>
-
-
-<dt id="arg-otu-g">otu_g<a class="anchor" aria-label="anchor" href="#arg-otu-g"></a></dt>
-<dd><p>percentage of taxa under genetic control, between 0 and 1, DEFAULT = 0.05</p></dd>
-
-
-<dt id="arg-qtn-y">qtn_y<a class="anchor" aria-label="anchor" href="#arg-qtn-y"></a></dt>
-<dd><p>number of causal SNPs for the phenotypes</p></dd>
+<dd><p>output of <code><a href="generate_founder.html">generate_founder()</a></code> function.</p></dd>
 
 
 <dt id="arg-n-ind">n_ind<a class="anchor" aria-label="anchor" href="#arg-n-ind"></a></dt>
-<dd><p>number of individual per generation</p></dd>
+<dd><p>number of individual per generation.</p></dd>
+
+
+<dt id="arg-n-clust">n_clust<a class="anchor" aria-label="anchor" href="#arg-n-clust"></a></dt>
+<dd><p>vector with taxa assignment, typical output of <code><a href="formatting_data.html">assign_taxa()</a></code></p></dd>
 
 
 <dt id="arg-n-gen">n_gen<a class="anchor" aria-label="anchor" href="#arg-n-gen"></a></dt>
 <dd><p>number of generation, DEFAULT = 5</p></dd>
 
 
-<dt id="arg-n-clust">n_clust<a class="anchor" aria-label="anchor" href="#arg-n-clust"></a></dt>
-<dd><p>vector with taxa assignment, typical output of assign_taxa</p></dd>
-
-
-<dt id="arg-selection">selection<a class="anchor" aria-label="anchor" href="#arg-selection"></a></dt>
-<dd><p>bool, if selection process needed, DEFAULT = FALSE</p></dd>
-
-
-<dt id="arg-size-selection-f">size_selection_F<a class="anchor" aria-label="anchor" href="#arg-size-selection-f"></a></dt>
-<dd><p>percentage of female to select</p></dd>
-
-
-<dt id="arg-size-selection-m">size_selection_M<a class="anchor" aria-label="anchor" href="#arg-size-selection-m"></a></dt>
-<dd><p>percentage of male to select</p></dd>
-
-
-<dt id="arg-selection-type">selection_type<a class="anchor" aria-label="anchor" href="#arg-selection-type"></a></dt>
-<dd><p>mode of selection to be used, value in ("GB", "B", "G", "diversity", "div.GB"), DEFAULT = "GB"</p></dd>
-
-
-<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>seed value for samplings in the function</p></dd>
-
-
-<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>bool, DEFAULT = T</p></dd>
-
-
-<dt id="arg-lambda">lambda<a class="anchor" aria-label="anchor" href="#arg-lambda"></a></dt>
-<dd><p>proportion of microbiome of offspring coming from vertical transmission, DEFAULT = 0.5</p></dd>
+<dt id="arg-qtn-y">qtn_y<a class="anchor" aria-label="anchor" href="#arg-qtn-y"></a></dt>
+<dd><p>number of causal SNPs for the phenotypes.</p></dd>
 
 
 <dt id="arg-correlation">correlation<a class="anchor" aria-label="anchor" href="#arg-correlation"></a></dt>
 <dd><p>Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5</p></dd>
 
 
+<dt id="arg-otu-g">otu_g<a class="anchor" aria-label="anchor" href="#arg-otu-g"></a></dt>
+<dd><p>percentage of taxa under genetic control, between 0 and 1, DEFAULT = 0.05</p></dd>
+
+
+<dt id="arg-lambda">lambda<a class="anchor" aria-label="anchor" href="#arg-lambda"></a></dt>
+<dd><p>proportion of microbiome of offspring coming from vertical transmission, DEFAULT = 0.5</p></dd>
+
+
+<dt id="arg-effect-size">effect.size<a class="anchor" aria-label="anchor" href="#arg-effect-size"></a></dt>
+<dd><p>Vector giving the size of genetic effect to try.</p></dd>
+
+
 <dt id="arg-mix-params">mix.params<a class="anchor" aria-label="anchor" href="#arg-mix-params"></a></dt>
-<dd><p>Vector of two values giving the weights for the regularisation of the base population microbiome. mix.params1 = weight for raw microbiome and mix.params2 = weight for mean microbiome. DEFAULT = c(0.75,0.25)</p></dd>
+<dd><p>Vector of two numeric values giving the weights for the regularisation of the base population microbiome. <code>mix.params[1]</code> = weight for raw microbiome and <code>mix.params[2]</code> = weight for mean microbiome. DEFAULT = c(0.75,0.25).</p></dd>
+
+
+<dt id="arg-mix-params-m">mix.params.M<a class="anchor" aria-label="anchor" href="#arg-mix-params-m"></a></dt>
+<dd><p>A vector of two numeric values specifying weights between Dirichlet samples and the original mean. DEFAULT = c(0.75,0.25). With <code>mix.params.M[1]</code> the dirichlet microbiome coefficient and <code>mix.params.M[2]</code> the mean microbiome coefficient.</p></dd>
 
 
 <dt id="arg-noise-microbiome">noise.microbiome<a class="anchor" aria-label="anchor" href="#arg-noise-microbiome"></a></dt>
@@ -147,23 +132,51 @@
 
 
 <dt id="arg-dir">dir<a class="anchor" aria-label="anchor" href="#arg-dir"></a></dt>
-<dd><p>bool</p></dd>
+<dd><p>Logical; Mentions if the ambient microbiome is generated via a Dirichlet law or a only the <code>mean_microbiome</code>. DEFAULT = T</p></dd>
 
 
 <dt id="arg-ao">ao<a class="anchor" aria-label="anchor" href="#arg-ao"></a></dt>
-<dd><p>for dirichlet sampling parameter</p></dd>
+<dd><p>A numeric scalar used as the concentration parameter for the Dirichlet distribution.</p></dd>
 
 
-<dt id="arg-thetax">thetaX<a class="anchor" aria-label="anchor" href="#arg-thetax"></a></dt>
-<dd><p>if environmental effect</p></dd>
+<dt id="arg-size-rmultinom">size_rmultinom<a class="anchor" aria-label="anchor" href="#arg-size-rmultinom"></a></dt>
+<dd><p>Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).</p></dd>
 
 
-<dt id="arg-env-gen">env_gen<a class="anchor" aria-label="anchor" href="#arg-env-gen"></a></dt>
-<dd><p>vector of bool</p></dd>
+<dt id="arg-selection">selection<a class="anchor" aria-label="anchor" href="#arg-selection"></a></dt>
+<dd><p>bool, if selection process needed, DEFAULT = FALSE</p></dd>
+
+
+<dt id="arg-size-selection-f">size_selection_F<a class="anchor" aria-label="anchor" href="#arg-size-selection-f"></a></dt>
+<dd><p>percentage of female to select.</p></dd>
+
+
+<dt id="arg-size-selection-m">size_selection_M<a class="anchor" aria-label="anchor" href="#arg-size-selection-m"></a></dt>
+<dd><p>percentage of male to select.</p></dd>
+
+
+<dt id="arg-selection-type">selection_type<a class="anchor" aria-label="anchor" href="#arg-selection-type"></a></dt>
+<dd><p>mode of selection to be used, value in ("GB", "B", "G", "diversity", "div.GB"), DEFAULT = "GB"</p></dd>
 
 
 <dt id="arg-w-param">w.param<a class="anchor" aria-label="anchor" href="#arg-w-param"></a></dt>
-<dd><p>in case div.GB selection mode is chosen</p></dd>
+<dd><p>in case div.GB selection mode is chosen.</p></dd>
+
+
+<dt id="arg-thetax">thetaX<a class="anchor" aria-label="anchor" href="#arg-thetax"></a></dt>
+<dd><p>if environmental effect.</p></dd>
+
+
+<dt id="arg-env-gen">env_gen<a class="anchor" aria-label="anchor" href="#arg-env-gen"></a></dt>
+<dd><p>vector of booleans.</p></dd>
+
+
+<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
+<dd><p>seed value for samplings in the function.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>bool, DEFAULT = T</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -178,8 +191,8 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span>  <span class="va">datafile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"DeruPop.rds"</span>, package <span class="op">=</span> <span class="st">"RITHMS"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">ToyData</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">datafile</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Deru"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">ToyData</span> <span class="op">&lt;-</span> <span class="va">Deru</span></span></span>
 <span class="r-in"><span>  <span class="va">taxa_assign_g</span> <span class="op">&lt;-</span> <span class="fu"><a href="formatting_data.html">assign_taxa</a></span><span class="op">(</span>founder_object <span class="op">=</span> <span class="va">ToyData</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">generations_simu</span> <span class="op">&lt;-</span> <span class="fu">holo_simu</span><span class="op">(</span>h2 <span class="op">=</span> <span class="fl">0.25</span>,</span></span>
 <span class="r-in"><span>                                 b2 <span class="op">=</span> <span class="fl">0.25</span>,</span></span>
@@ -201,11 +214,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Solène Pety, Ingrid David, Mahendra Mariadassou, Andrea Rau.</p>
+  <p>Developed by Solène Pety, Ingrid David, Mahendra Mariadassou, Andrea Rau, Youna Maillié.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>

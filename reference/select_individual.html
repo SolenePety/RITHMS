@@ -51,6 +51,7 @@
 <span>  <span class="va">size_selection_F</span>,</span>
 <span>  <span class="va">size_selection_M</span>,</span>
 <span>  <span class="va">selection_type</span>,</span>
+<span>  <span class="va">size_rmultinom</span>,</span>
 <span>  <span class="va">w.param</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -59,24 +60,48 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-selection">selection<a class="anchor" aria-label="anchor" href="#arg-selection"></a></dt>
+<dl><dt id="arg-phenotypes">phenotypes<a class="anchor" aria-label="anchor" href="#arg-phenotypes"></a></dt>
+<dd><p>Phenotype values of the current generation given as the result of the combined effects of the microbiota and direct genetic effects. Typically <code><a href="get_phenotypes.html">get_phenotypes()</a></code> output or <code><a href="compute_phenotypes.html">compute_phenotypes()</a></code>.</p></dd>
+
+
+<dt id="arg-microbiomes">microbiomes<a class="anchor" aria-label="anchor" href="#arg-microbiomes"></a></dt>
+<dd><p>Abundances for each individual of the current generation. Note: It is necessary to transform the abundances if they are CLR-transformed with the following command. <code>microbiomes_clr |&gt;  t() |&gt; clrInv() |&gt; t()</code></p></dd>
+
+
+<dt id="arg-genotypes">genotypes<a class="anchor" aria-label="anchor" href="#arg-genotypes"></a></dt>
+<dd><p>Genotypes values of the current generation. Typically from the MoBPS <code>get.geno()</code> function.</p></dd>
+
+
+<dt id="arg-beta">beta<a class="anchor" aria-label="anchor" href="#arg-beta"></a></dt>
+<dd><p>Beta matrix from <code><a href="compute_beta_matrix_cluster.html">compute_beta_matrix_cluster()</a></code> output.</p></dd>
+
+
+<dt id="arg-beta-otu">beta_otu<a class="anchor" aria-label="anchor" href="#arg-beta-otu"></a></dt>
+<dd><p>Omega parameter from <code><a href="calibrate_params_phenotypes.html">calibrate_params_phenotypes()</a></code> output.</p></dd>
+
+
+<dt id="arg-selection">selection<a class="anchor" aria-label="anchor" href="#arg-selection"></a></dt>
 <dd><p>bool, if selection process needed, DEFAULT = FALSE</p></dd>
 
 
 <dt id="arg-size-selection-f">size_selection_F<a class="anchor" aria-label="anchor" href="#arg-size-selection-f"></a></dt>
-<dd><p>percentage of female to select</p></dd>
+<dd><p>percentage of female to select.</p></dd>
 
 
 <dt id="arg-size-selection-m">size_selection_M<a class="anchor" aria-label="anchor" href="#arg-size-selection-m"></a></dt>
-<dd><p>percentage of male to select</p></dd>
+<dd><p>percentage of male to select.</p></dd>
 
 
 <dt id="arg-selection-type">selection_type<a class="anchor" aria-label="anchor" href="#arg-selection-type"></a></dt>
 <dd><p>mode of selection to be used, value in ("GB", "B", "G", "diversity", "div.GB"), DEFAULT = "GB"</p></dd>
 
 
+<dt id="arg-size-rmultinom">size_rmultinom<a class="anchor" aria-label="anchor" href="#arg-size-rmultinom"></a></dt>
+<dd><p>Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).</p></dd>
+
+
 <dt id="arg-w-param">w.param<a class="anchor" aria-label="anchor" href="#arg-w-param"></a></dt>
-<dd><p>in case div.GB selection mode is chosen</p></dd>
+<dd><p>in case div.GB selection mode is chosen.</p></dd>
 
 </dl></div>
 
@@ -85,11 +110,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Solène Pety, Ingrid David, Mahendra Mariadassou, Andrea Rau.</p>
+  <p>Developed by Solène Pety, Ingrid David, Mahendra Mariadassou, Andrea Rau, Youna Maillié.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>
