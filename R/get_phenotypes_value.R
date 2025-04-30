@@ -9,13 +9,15 @@
 #' @importFrom magrittr %>%
 #' 
 #' @param data List corresponding to one generation, as returned by [holo_simu()]. Containing simulation output.
+#' @param value A String caracter that precise the object to extract from the generation object. Must be "gq" to extract phenotype values.
 #' @return A `data.frame` of phenotype values for each individuals of a given generation.
 #' 
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #' library(purrr)
-#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
-#' ToyData <- readRDS(datafile)
+#' data("Deru")
+#' ToyData <- Deru
 #' taxa_assign_g <- assign_taxa(founder_object = ToyData)
 #' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
 #'                               n_clust = taxa_assign_g, n_ind = 500,
@@ -27,6 +29,7 @@
 #'  #Extract phenotype values for each individuals of all generations
 #'  ## Don't forget to substract the metadata
 #'  phenotypes_values <- generations_simu[-1] %>% map(get_phenotypes_value)
+#'  }
 #'  
 #' @seealso [get_mean_phenotypes()], [get_microbiomes()], [get_om_beta_g()], [get_selected_ind()], [get_phenotypes()]
 #' @rdname get_phenotypes_value

@@ -21,10 +21,11 @@ The gets functions use the output of \code{\link[=holo_simu]{holo_simu()}} to ex
 \code{get_microbiomes} extract the microbiome abundance matrix from a generation object, with or without CLR transformation or transposition.
 }
 \examples{
+\dontrun{
 library(magrittr)
 library(purrr)
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
+data("Deru")
+ToyData <- Deru
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
 generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
                               n_clust = taxa_assign_g, n_ind = 500,
@@ -42,6 +43,7 @@ G1_CLR_microbiome <- get_microbiomes(generations_simu$G1, transpose = TRUE, CLR 
 # Extract all microbiome matrices of all generations
 # substract metadata
 microbiomes <- generations_simu[-1] \%>\% map(get_microbiomes)
+}
 
 }
 \seealso{

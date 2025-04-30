@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_phenotypes.R
 \name{compute_phenotypes}
 \alias{compute_phenotypes}
-\title{Compute phenotype values based on generated object of current generation}
+\title{Compute phenotype values based on generated objects of the current generation}
 \usage{
 compute_phenotypes(
   X,
@@ -36,7 +36,7 @@ compute_phenotypes(
 \item{se}{Phenotypes Standard deviation, see \code{\link[=calibrate_params_phenotypes]{calibrate_params_phenotypes()}}.}
 }
 \description{
-Compute phenotype values based on generated object of current generation
+Compute phenotype values based on generated objects of the current generation
 }
 \seealso{
 \code{\link[=calibrate_params_phenotypes]{calibrate_params_phenotypes()}}

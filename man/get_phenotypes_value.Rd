@@ -8,6 +8,8 @@ get_phenotypes_value(data, value = "gq")
 }
 \arguments{
 \item{data}{List corresponding to one generation, as returned by \code{\link[=holo_simu]{holo_simu()}}. Containing simulation output.}
+
+\item{value}{A String caracter that precise the object to extract from the generation object. Must be "gq" to extract phenotype values.}
 }
 \value{
 A \code{data.frame} of phenotype values for each individuals of a given generation.
@@ -17,10 +19,11 @@ The gets functions use the output of \code{\link[=holo_simu]{holo_simu()}} to ex
 \code{get_phenotypes_values} extract the set of phenotype values from a generation object.
 }
 \examples{
+\dontrun{
 library(magrittr)
 library(purrr)
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
+data("Deru")
+ToyData <- Deru
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
 generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
                               n_clust = taxa_assign_g, n_ind = 500,
@@ -32,6 +35,7 @@ generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
  #Extract phenotype values for each individuals of all generations
  ## Don't forget to substract the metadata
  phenotypes_values <- generations_simu[-1] \%>\% map(get_phenotypes_value)
+ }
  
 }
 \seealso{

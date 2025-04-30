@@ -50,6 +50,7 @@ generate-figures.Rmd:
     document: true
     overwrite: ask
     clean: ask
+    codecov: false
 import-data.Rmd:
   path: dev/import-data.Rmd
   state: active

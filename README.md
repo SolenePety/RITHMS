@@ -54,18 +54,18 @@ structure of input data :
 
 ``` r
 library(RITHMS)
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
+data("Deru")
+ToyData <- Deru
 ```
 
 To import your own dataset, you can refer to the following
-[vignette](https://solenepety.github.io/RITHMS/docs/articles/import-data.html).
+[vignette](https://solenepety.github.io/RITHMS/articles/import-data.html).
 
 ## Quick Start from the toy dataset
 
 ``` r
 taxa_assign_g <- assign_taxa(ToyData)
-generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData, n_clust = taxa_assign_g)
+generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData, n_clust = taxa_assign_g, n_ind = 500)
 ```
 
 ## Quick Start from Ped/Map format

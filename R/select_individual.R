@@ -6,6 +6,12 @@
 #' @importFrom dplyr select
 #' @importFrom stringr str_extract
 #' 
+#' @param phenotypes Phenotype values of the current generation given as the result of the combined effects of the microbiota and direct genetic effects. Typically [get_phenotypes()] output or [compute_phenotypes()].
+#' @param microbiomes Abundances for each individual of the current generation. Note: It is necessary to transform the abundances if they are CLR-transformed with the following command. `microbiomes_clr |>  t() |> clrInv() |> t()`
+#' @param genotypes Genotypes values of the current generation. Typically from the MoBPS `get.geno()` function.
+#' @param beta Beta matrix from [compute_beta_matrix_cluster()] output.
+#' @param beta_otu Omega parameter from [calibrate_params_phenotypes()] output.
+#' 
 #' @inheritParams holo_simu
 #' @rdname select_individual
 
@@ -18,6 +24,7 @@ select_individual <- function(phenotypes,
                               size_selection_F, 
                               size_selection_M, 
                               selection_type,
+                              size_rmultinom,
                               w.param){
   #extract id of individuals of interest
   n_F <- (size_selection_F * length(grep("^F",colnames(genotypes)))) |> round()
@@ -43,9 +50,9 @@ select_individual <- function(phenotypes,
     }else if(selection_type == "B"){
       score <- phenotypes$gb
     }else if(selection_type == "diversity"){
-      score <- microbiomes %>% richness_from_abundances_gen() %>% select(Shannon) %>% as.matrix()
+      score <- microbiomes %>% richness_from_abundances_gen(size_rmultinom = size_rmultinom) %>% select(Shannon) %>% as.matrix()
     }else{
-      diversity <- microbiomes %>% richness_from_abundances_gen() %>% select(Shannon) %>% as.matrix()
+      diversity <- microbiomes %>% richness_from_abundances_gen(size_rmultinom = size_rmultinom) %>% select(Shannon) %>% as.matrix()
       TBV <- phenotypes$gq + as.vector(beta_otu %*% (beta[rowSums(beta) != 0, ] %*% genotypes))
       score = w.param[1] * diversity + w.param[2] * TBV
     }

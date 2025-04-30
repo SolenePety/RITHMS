@@ -8,76 +8,83 @@ holo_simu(
   h2,
   b2,
   founder_object,
-  otu_g = 0.05,
-  qtn_y = NULL,
   n_ind = NULL,
-  n_gen = 5,
   n_clust = NULL,
+  n_gen = 5,
+  qtn_y = NULL,
+  correlation = 0.5,
+  otu_g = 0.05,
+  lambda = 0.5,
+  effect.size = 0.1,
+  mix.params = c(0.75, 0.25),
+  mix.params.M = c(0.75, 0.25),
+  noise.microbiome = 0.1,
+  dir = T,
+  ao = 25,
+  size_rmultinom = 10000,
   selection = F,
   size_selection_F = NULL,
   size_selection_M = NULL,
   selection_type = "GB",
-  seed = 1234,
-  verbose = T,
-  lambda = 0.5,
-  correlation = 0.5,
-  mix.params = c(0.75, 0.25),
-  mix.params.M = c(0.75, 0.25),
-  effect.size = 0.1,
-  noise.microbiome = 0.1,
-  dir = F,
-  ao = 25,
+  w.param = c(0.5, 0.5),
   thetaX = NULL,
   env_gen = NULL,
-  w.param = c(0.5, 0.5)
+  seed = 1234,
+  verbose = T
 )
 }
 \arguments{
-\item{h2}{direct heritability value, between 0 and 1}
+\item{h2}{direct heritability value, between 0 and 1.}
 
-\item{b2}{microbiability value, between 0 and 1}
+\item{b2}{microbiability value, between 0 and 1.}
 
-\item{founder_object}{output of generate_founder() function}
+\item{founder_object}{output of \code{generate_founder()} function.}
 
-\item{otu_g}{percentage of taxa under genetic control, between 0 and 1, DEFAULT = 0.05}
+\item{n_ind}{number of individual per generation.}
 
-\item{qtn_y}{number of causal SNPs for the phenotypes}
-
-\item{n_ind}{number of individual per generation}
+\item{n_clust}{vector with taxa assignment, typical output of \code{assign_taxa()}}
 
 \item{n_gen}{number of generation, DEFAULT = 5}
 
-\item{n_clust}{vector with taxa assignment, typical output of assign_taxa}
-
-\item{selection}{bool, if selection process needed, DEFAULT = FALSE}
-
-\item{size_selection_F}{percentage of female to select}
-
-\item{size_selection_M}{percentage of male to select}
-
-\item{selection_type}{mode of selection to be used, value in ("GB", "B", "G", "diversity", "div.GB"), DEFAULT = "GB"}
-
-\item{seed}{seed value for samplings in the function}
-
-\item{verbose}{bool, DEFAULT = T}
-
-\item{lambda}{proportion of microbiome of offspring coming from vertical transmission, DEFAULT = 0.5}
+\item{qtn_y}{number of causal SNPs for the phenotypes.}
 
 \item{correlation}{Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5}
 
-\item{mix.params}{Vector of two values giving the weights for the regularisation of the base population microbiome. mix.params\link{1} = weight for raw microbiome and mix.params\link{2} = weight for mean microbiome. DEFAULT = c(0.75,0.25)}
+\item{otu_g}{percentage of taxa under genetic control, between 0 and 1, DEFAULT = 0.05}
+
+\item{lambda}{proportion of microbiome of offspring coming from vertical transmission, DEFAULT = 0.5}
+
+\item{effect.size}{Vector giving the size of genetic effect to try.}
+
+\item{mix.params}{Vector of two numeric values giving the weights for the regularisation of the base population microbiome. \code{mix.params[1]} = weight for raw microbiome and \code{mix.params[2]} = weight for mean microbiome. DEFAULT = c(0.75,0.25).}
+
+\item{mix.params.M}{A vector of two numeric values specifying weights between Dirichlet samples and the original mean. DEFAULT = c(0.75,0.25). With \code{mix.params.M[1]} the dirichlet microbiome coefficient and \code{mix.params.M[2]} the mean microbiome coefficient.}
 
 \item{noise.microbiome}{sd of microbiome noise, DEFAULT = 0.1}
 
-\item{dir}{bool}
+\item{dir}{Logical; Mentions if the ambient microbiome is generated via a Dirichlet law or a only the \code{mean_microbiome}. DEFAULT = T}
 
-\item{ao}{for dirichlet sampling parameter}
+\item{ao}{A numeric scalar used as the concentration parameter for the Dirichlet distribution.}
 
-\item{thetaX}{if environmental effect}
+\item{size_rmultinom}{Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).}
 
-\item{env_gen}{vector of bool}
+\item{selection}{bool, if selection process needed, DEFAULT = FALSE}
 
-\item{w.param}{in case div.GB selection mode is chosen}
+\item{size_selection_F}{percentage of female to select.}
+
+\item{size_selection_M}{percentage of male to select.}
+
+\item{selection_type}{mode of selection to be used, value in ("GB", "B", "G", "diversity", "div.GB"), DEFAULT = "GB"}
+
+\item{w.param}{in case div.GB selection mode is chosen.}
+
+\item{thetaX}{if environmental effect.}
+
+\item{env_gen}{vector of booleans.}
+
+\item{seed}{seed value for samplings in the function.}
+
+\item{verbose}{bool, DEFAULT = T}
 }
 \value{
 A big list object with metada info such as beta matrix details and each generation at level 1. For each generation, the genotypes, the microbiomes, the phenotypes, the pedigree and the individuals selected can be reachable.
@@ -87,8 +94,8 @@ Main function to generate transgenerational hologenomic data
 }
 \examples{
 \dontrun{
-  datafile <- system.file("DeruPop.rds", package = "RITHMS")
-  ToyData <- readRDS(datafile)
+  data("Deru")
+  ToyData <- Deru
   taxa_assign_g <- assign_taxa(founder_object = ToyData)
   generations_simu <- holo_simu(h2 = 0.25,
                                  b2 = 0.25,

@@ -10,7 +10,8 @@ Authors@R: c(
     person("Mahendra", "Mariadassou", , "mahendra.mariadassou@inrae.fr", role = c("aut", "ths"),
            comment = c(ORCID = "0000-0003-2986-354X")),
     person("Andrea", "Rau", , "andrea.rau@inrae.fr", role = c("aut", "ths"),
-           comment = c(ORCID = "0000-0001-6469-488X"))
+           comment = c(ORCID = "0000-0001-6469-488X")),
+    person("Youna", "Maillié", , "youna.maillie@inrae.fr", role = "aut")
   )
 Description: RITHMS, an R Implementation of a Transgenerational
     Hologenomic Model-based Simulator is an open-source package, builds
@@ -40,15 +41,13 @@ Suggests:
     circlize,
     ComplexHeatmap,
     cowplot,
-    furrr,
     ggh4x,
     ggrepel,
     knitr,
     peakRAM,
-    RColorBrewer,
     rmarkdown,
     testthat,
-    tidyr
+    tidyverse
 VignetteBuilder: 
     knitr
 Remotes: 
@@ -57,5 +56,6 @@ BiocViews:
 Config/fusen/version: 0.7.1
 Encoding: UTF-8
 LazyData: true
+LazyDataCompression: xz
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

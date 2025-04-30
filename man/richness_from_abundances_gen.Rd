@@ -12,7 +12,7 @@ richness_from_abundances_gen(
 )
 }
 \arguments{
-\item{microbiome_matrix}{A matrix of relative abundances (individuals in rows and OTUs in columns, see \code{\link[=get_microbiome]{get_microbiome()}} output).}
+\item{microbiome_matrix}{A matrix of relative abundances (individuals in rows and OTUs in columns, see \code{\link[=get_microbiomes]{get_microbiomes()}} output).}
 
 \item{size_rmultinom}{Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).}
 
@@ -28,10 +28,11 @@ This function estimate diversity metrics (Observed, Shannon, Inverse Simpson) fr
 It uses multinomial sampling to simulate read counts from abundances, and computes diversity metrics across \code{n_loop} in order to obtain robust estimation. This function is particularly useful when selection is based on diversity.
 }
 \examples{
+\dontrun{
 library(magrittr)
 library(purrr)
-datafile <- system.file("DeruPop.rds", package = "RITHMS")
-ToyData <- readRDS(datafile)
+data("Deru")
+ToyData <- Deru
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
 generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
                                n_clust = taxa_assign_g, n_ind = 500,
@@ -41,7 +42,9 @@ generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
 microbiomes <- generations_simu[-1] \%>\% map(get_microbiomes)
  
 # Estimate diversity metrics
-richness_from_abundances <- microbiomes \%>\% map(richness_from_abundances_gen)
+richness_from_abundances <- microbiomes \%>\% map(richness_from_abundances_gen, size_rmultinom = 10000) 
+## size_rmultinom = 10000 according to DeruPops dataset
+}
 }
 \seealso{
 \code{\link[=get_microbiomes]{get_microbiomes()}}, \code{\link[phyloseq:estimate_richness]{phyloseq::estimate_richness()}}

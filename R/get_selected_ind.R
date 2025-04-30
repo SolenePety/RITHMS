@@ -12,10 +12,11 @@
 #' 
 #' @return A`list` of the selected individuals of a given generation.
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #' library(purrr)
-#' datafile <- system.file("DeruPop.rds", package = "RITHMS")
-#' ToyData <- readRDS(datafile)
+#' data("Deru")
+#' ToyData <- Deru
 #' taxa_assign_g <- assign_taxa(founder_object = ToyData)
 #' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
 #'                               n_clust = taxa_assign_g, n_ind = 500,
@@ -27,6 +28,7 @@
 #' #Extract selected individuals IDs for all generations
 #' ## Don't forget to substract the metadata
 #' selected_ind <- generations_simu[-1] %>% map(get_selected_ind)
+#' }
 #'
 #' @seealso [get_mean_phenotypes()], [get_phenotypes_value()], [get_om_beta_g()], [get_microbiomes()], [get_phenotypes()]
 #' @rdname get_selected_ind
