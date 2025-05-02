@@ -78,7 +78,13 @@ holo_simu(
 
 \item{w.param}{in case div.GB selection mode is chosen.}
 
-\item{thetaX}{if environmental effect.}
+\item{thetaX}{Optionnal matrix specifying environmental effects applied to the microbiome, such as antibiotic treatment. This matrix should be of dimension \link{n_taxa x n_individuals}, and typically constructed as the product of:
+\itemize{
+\item a vector of taxa-specific effects \code{theta} (negative or positive values for all taxa).
+\item a binary vector \code{X} encoding individual exposure (1 for treated, 0 ofr untreated).
+If \code{NULL} (default value), no environmental effect is applied.
+Example use case: refer to the vignette on \href{https://solenepety.github.io/RITHMS/articles/generate-figures.html#introduction-of-transient-perturbations-of-the-microbiota}{Generate figures}
+}}
 
 \item{env_gen}{vector of booleans.}
 
@@ -90,8 +96,73 @@ holo_simu(
 A big list object with metada info such as beta matrix details and each generation at level 1. For each generation, the genotypes, the microbiomes, the phenotypes, the pedigree and the individuals selected can be reachable.
 }
 \description{
-Main function to generate transgenerational hologenomic data
+Simulates hologenomic data over multiple generations with genetic, microbial, and environmental effects.
 }
+\section{Required parameters}{
+
+\itemize{
+\item \code{h2}
+\item \code{b2}
+\item \code{founder_object}
+\item \code{n_ind}
+\item \code{n_clust}
+}
+}
+
+\section{Generation parameters}{
+
+\itemize{
+\item \code{n_gen}
+}
+}
+
+\section{Genotype-related parameters}{
+
+\itemize{
+\item \code{qtn_y}
+}
+}
+
+\section{Microbiome-related parameters}{
+
+\itemize{
+\item \code{correlation}
+\item \code{otu_g}
+\item \code{lambda}
+\item \code{effect.size}
+\item \code{mix.params}
+\item \code{mix.params.M}
+\item \code{noise.microbiome}
+\item \code{dir}
+\item \code{ao}
+}
+}
+
+\section{Selection-related parameters}{
+
+\itemize{
+\item \code{selection}
+\item \code{size_selection_F}, \code{size_selection_M}
+\item \code{selection_type}
+}
+}
+
+\section{Environmental effects}{
+
+\itemize{
+\item \code{thetaX}
+\item \code{env_gen}
+}
+}
+
+\section{Misc}{
+
+\itemize{
+\item \code{seed}
+\item \code{verbose}
+}
+}
+
 \examples{
 \dontrun{
   data("Deru")

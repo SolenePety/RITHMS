@@ -45,6 +45,7 @@ Suggests:
     ggrepel,
     knitr,
     peakRAM,
+    RColorBrewer,
     rmarkdown,
     testthat,
     tidyverse

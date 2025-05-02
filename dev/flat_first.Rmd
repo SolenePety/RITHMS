@@ -909,7 +909,9 @@ select_individual <- function(phenotypes,
 ## Main function
 
 ```{r function-holo_simu}
-#' Main function to generate transgenerational hologenomic data 
+#' Main function to generate transgenerational hologenomic data
+#' 
+#' @description Simulates hologenomic data over multiple generations with genetic, microbial, and environmental effects.
 #'
 #' @importFrom MoBPS get.geno breeding.diploid get.pedigree
 #' @importFrom compositions clr clrInv
@@ -940,11 +942,52 @@ select_individual <- function(phenotypes,
 #' @param size_selection_M percentage of male to select.
 #' @param selection_type mode of selection to be used, value in ("GB", "B", "G", "diversity", "div.GB"), DEFAULT = "GB"
 #' @param w.param in case div.GB selection mode is chosen.
-#' @param thetaX if environmental effect.
+#' @param thetaX Optionnal matrix specifying environmental effects applied to the microbiome, such as antibiotic treatment. This matrix should be of dimension [n_taxa x n_individuals], and typically constructed as the product of:
+#' - a vector of taxa-specific effects `theta` (negative or positive values for all taxa).
+#' - a binary vector `X` encoding individual exposure (1 for treated, 0 ofr untreated).
+#' If `NULL` (default value), no environmental effect is applied.
+#' Example use case: refer to the vignette on [Generate figures](https://solenepety.github.io/RITHMS/articles/generate-figures.html#introduction-of-transient-perturbations-of-the-microbiota)
 #' @param env_gen vector of booleans.
 #' @param seed seed value for samplings in the function.
 #' @param verbose bool, DEFAULT = T
 #'
+#' @section Required parameters:
+#' - `h2`
+#' - `b2`
+#' - `founder_object`
+#' - `n_ind`
+#' - `n_clust`
+#'
+#' @section Generation parameters:
+#' - `n_gen`
+#'
+#' @section Genotype-related parameters:
+#' - `qtn_y`
+#'
+#' @section Microbiome-related parameters:
+#' - `correlation`
+#' - `otu_g`
+#' - `lambda`
+#' - `effect.size`
+#' - `mix.params`
+#' - `mix.params.M`
+#' - `noise.microbiome`
+#' - `dir`
+#' - `ao`
+#'
+#' @section Selection-related parameters:
+#' - `selection` 
+#' - `size_selection_F`, `size_selection_M` 
+#' - `selection_type` 
+#'
+#' @section Environmental effects:
+#' - `thetaX`
+#' - `env_gen`
+#'
+#' @section Misc:
+#' - `seed`
+#' - `verbose` 
+#' 
 #' @return
 #' A big list object with metada info such as beta matrix details and each generation at level 1. For each generation, the genotypes, the microbiomes, the phenotypes, the pedigree and the individuals selected can be reachable.
 #' 
