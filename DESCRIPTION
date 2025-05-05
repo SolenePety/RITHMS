@@ -1,17 +1,17 @@
 Package: RITHMS
 Title: An Advanced Stochastic Framework for the Simulation of
     Transgenerational Hologenomic Data
-Version: 0.0.0.9000
+Version: 0.0.2
 Authors@R: c(
     person("Solène", "Pety", , "solene.pety@inrae.fr", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0002-1245-7425")),
     person("Ingrid", "David", , "ingrid.david@inrae.fr", role = c("aut", "ths"),
            comment = c(ORCID = "0000-0002-2514-6693")),
-    person("Mahendra", "Mariadassou", , "mahendra.mariadassou@inrae.fr", role = c("aut", "ths"),
-           comment = c(ORCID = "0000-0003-2986-354X")),
+    person("Youna", "Maillié", , "youna.maillie@inrae.fr", role = "aut"),
     person("Andrea", "Rau", , "andrea.rau@inrae.fr", role = c("aut", "ths"),
            comment = c(ORCID = "0000-0001-6469-488X")),
-    person("Youna", "Maillié", , "youna.maillie@inrae.fr", role = "aut")
+    person("Mahendra", "Mariadassou", , "mahendra.mariadassou@inrae.fr", role = c("aut", "ths"),
+           comment = c(ORCID = "0000-0003-2986-354X"))
   )
 Description: RITHMS, an R Implementation of a Transgenerational
     Hologenomic Model-based Simulator is an open-source package, builds
@@ -19,6 +19,7 @@ Description: RITHMS, an R Implementation of a Transgenerational
     of the microbiota, notably vertical and horizontal transfer as well as
     modulation due to the environment and host genetics.
 License: GPL (>= 3)
+URL: https://arxiv.org/abs/2502.07366
 Depends: 
     R (>= 4.4.0)
 Imports: 
@@ -44,8 +45,10 @@ Suggests:
     ggh4x,
     ggrepel,
     knitr,
+    paletteer,
     peakRAM,
-    RColorBrewer,
+    plotly,
+    psych,
     rmarkdown,
     testthat,
     tidyverse
