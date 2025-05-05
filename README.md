@@ -26,24 +26,12 @@ Here is a little summary of how RITHMS work, but you can read the
 You can install the development version of RITHMS from GitHub using
 `remotes` as shown below.
 
-Note: Before installing the **`RITHMS`** package, please make sure that
-version `1.10.49` of the `MoBPS` package is manually installed from the
-following link:
-
 ``` r
 
 # install.packages("remotes")
 
-if (!requireNamespace("MoBPS", quietly = TRUE) || packageVersion("MoBPS") != "1.10.49") {
-    message("Installing MoBPS 1.10.49...")
-    remotes::install_url("https://github.com/tpook92/MoBPS/raw/master/Previous%20versions/MoBPS_1.10.49.tar.gz")
-}
-
 remotes::install_github("SolenePety/RITHMS")
 ```
-
-*This requirement will be handled more automatically in a future version
-of **`RITHMS`**.*
 
 ## Toy dataset
 
@@ -65,19 +53,44 @@ To import your own dataset, you can refer to the following
 
 ``` r
 taxa_assign_g <- assign_taxa(ToyData)
-generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData, n_clust = taxa_assign_g, n_ind = 500)
+generations_simu <- holo_simu(h2 = 0.25,
+                              b2 = 0.25,
+                              founder_object = ToyData,
+                              n_clust = taxa_assign_g,
+                              n_ind = 500)
 ```
 
-## Quick Start from Ped/Map format
+## Quick Start from your own dataset
+
+If you’re using your own dataset instead of the toy dataset, make sure
+to calibrate the simulation parameters accordingly. In particular, the
+`n_ind` (number of individuals in each generation), the genetic effect
+size `effect.size` and the multinomial sampling size parameter
+`size_rmultinom` used in holo_simu() should be consistent with the
+characteristics of your dataset.
+
+To help you with this, please refer to the [dedicated
+vignette](https://solenepety.github.io/RITHMS/articles/calibrate_params.html).
 
 ``` r
+# from VCf format
+founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
+                                  path_to_pedmap = "/path/to/vcf/'prefix'",
+                                  biome_id_column = "ind_id")
+# from Ped/Map format
 founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
                                   path_to_pedmap = "/path/to/pedmap/'prefix'",
                                   biome_id_column = "ind_id")
 
 taxa_assign_g <- assign_taxa(founder_object)
-generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = founder_object, n_clust = taxa_assign_g, n_ind = 500)
-# Choose n_ind such that it is consistent with the initial dimensions of your data set
+generations_simu <- holo_simu(h2 = 0.25,
+                              b2 = 0.25, 
+                              founder_object = founder_object,
+                              n_clust = taxa_assign_g,
+                              n_ind = 500,
+                              effect.size = 0.3,
+                              size_rmultinom = 10000)
+# Choose n_ind, effect.size and size_rmultinom such that it is consistent with the initial dimensions of your data set
 ```
 
 ## To go further
