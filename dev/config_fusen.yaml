@@ -1,3 +1,18 @@
+calibrate_params.Rmd:
+  path: dev/calibrate_params.Rmd
+  state: active
+  R: []
+  tests: []
+  vignettes: vignettes/calibrate-simulation-parameters.Rmd
+  inflate:
+    flat_file: dev/calibrate_params.Rmd
+    vignette_name: Calibrate simulation parameters
+    open_vignette: true
+    check: true
+    document: true
+    overwrite: ask
+    clean: ask
+    codecov: false
 flat_first.Rmd:
   path: dev/flat_first.Rmd
   state: active
