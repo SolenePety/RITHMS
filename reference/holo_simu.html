@@ -164,7 +164,7 @@
 
 
 <dt id="arg-thetax">thetaX<a class="anchor" aria-label="anchor" href="#arg-thetax"></a></dt>
-<dd><p>Optionnal matrix specifying environmental effects applied to the microbiome, such as antibiotic treatment. This matrix should be of dimension n_taxa x n_individuals, and typically constructed as the product of:</p><ul><li><p>a vector of taxa-specific effects <code>theta</code> (negative or positive values for all taxa).</p></li>
+<dd><p>Optionnal matrix specifying environmental effects applied to the microbiome, such as antibiotic treatment. This matrix should be of dimension <code>n_taxa x n_individuals</code>, and typically constructed as the product of:</p><ul><li><p>a vector of taxa-specific effects <code>theta</code> (negative or positive values for all taxa).</p></li>
 <li><p>a binary vector <code>X</code> encoding individual exposure (1 for treated, 0 ofr untreated).
 If <code>NULL</code> (default value), no environmental effect is applied.
 Example use case: refer to the vignette on <a href="https://solenepety.github.io/RITHMS/articles/generate-figures.html#introduction-of-transient-perturbations-of-the-microbiota" class="external-link">Generate figures</a></p></li>
