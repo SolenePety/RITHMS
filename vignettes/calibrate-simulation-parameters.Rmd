@@ -29,6 +29,8 @@ We focus here on two parameters that influence the behavior of the simulation:
 - **The multinomial sampling size parameter**, used to perform the multinomial sampling step that converts abundances to counts data. 
 
 ```{r}
+#| warning: no
+#| message: no
 #| class.source: fold-show
 #| eval: yes
 
@@ -75,37 +77,38 @@ density_peaks <- out_data %>%
     peak_x = density(Heritability)$x[which.max(density(Heritability)$y)]
   )
 
-density_peaks <- density_peaks %>% filter(peak_x <= 0.5)
-
 
 out_data_filtered <- out_data %>% semi_join(density_peaks, by = "effect.size")
 
-p2 <- out_data_filtered %>% ggplot(aes(x=Heritability,fill=as.factor(effect.size), label = as.factor(effect.size))) +
-    geom_density(alpha=0.5, color = NA)+
-    coord_cartesian(xlim = range(out_data$Heritability, density_peaks$peak_x))+
-
-    geom_text_repel(
-      data = density_peaks,
-      aes(x = peak_x, y = peak, label = effect.size, color = as.factor(effect.size)),
-      nudge_x = 0.01,
-      nudge_y = 0.3,
-      direction = "y",
-      show.legend = FALSE) +
-    labs(x = "Taxa heritability",
-         y = "Density",
-         fill = "Genetic effect size",
-         title = "Taxa heritability density, noise 0.5")+
-    theme(panel.background = element_rect(fill="white"),
-          panel.grid.major = element_line(colour="#e3e3e3"),
-          panel.grid.minor = element_line(colour="#e9e9e9"),
-          axis.title = element_text(size = 8),
-          axis.text = element_text(size=7),
-          plot.title = element_text(size=7),
-          legend.position = "right") +
-  
+p2 <- ggplot(out_data_filtered, aes(x = Heritability, fill = as.factor(effect.size))) +
+  geom_density(alpha = 0.5, color = NA) +
+  geom_text(
+    data = density_peaks,
+    aes(x = peak_x, y = peak, label = effect.size, color = as.factor(effect.size)),
+    inherit.aes = FALSE,
+    hjust = -0.1,
+    size = 3,
+    show.legend = FALSE
+  ) +
+  labs(
+    x = "Taxa heritability",
+    y = "Density",
+    fill = "Genetic effect size",
+    title = "Taxa heritability density, noise 0.5"
+  ) +
+  theme(
+    panel.background = element_rect(fill = "white"),
+    panel.grid.major = element_line(colour = "#e3e3e3"),
+    panel.grid.minor = element_line(colour = "#e9e9e9"),
+    axis.title = element_text(size = 8),
+    axis.text = element_text(size = 7),
+    plot.title = element_text(size = 7),
+    legend.position = "right"
+  ) +
   scale_fill_paletteer_d("werpals::uyuni") +
   scale_color_paletteer_d("werpals::uyuni")
- p2
+
+ggplotly(p2)
 ```
 
 
