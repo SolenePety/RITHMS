@@ -17,6 +17,8 @@ navbar:
         href: articles/generate-figures.html
       - text: "Data Importation"
         href: articles/import-data.html
+      - text: "Calibrate simulation parameters"
+        href: articles/calibrate-simulation-parameters.html
     github:
       icon: fab fa-github
       href: https://github.com/SolenePety/RITHMS
