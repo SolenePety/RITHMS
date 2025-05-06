@@ -78,7 +78,7 @@ holo_simu(
 
 \item{w.param}{in case div.GB selection mode is chosen.}
 
-\item{thetaX}{Optionnal matrix specifying environmental effects applied to the microbiome, such as antibiotic treatment. This matrix should be of dimension \link{n_taxa x n_individuals}, and typically constructed as the product of:
+\item{thetaX}{Optionnal matrix specifying environmental effects applied to the microbiome, such as antibiotic treatment. This matrix should be of dimension \verb{n_taxa x n_individuals}, and typically constructed as the product of:
 \itemize{
 \item a vector of taxa-specific effects \code{theta} (negative or positive values for all taxa).
 \item a binary vector \code{X} encoding individual exposure (1 for treated, 0 ofr untreated).
