@@ -942,7 +942,7 @@ select_individual <- function(phenotypes,
 #' @param size_selection_M percentage of male to select.
 #' @param selection_type mode of selection to be used, value in ("GB", "B", "G", "diversity", "div.GB"), DEFAULT = "GB"
 #' @param w.param in case div.GB selection mode is chosen.
-#' @param thetaX Optionnal matrix specifying environmental effects applied to the microbiome, such as antibiotic treatment. This matrix should be of dimension [n_taxa x n_individuals], and typically constructed as the product of:
+#' @param thetaX Optionnal matrix specifying environmental effects applied to the microbiome, such as antibiotic treatment. This matrix should be of dimension `n_taxa x n_individuals`, and typically constructed as the product of:
 #' - a vector of taxa-specific effects `theta` (negative or positive values for all taxa).
 #' - a binary vector `X` encoding individual exposure (1 for treated, 0 ofr untreated).
 #' If `NULL` (default value), no environmental effect is applied.
