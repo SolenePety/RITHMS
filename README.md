@@ -70,7 +70,7 @@ size `effect.size` and the multinomial sampling size parameter
 characteristics of your dataset.
 
 To help you with this, please refer to the [dedicated
-vignette](https://solenepety.github.io/RITHMS/articles/calibrate_params.html).
+vignette](https://solenepety.github.io/RITHMS/articles/calibrate-simulation-parameters.html).
 
 ``` r
 # from VCf format

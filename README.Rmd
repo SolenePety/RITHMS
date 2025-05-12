@@ -65,7 +65,7 @@ generations_simu <- holo_simu(h2 = 0.25,
 
 If you're using your own dataset instead of the toy dataset, make sure to calibrate the simulation parameters accordingly. In particular, the `n_ind` (number of individuals in each generation), the genetic effect size `effect.size` and the multinomial sampling size parameter `size_rmultinom` used in holo_simu() should be consistent with the characteristics of your dataset.
 
-To help you with this, please refer to the [dedicated vignette](https://solenepety.github.io/RITHMS/articles/calibrate_params.html).
+To help you with this, please refer to the [dedicated vignette](https://solenepety.github.io/RITHMS/articles/calibrate-simulation-parameters.html).
 
 ```{r start-pedmap, eval=FALSE, warning=FALSE, message=FALSE}
 # from VCf format
