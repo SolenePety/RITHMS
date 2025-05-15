@@ -27,10 +27,10 @@ set.seed(123)
 n_taxa <- 5
 n_snp <- 10
 n_ind <- 50
-# Simulate a little beta matrix
+# Simulate a small beta matrix
 beta <- matrix(sample(seq(0.1, 1, by = 0.05), size = n_taxa*n_snp, replace = TRUE), nrow = n_taxa, ncol = n_snp)
 
-# Simulate a little genotype matrix
+# Simulate a small genotype matrix
 genotypes <- matrix(sample(0:2, size = n_snp*n_ind, replace = TRUE), nrow = n_snp, ncol = n_ind)
 
 # Compute beta_g matrix with noise

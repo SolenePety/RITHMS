@@ -80,7 +80,10 @@
 #' - `verbose` 
 #' 
 #' @return
-#' A big list object with metada info such as beta matrix details and each generation at level 1. For each generation, the genotypes, the microbiomes, the phenotypes, the pedigree and the individuals selected can be reachable.
+#' An important list with several different objects :
+#' - `parameters`: the set of parameters used for the simulation when calling `holo_simu()`
+#' - `metadata`: metadata info such as beta matrix details
+#' - `G0` to `G5` (5 generations by default): computational characteristics of generations. For each generation, genotypes, microbiomes, phenotypes, pedigree and individuals selected can be reachable.
 #' 
 #' @seealso [compute_beta_matrix_cluster()], [compute_mean_microbiome()], [compute_current_microbiome()], [compute_phenotypes()]
 #' @rdname holo_simu
@@ -150,18 +153,21 @@ holo_simu <- function(### Required parameters ###
                       verbose = T
                       ###
                       ){
+  
+  parameters <- as.list(environment()) %>% within(., rm(founder_object))
+  
   set.seed(seed)
   
-  population <- attr(founder_object,"population")
+  population <- founder_object$population
   #obtain genotypes for all generation using MoBPS breeding.diploid
   if(is.null(n_ind)){
-    n_ind <- ncol(founder_object)
+    n_ind <- ncol(founder_object$microbiome)
   }
   
   ######
   #call to compute beta matrix function, common for all generations
   ######
-  microbiome_filtered <- founder_object |> t()
+  microbiome_filtered <- founder_object$microbiome |> t()
   n_g <- nrow(get.geno(population, gen=1))
   
   #####################
@@ -176,7 +182,7 @@ holo_simu <- function(### Required parameters ###
                                         n_otus = sum(n_clust != 0), 
                                         correlation = correlation, 
                                         effect_size = effect.size)
-  beta_info <- attr(beta,"sim_params")
+  beta_info <- beta$sim_params
   otu_list <- list_c(beta_info$id_otu)
   
   ######
@@ -222,14 +228,14 @@ holo_simu <- function(### Required parameters ###
   #####################
   ### first elements output
   #####################
-  metadata <- list(Beta_matrix = beta, 
+  metadata <- list(Beta_matrix = beta,
                    QTN_y = params_phenotypes$qtl_list, 
                    G_coeff = params_phenotypes$alpha, 
                    B_coeff = params_phenotypes$omega)
   G0 <- list(microbiome = microbiome_gen |>  t() |> clrInv() |> t(), 
              genotypes = get.geno(population,gen = 1), 
              phenotypes = phenotypes_founder)
-  list_output <- list(metadata = metadata, G0 = G0)
+  list_output <- list(parameters = parameters, metadata = metadata, G0 = G0)
   
   
   #####################
@@ -274,7 +280,7 @@ holo_simu <- function(### Required parameters ###
     
     if(!is.null(env_gen)){
       if(env_gen[i]){
-        microbiome_gen <- compute_current_microbiome(beta = beta,
+        microbiome_gen <- compute_current_microbiome(beta = beta$matrix,
                                                      current_genotypes = get.geno(population,gen = i+1),
                                                      mother_microbiomes = current_mother_microbiomes,
                                                      mean_microbiome = mean_microbiome,
@@ -283,7 +289,7 @@ holo_simu <- function(### Required parameters ###
                                                      dir = dir,
                                                      thetaX = thetaX) #not mandatory if we check dimension of mean_microbiome
       }else{
-        microbiome_gen <- compute_current_microbiome(beta = beta,
+        microbiome_gen <- compute_current_microbiome(beta = beta$matrix,
                                                      current_genotypes = get.geno(population,gen = i+1),
                                                      mother_microbiomes = current_mother_microbiomes,
                                                      mean_microbiome = mean_microbiome,
@@ -293,7 +299,7 @@ holo_simu <- function(### Required parameters ###
                                                      thetaX = NULL)
       }
     }else{
-      microbiome_gen <- compute_current_microbiome(beta = beta,
+      microbiome_gen <- compute_current_microbiome(beta = beta$matrix,
                                                    current_genotypes = get.geno(population,gen = i+1),
                                                    mother_microbiomes = current_mother_microbiomes,
                                                    mean_microbiome = mean_microbiome,
@@ -323,7 +329,7 @@ holo_simu <- function(### Required parameters ###
     ID_selected <- select_individual(phenotypes = phenotypes,
                                      microbiomes = microbiome_gen |>  t() |> clrInv() |> t(),
                                      genotypes = get.geno(population,gen = 1+i),
-                                     beta = beta,
+                                     beta = beta$matrix,
                                      beta_otu = params_phenotypes$omega,
                                      selection = selection,
                                      size_selection_F = size_selection_F,
@@ -342,7 +348,7 @@ holo_simu <- function(### Required parameters ###
                                         mean_microbiome = mean_microbiome,
                                         noise_microbiome = attr(microbiome_gen,"noise_microbiome"),
                                         ID_selected = c(glue("F_{ID_selected$F_id}"),glue("M_{ID_selected$M_id}")),
-                                        omega_beta_g = as.vector(params_phenotypes$omega %*% (beta[rowSums(beta) != 0, ] %*% get.geno(population,gen = 1+i))))
+                                        omega_beta_g = as.vector(params_phenotypes$omega %*% (beta$matrix[rowSums(beta$matrix) != 0, ] %*% get.geno(population,gen = 1+i))))
     if(verbose){
       end_g <- proc.time() - start_g
       print(glue("Executed in {round(end_g[1] |> as.numeric(),3)} seconds"))

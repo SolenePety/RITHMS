@@ -13,7 +13,7 @@ gen_effect_calibration(
 )
 }
 \arguments{
-\item{founder_object}{Output of generate_founder() function}
+\item{founder_object}{Output of \code{\link[=generate_founder]{generate_founder()}} or \code{\link[=read_input_data]{read_input_data()}} function}
 
 \item{taxa_assign_g}{Factor vector giving cluster assignment for all taxa, typical output of assign_taxa()}
 

@@ -17,7 +17,10 @@
 #' @param correlation A numeric value between 0 and 1 representing the target correlation between taxa within the same cluster.
 #' @param beta_info Informations from Beta matrix of genetic effects
 #' 
-#' @return A `matrix` of taxa (in rows) across SNPs (in columns) giving the multiplicative effect of genotype on taxa abundances.
+#' @return 
+#' A `list` of two objects linked to the beta matrix. 
+#' The beta matrix itself : a `matrix` of taxa (in rows) across SNPs (in columns) giving the multiplicative effect of genotype on taxa abundances.
+#' A small `data.frame` containing the parameters used during the beta matrix simulation, including `cluster`, `id_otu` and `id_qtl_o`.
 #' 
 #' @seealso [compute_beta_g()], [holo_simu()]
 #' 
@@ -65,7 +68,8 @@ compute_beta_matrix_cluster <- function(n_b,
     beta[ID_OTUs_gen,id_qtl_o] <- (lambda * correlated_coef + (1 - lambda) * ind_coef) / sqrt(lambda^2 + (1-lambda)^2)
   }
   
-  attr(beta, "sim_params") <- beta_info
+  beta <- list(matrix = beta,
+               sim_params = beta_info)
+  
   return(beta)
 }
-

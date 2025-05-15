@@ -33,7 +33,9 @@ compute_beta_matrix_cluster(
 \item{beta_info}{Informations from Beta matrix of genetic effects}
 }
 \value{
-A \code{matrix} of taxa (in rows) across SNPs (in columns) giving the multiplicative effect of genotype on taxa abundances.
+A \code{list} of two objects linked to the beta matrix.
+The beta matrix itself : a \code{matrix} of taxa (in rows) across SNPs (in columns) giving the multiplicative effect of genotype on taxa abundances.
+A small \code{data.frame} containing the parameters used during the beta matrix simulation, including \code{cluster}, \code{id_otu} and \code{id_qtl_o}.
 }
 \description{
 Generate beta matrix giving genetic effect per SNP on taxa abundances.

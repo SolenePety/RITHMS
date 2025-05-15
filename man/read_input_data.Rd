@@ -27,7 +27,9 @@ read_input_data(
 \item{ind_selected}{Vector of string values with individuals to keep, have to match rownames of count table file, DEFAULT = NULL}
 }
 \value{
-A data.frame corresponding to (rarefied) microbiome with individuals in rows and taxa in columns. Genotypes data.frame is an attribute called "population" reachable using \code{attr(output_name,"population")}
+A \code{list} containing two object.
+A \code{matrix} containing the microbiome(\code{microbiome}).
+A \code{list} from \href{https://pubmed.ncbi.nlm.nih.gov/32229505/}{MoBPS} package, containing the genotypes (\code{population}). Individuals are in columns and taxa or SNPs are in rows.
 }
 \description{
 Formatting data from file paths to base population object

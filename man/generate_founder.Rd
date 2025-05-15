@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_founder.R
 \name{generate_founder}
 \alias{generate_founder}
-\title{Formatting of ped/map files or vcf into haplotypes table and create it as "population" attr.}
+\title{Formatting of ped/map files or vcf into haplotypes table and add it inside the \code{founder_object} list.}
 \usage{
 generate_founder(path = NULL, microbiome_matrix, file_type = "pedmap")
 }
@@ -14,15 +14,22 @@ generate_founder(path = NULL, microbiome_matrix, file_type = "pedmap")
 \item{file_type}{String specifying the file type used to load genotype data. This should be one of \code{"pedmap"} or \code{"vcf"}. (default: \code{"pedmap"}).}
 }
 \value{
-Matrix of taxa (in columns) accross individuals (in rows), genotypes of each generation are reachable thanks to \strong{"population"} attribute. Genotypes are encodes as 0,1,2 and generated using the \href{https://pubmed.ncbi.nlm.nih.gov/32229505/}{MoBPS} package.
+A \code{list} of two \code{matrix}.
+The \code{microbiome} matrix contains taxa (in columns) accross individuals (in rows).
+The \code{population} object contains genotypes, encoded as 0,1,2 and generated using the \href{https://pubmed.ncbi.nlm.nih.gov/32229505/}{MoBPS} package.
 }
 \description{
-Formatting of ped/map files or vcf into haplotypes table and create it as "population" attr.
+Formatting of ped/map files or vcf into haplotypes table and add it inside the \code{founder_object} list.
 }
 \examples{
 \dontrun{
+  # Generate founder object from PED/MAP set
   microbiome <- data.table::fread("/path/to/microbiome.txt")
-  founder_object <- generate_founder(path = "/path/to/pedmap", microbiome) 
+  founder_object <- generate_founder(path = "/path/to/pedmap", microbiome, file_type = "pedmap")
+  
+  # Generate founder object from VCF set
+  microbiome <- data.table::fread("/path/to/microbiome.txt")
+  founder_object <- generate_founder(path = "/path/to/vcf", microbiome, file_type = "vcf") 
 }
 
 }

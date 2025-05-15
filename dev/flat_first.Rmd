@@ -70,7 +70,9 @@ ToyData <- Deru
 #' @param ind_selected Vector of string values with individuals to keep, have to match rownames of count table file, DEFAULT = NULL
 #' 
 #' @return
-#' A data.frame corresponding to (rarefied) microbiome with individuals in rows and taxa in columns. Genotypes data.frame is an attribute called "population" reachable using `attr(output_name,"population")`
+#' A `list` containing two object.
+#' A `matrix` containing the microbiome(`microbiome`). 
+#' A `list` from [MoBPS](https://pubmed.ncbi.nlm.nih.gov/32229505/) package, containing the genotypes (`population`). Individuals are in columns and taxa or SNPs are in rows.
 #' 
 #' @note
 #' The number of individuals in the microbiome an genotype data must be equivalent.
@@ -167,14 +169,16 @@ rarefied_microbiome <- function(microbiome_matrix,
 ```
 
 ```{r function-generate_founder}
-#' Formatting of ped/map files or vcf into haplotypes table and create it as "population" attr.
+#' Formatting of ped/map files or vcf into haplotypes table and add it inside the `founder_object` list.
 #' 
 #' @param path String giving the path and prefix to ped and map file
 #' @param microbiome_matrix Filtered microbiome matrix, with OTUs in columns and individuals in rows
 #' @param file_type String specifying the file type used to load genotype data. This should be one of `"pedmap"` or `"vcf"`. (default: `"pedmap"`).
 #' 
-#' @return 
-#' Matrix of taxa (in columns) accross individuals (in rows), genotypes of each generation are reachable thanks to **"population"** attribute. Genotypes are encodes as 0,1,2 and generated using the [MoBPS](https://pubmed.ncbi.nlm.nih.gov/32229505/) package.
+#' @return
+#' A `list` of two `matrix`.
+#' The `microbiome` matrix contains taxa (in columns) accross individuals (in rows).
+#' The `population` object contains genotypes, encoded as 0,1,2 and generated using the [MoBPS](https://pubmed.ncbi.nlm.nih.gov/32229505/) package.
 #' 
 #' @seealso [read_input_data()], [rarefied_microbiome()]
 #' 
@@ -214,9 +218,12 @@ generate_founder <- function(path = NULL,
         population <- creating.diploid(vcf = path_to_vcf, verbose=TRUE)
         
     }
-      
-      attr(microbiome_matrix,"population") <- population
-      return(microbiome_matrix)
+    
+      founder_object <- list(microbiome = microbiome_matrix,
+                             population = population)  
+    
+      #attr(microbiome_matrix,"population") <- population
+      return(founder_object)
     }
   
 }
@@ -226,8 +233,13 @@ generate_founder <- function(path = NULL,
 
 ```{r examples-generate_founder}
 \dontrun{
+  # Generate founder object from PED/MAP set
   microbiome <- data.table::fread("/path/to/microbiome.txt")
-  founder_object <- generate_founder(path = "/path/to/pedmap", microbiome) 
+  founder_object <- generate_founder(path = "/path/to/pedmap", microbiome, file_type = "pedmap")
+  
+  # Generate founder object from VCF set
+  microbiome <- data.table::fread("/path/to/microbiome.txt")
+  founder_object <- generate_founder(path = "/path/to/vcf", microbiome, file_type = "vcf") 
 }
 
 ```
@@ -252,7 +264,7 @@ generate_founder <- function(path = NULL,
 
 assign_taxa <- function(founder_object,
                         taxa_g = 0.05){
-  dist_mat <- vegdist(x = t(founder_object),
+  dist_mat <- vegdist(x = t(founder_object$microbiome),
                method = "bray")
   hc <- hclust(dist_mat)
   taxa_assign <- cutree(hc, k = 100)
@@ -298,7 +310,7 @@ taxa_assign_g <- assign_taxa(founder_object = ToyData,
 #' @importFrom glue glue
 #' @importFrom magrittr %>%
 #' 
-#' @param founder_object Output of generate_founder() function
+#' @param founder_object Output of [generate_founder()] or [read_input_data()] function
 #' @param taxa_assign_g Factor vector giving cluster assignment for all taxa, typical output of assign_taxa()
 #' @param correlation Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5
 #' @param effect.size Vector giving the size of genetic effect to try 
@@ -317,11 +329,11 @@ gen_effect_calibration <- function(founder_object,
   #init of all parameters
   
   #Microbiome part
-  M <- founder_object %>% t() %>% apply(2, \(x) x/sum(x))
+  M <- founder_object$microbiome %>% t() %>% apply(2, \(x) x/sum(x))
   M0_clr <- M |> t() |> clr() |> t()
   taxa_scale <- apply(M0_clr, 1, sd)
   #Genotype
-  G <- get.geno(attr(founder_object,"population"),gen=1)
+  G <- get.geno(founder_object$population,gen=1)
   
   #beta arguments
   n_g <- nrow(G)
@@ -340,7 +352,7 @@ gen_effect_calibration <- function(founder_object,
                                             correlation = correlation, 
                                             effect_size = 0.1)
   
-  beta_info <- attr(beta_innit, "sim_params")
+  beta_info <- beta_innit$sim_params
   
   for(e in effect.size){
     beta <- compute_beta_matrix_cluster(n_b = nrow(M), 
@@ -351,9 +363,9 @@ gen_effect_calibration <- function(founder_object,
                                         correlation = correlation, 
                                         effect_size = e,
                                         beta_info = beta_info)
-    beta_test <- attr(beta, "sim_params")
+    beta_test <- beta$sim_params
     #print(beta_test$id_otu[1])
-    betaG_e <- compute_beta_g(beta, G, noise = 0.5, taxa_scale = taxa_scale)
+    betaG_e <- compute_beta_g(beta$matrix, G, noise = 0.5, taxa_scale = taxa_scale)
     betaG <- attr(betaG_e,"noise")$betag
     betag_var <- betaG |> apply(1,var)
     
@@ -434,7 +446,10 @@ out_data <- gen_effect_calibration(founder_object = ToyData,
 #' @param correlation A numeric value between 0 and 1 representing the target correlation between taxa within the same cluster.
 #' @param beta_info Informations from Beta matrix of genetic effects
 #' 
-#' @return A `matrix` of taxa (in rows) across SNPs (in columns) giving the multiplicative effect of genotype on taxa abundances.
+#' @return 
+#' A `list` of two objects linked to the beta matrix. 
+#' The beta matrix itself : a `matrix` of taxa (in rows) across SNPs (in columns) giving the multiplicative effect of genotype on taxa abundances.
+#' A small `data.frame` containing the parameters used during the beta matrix simulation, including `cluster`, `id_otu` and `id_qtl_o`.
 #' 
 #' @seealso [compute_beta_g()], [holo_simu()]
 #' 
@@ -482,10 +497,11 @@ compute_beta_matrix_cluster <- function(n_b,
     beta[ID_OTUs_gen,id_qtl_o] <- (lambda * correlated_coef + (1 - lambda) * ind_coef) / sqrt(lambda^2 + (1-lambda)^2)
   }
   
-  attr(beta, "sim_params") <- beta_info
+  beta <- list(matrix = beta,
+               sim_params = beta_info)
+  
   return(beta)
 }
-
 ```
 
 ```{r function-compute_beta_g}
@@ -526,10 +542,10 @@ set.seed(123)
 n_taxa <- 5
 n_snp <- 10
 n_ind <- 50
-# Simulate a little beta matrix
+# Simulate a small beta matrix
 beta <- matrix(sample(seq(0.1, 1, by = 0.05), size = n_taxa*n_snp, replace = TRUE), nrow = n_taxa, ncol = n_snp)
 
-# Simulate a little genotype matrix
+# Simulate a small genotype matrix
 genotypes <- matrix(sample(0:2, size = n_snp*n_ind, replace = TRUE), nrow = n_snp, ncol = n_ind)
 
 # Compute beta_g matrix with noise
@@ -989,7 +1005,10 @@ select_individual <- function(phenotypes,
 #' - `verbose` 
 #' 
 #' @return
-#' A big list object with metada info such as beta matrix details and each generation at level 1. For each generation, the genotypes, the microbiomes, the phenotypes, the pedigree and the individuals selected can be reachable.
+#' An important list with several different objects :
+#' - `parameters`: the set of parameters used for the simulation when calling `holo_simu()`
+#' - `metadata`: metadata info such as beta matrix details
+#' - `G0` to `G5` (5 generations by default): computational characteristics of generations. For each generation, genotypes, microbiomes, phenotypes, pedigree and individuals selected can be reachable.
 #' 
 #' @seealso [compute_beta_matrix_cluster()], [compute_mean_microbiome()], [compute_current_microbiome()], [compute_phenotypes()]
 #' @rdname holo_simu
@@ -1041,18 +1060,21 @@ holo_simu <- function(### Required parameters ###
                       verbose = T
                       ###
                       ){
+  
+  parameters <- as.list(environment()) %>% within(., rm(founder_object))
+  
   set.seed(seed)
   
-  population <- attr(founder_object,"population")
+  population <- founder_object$population
   #obtain genotypes for all generation using MoBPS breeding.diploid
   if(is.null(n_ind)){
-    n_ind <- ncol(founder_object)
+    n_ind <- ncol(founder_object$microbiome)
   }
   
   ######
   #call to compute beta matrix function, common for all generations
   ######
-  microbiome_filtered <- founder_object |> t()
+  microbiome_filtered <- founder_object$microbiome |> t()
   n_g <- nrow(get.geno(population, gen=1))
   
   #####################
@@ -1067,7 +1089,7 @@ holo_simu <- function(### Required parameters ###
                                         n_otus = sum(n_clust != 0), 
                                         correlation = correlation, 
                                         effect_size = effect.size)
-  beta_info <- attr(beta,"sim_params")
+  beta_info <- beta$sim_params
   otu_list <- list_c(beta_info$id_otu)
   
   ######
@@ -1113,14 +1135,14 @@ holo_simu <- function(### Required parameters ###
   #####################
   ### first elements output
   #####################
-  metadata <- list(Beta_matrix = beta, 
+  metadata <- list(Beta_matrix = beta,
                    QTN_y = params_phenotypes$qtl_list, 
                    G_coeff = params_phenotypes$alpha, 
                    B_coeff = params_phenotypes$omega)
   G0 <- list(microbiome = microbiome_gen |>  t() |> clrInv() |> t(), 
              genotypes = get.geno(population,gen = 1), 
              phenotypes = phenotypes_founder)
-  list_output <- list(metadata = metadata, G0 = G0)
+  list_output <- list(parameters = parameters, metadata = metadata, G0 = G0)
   
   
   #####################
@@ -1165,7 +1187,7 @@ holo_simu <- function(### Required parameters ###
     
     if(!is.null(env_gen)){
       if(env_gen[i]){
-        microbiome_gen <- compute_current_microbiome(beta = beta,
+        microbiome_gen <- compute_current_microbiome(beta = beta$matrix,
                                                      current_genotypes = get.geno(population,gen = i+1),
                                                      mother_microbiomes = current_mother_microbiomes,
                                                      mean_microbiome = mean_microbiome,
@@ -1174,7 +1196,7 @@ holo_simu <- function(### Required parameters ###
                                                      dir = dir,
                                                      thetaX = thetaX) #not mandatory if we check dimension of mean_microbiome
       }else{
-        microbiome_gen <- compute_current_microbiome(beta = beta,
+        microbiome_gen <- compute_current_microbiome(beta = beta$matrix,
                                                      current_genotypes = get.geno(population,gen = i+1),
                                                      mother_microbiomes = current_mother_microbiomes,
                                                      mean_microbiome = mean_microbiome,
@@ -1184,7 +1206,7 @@ holo_simu <- function(### Required parameters ###
                                                      thetaX = NULL)
       }
     }else{
-      microbiome_gen <- compute_current_microbiome(beta = beta,
+      microbiome_gen <- compute_current_microbiome(beta = beta$matrix,
                                                    current_genotypes = get.geno(population,gen = i+1),
                                                    mother_microbiomes = current_mother_microbiomes,
                                                    mean_microbiome = mean_microbiome,
@@ -1214,7 +1236,7 @@ holo_simu <- function(### Required parameters ###
     ID_selected <- select_individual(phenotypes = phenotypes,
                                      microbiomes = microbiome_gen |>  t() |> clrInv() |> t(),
                                      genotypes = get.geno(population,gen = 1+i),
-                                     beta = beta,
+                                     beta = beta$matrix,
                                      beta_otu = params_phenotypes$omega,
                                      selection = selection,
                                      size_selection_F = size_selection_F,
@@ -1233,7 +1255,7 @@ holo_simu <- function(### Required parameters ###
                                         mean_microbiome = mean_microbiome,
                                         noise_microbiome = attr(microbiome_gen,"noise_microbiome"),
                                         ID_selected = c(glue("F_{ID_selected$F_id}"),glue("M_{ID_selected$M_id}")),
-                                        omega_beta_g = as.vector(params_phenotypes$omega %*% (beta[rowSums(beta) != 0, ] %*% get.geno(population,gen = 1+i))))
+                                        omega_beta_g = as.vector(params_phenotypes$omega %*% (beta$matrix[rowSums(beta$matrix) != 0, ] %*% get.geno(population,gen = 1+i))))
     if(verbose){
       end_g <- proc.time() - start_g
       print(glue("Executed in {round(end_g[1] |> as.numeric(),3)} seconds"))
@@ -1732,7 +1754,7 @@ transform_geno_into_vcf <- function(geno_matrix, output_type = c("file", "datafr
 n_ind <- 50
 n_snp <- 50
 
-# Create a little genotype matrix
+# Create a small genotype matrix
 set.seed(123)
 geno_matrix <- matrix(sample(0:2, size = n_ind*n_snp, replace = TRUE),
                       nrow = n_snp, ncol = n_ind)
@@ -1747,9 +1769,11 @@ head(vcf[1:3,1:7])
 ```{r function-Deru}
 #' Deru Dataset
 #' 
-#' A subset of data from [Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/) containing hologenomic data from 750 pigs fed a conventional diet. Genotypes are accessible thanks to the "population" attribute.
+#' A subset of data from [Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/) containing hologenomic data from 750 pigs fed a conventional diet. 
 #' 
-#' @format A matrix with 780 rows (individuals) and 1845 taxa, where each element represents the abundance of a specific taxon in a specific individual. Additionnally, there is an attribute "population" wich provides the genotypes of each individual, encoded as 0, 1 ,2.
+#' @format A `list` containing two different matrices, one for the microbiome and the other for the genotypes.
+#' `microbiome` : a matrix with 780 rows (individuals) and 1845 taxa, where each element represents the abundance of a specific taxon in a specific individual. 
+#' `population` : object from [MoBPS](https://pubmed.ncbi.nlm.nih.gov/32229505/) package which provides the genotypes of each individual, encoded as 0, 1 ,2.
 #' 
 #' @source [Déru et al.](https://pmc.ncbi.nlm.nih.gov/articles/PMC9194801/) for microbiota data and [Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/) for genotypes data.
 #' 
@@ -1758,10 +1782,11 @@ head(vcf[1:3,1:7])
 #' data("Deru")
 #' 
 #' # View the first few rows of the taxa matrix
-#' head(Deru[1:5,1:5])
+#' head(Deru$microbiome[1:5,1:5])
 #' 
-#' # Access the population attribute to view genotypes
-#' population <- attr(Deru, "population")
+#' # Access the population object
+#' population <- Deru$population
+#' 
 "Deru"
 ```
 

@@ -9,7 +9,7 @@ calibrate_params.Rmd:
     vignette_name: Calibrate simulation parameters
     open_vignette: true
     check: true
-    document: false
+    document: true
     overwrite: ask
     clean: ask
     codecov: false
@@ -47,7 +47,7 @@ flat_first.Rmd:
     vignette_name: ~
     open_vignette: true
     check: true
-    document: false
+    document: true
     overwrite: ask
     clean: ask
     codecov: false

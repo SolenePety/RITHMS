@@ -93,7 +93,12 @@ Example use case: refer to the vignette on \href{https://solenepety.github.io/RI
 \item{verbose}{bool, DEFAULT = T}
 }
 \value{
-A big list object with metada info such as beta matrix details and each generation at level 1. For each generation, the genotypes, the microbiomes, the phenotypes, the pedigree and the individuals selected can be reachable.
+An important list with several different objects :
+\itemize{
+\item \code{parameters}: the set of parameters used for the simulation when calling \code{holo_simu()}
+\item \code{metadata}: metadata info such as beta matrix details
+\item \code{G0} to \code{G5} (5 generations by default): computational characteristics of generations. For each generation, genotypes, microbiomes, phenotypes, pedigree and individuals selected can be reachable.
+}
 }
 \description{
 Simulates hologenomic data over multiple generations with genetic, microbial, and environmental effects.

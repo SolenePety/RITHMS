@@ -21,7 +21,7 @@
 
 assign_taxa <- function(founder_object,
                         taxa_g = 0.05){
-  dist_mat <- vegdist(x = t(founder_object),
+  dist_mat <- vegdist(x = t(founder_object$microbiome),
                method = "bray")
   hc <- hclust(dist_mat)
   taxa_assign <- cutree(hc, k = 100)
