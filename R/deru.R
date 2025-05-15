@@ -2,9 +2,11 @@
 
 #' Deru Dataset
 #' 
-#' A subset of data from [Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/) containing hologenomic data from 750 pigs fed a conventional diet. Genotypes are accessible thanks to the "population" attribute.
+#' A subset of data from [Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/) containing hologenomic data from 750 pigs fed a conventional diet. 
 #' 
-#' @format A matrix with 780 rows (individuals) and 1845 taxa, where each element represents the abundance of a specific taxon in a specific individual. Additionnally, there is an attribute "population" wich provides the genotypes of each individual, encoded as 0, 1 ,2.
+#' @format A `list` containing two different matrices, one for the microbiome and the other for the genotypes.
+#' `microbiome` : a matrix with 780 rows (individuals) and 1845 taxa, where each element represents the abundance of a specific taxon in a specific individual. 
+#' `population` : object from [MoBPS](https://pubmed.ncbi.nlm.nih.gov/32229505/) package which provides the genotypes of each individual, encoded as 0, 1 ,2.
 #' 
 #' @source [Déru et al.](https://pmc.ncbi.nlm.nih.gov/articles/PMC9194801/) for microbiota data and [Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/) for genotypes data.
 #' 
@@ -13,8 +15,9 @@
 #' data("Deru")
 #' 
 #' # View the first few rows of the taxa matrix
-#' head(Deru[1:5,1:5])
+#' head(Deru$microbiome[1:5,1:5])
 #' 
-#' # Access the population attribute to view genotypes
-#' population <- attr(Deru, "population")
+#' # Access the population object
+#' population <- Deru$population
+#' 
 "Deru"
