@@ -72,7 +72,7 @@ The data matrix loaded is the count matrix of taxa (in columns) across individua
 
 data("Deru")
 founder_object <- Deru
-founder_object[1:5,1:5]
+founder_object$microbiome[1:5,1:5]
 ```
 
 
@@ -81,7 +81,7 @@ founder_object[1:5,1:5]
 #| eval: yes
 
 #MoBPS population structure, use get.geno() and generation index to extract genotypes
-genotypes <- attr(founder_object, "population") %>%
+genotypes <- founder_object$population %>%
   get.geno(gen=1)
 
 genotypes[1:5,1:5]
@@ -143,7 +143,7 @@ The $\beta$ matrix is reachable through metadata of `holo_simu()` output.
 #| class.source: fold-hide
 
 #Correlation intra-cluster for cluster under genetic control
-beta <- generations_simu$metadata$Beta_matrix[taxa_assign_g_small != 0,]
+beta <- generations_simu$metadata$Beta_matrix$matrix[taxa_assign_g_small != 0,]
 cor_matrix <- cor(t(beta))
 taxa_order <- taxa_assign_g_small[taxa_assign_g_small != 0] %>% order()
 cor_matrix <- cor_matrix[taxa_order,taxa_order]
@@ -248,21 +248,21 @@ run_simulation_lambda <- function(i, it) {
       
       #Richness of G2 offsprings
       current_div <- generations_simu$G2$microbiome %>% 
-        richness_from_abundances_gen()
+        richness_from_abundances_gen(size_rmultinom = generations_simu$parameters$size_rmultinom)
       
       #Richness of offpsring's fathers
       previous_s_div <- sapply(generations_simu$G2$pedigree[,"father"],
                                function(x){generations_simu$G1$microbiome[,x]}) %>% 
-        richness_from_abundances_gen()
+        richness_from_abundances_gen(size_rmultinom = generations_simu$parameters$size_rmultinom)
       
       #Richness of offpsring's mothers
       previous_d_div <- sapply(generations_simu$G2$pedigree[,"mother"],
                                function(x){generations_simu$G1$microbiome[,x]}) %>% 
-        richness_from_abundances_gen()
+        richness_from_abundances_gen(size_rmultinom = generations_simu$parameters$size_rmultinom)
       
       #Richness of ambient microbiome
       ambient_div <- generations_simu$G2$mean_microbiome %>% 
-        richness_from_abundances_gen()
+        richness_from_abundances_gen(size_rmultinom = generations_simu$parameters$size_rmultinom)
       
       
       tibble(lambda = list(as.numeric(params_df_it[i,"lambda"])),
@@ -434,8 +434,11 @@ generations_simu <- holo_simu(h2 = h2,
 ```{r}
 #| class.source: fold-show
 
-diversities_microbiomes <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen) |> bind_rows(.id = "Generation")
-  p4 <- ggplot(diversities_microbiomes,aes(x=Shannon,y=Generation,fill=Generation)) +
+diversities_microbiomes <- generations_simu[-c(1,2)] %>% map(get_microbiomes) %>%
+  map(richness_from_abundances_gen, size_rmultinom = generations_simu$parameters$size_rmultinom) |>
+  bind_rows(.id = "Generation")
+  
+p4 <- ggplot(diversities_microbiomes,aes(x=Shannon,y=Generation,fill=Generation)) +
         geom_density_ridges(alpha=0.8) + 
         theme(aspect.ratio = 1.5)+
   scale_fill_manual(values = rev(greens_pal))
@@ -457,7 +460,7 @@ ggsave("../man/figures/ridges_shannon.png", p4, width = 9, height = 6)
   
 In breeding and selection programs, it is essential to account for fixed environmental effects, given their strong role in modulating an individual’s phenotype. It is therefore important to verify that simulated transgenerational hologenomic data can correctly integrate such factors under a variety of plausible scenarios, such as short-term treatments or long-term diet effects.  
   
-To build this modulation, the user build outside the main function the $\theta X$ product and choose precisely the values and the effect size given to each environmental effect. Dimensions of this product should match the `founder_object` ones.  
+To build this modulation, the user build outside the main function the $\theta X$ product and choose precisely the values and the effect size given to each environmental effect. Dimensions of this product should match the `founder_object$microbiome` ones.  
   
 To evaluate our simulation on that part we've computed a multidimensional scaling (MDS) of microbial abundance data using Bray-Curtis distances and ridges plot of Shannon index values.
   
@@ -485,8 +488,8 @@ antibio_ind <- sample(1:n_ind, 250) #selecting index of individuals
 antibio[antibio_ind] <- 1 
 X <- matrix(antibio, ncol = n_ind, nrow = 1)
 
-theta <- rnorm(ncol(founder_object),mean = 0, sd = 5) #sampling strong antibiotics effect
-theta <- ifelse(theta > 0, -theta, theta) %>% matrix(ncol = 1, nrow = ncol(founder_object)) #only negative values for all taxa
+theta <- rnorm(ncol(founder_object$microbiome),mean = 0, sd = 5) #sampling strong antibiotics effect
+theta <- ifelse(theta > 0, -theta, theta) %>% matrix(ncol = 1, nrow = ncol(founder_object$microbiome)) #only negative values for all taxa
 
 thetaX <- theta %*% X
 ```
@@ -519,7 +522,9 @@ Call to `get_microbiomes()` and `richness_from_abundances_gen()` to extract all 
 ```{r}
 #| class.source: fold-hide
 
-diversities_microbiomes <- generations_simu_env[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen) |> bind_rows(.id = "Generation")
+diversities_microbiomes <- generations_simu[-c(1,2)] %>% map(get_microbiomes) %>%
+  map(richness_from_abundances_gen, size_rmultinom = generations_simu$parameters$size_rmultinom) |>
+  bind_rows(.id = "Generation")
 
   p1 <- diversities_microbiomes %>% filter(!Generation %in% c("G4","G5")) %>%
     ggplot(aes(x=Shannon,y=Generation,fill=Generation)) +
@@ -547,7 +552,7 @@ ggsave("../man/figures/antibio_shannon.png", p1, width = 9, height = 6)
 ```{r}
 #| class.source: fold-hide
 
-microbiomes_all <- generations_simu_env[c(2,3,4,5)] %>% map(get_microbiomes, transpose = T, CLR = F) |> bind_rows(.id = "Generation")
+microbiomes_all <- generations_simu_env[c(3,4,5,6)] %>% map(get_microbiomes, transpose = T, CLR = F) |> bind_rows(.id = "Generation")
                           
 antibio_vec <- rep(0, nrow(microbiomes_all))
 id_antibio_ind <- rownames(microbiomes_all)[which(microbiomes_all$Generation == "G1")] %in% colnames((generations_simu_env$G1$microbiome))[which(X != 0)]
@@ -664,7 +669,9 @@ generations_simu_env <- holo_simu(h2 = h2,
 ```{r}
 #| class.source: fold-hide
 
-diversities_microbiomes <- generations_simu_env[c(2,3,4,5)] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen) |> bind_rows(.id = "Generation")
+diversities_microbiomes <- generations_simu_env[c(3,4,5,6)] %>% map(get_microbiomes) %>%
+  map(richness_from_abundances_gen, size_rmultinom = generations_simu$parameters$size_rmultinom) |> 
+  bind_rows(.id = "Generation")
 
   p4 <- ggplot(diversities_microbiomes,aes(x=Shannon,y=Generation,fill=Generation)) +
         geom_density_ridges(alpha=0.8) + 
@@ -690,7 +697,7 @@ ggsave("../man/figures/diet_shannon.png", p4, width = 9, height = 6)
 #| class.source: fold-hide
 
 #Post-processing of the data
-microbiomes_all <- generations_simu_env[c(2,3,4,5)] %>% map(get_microbiomes, transpose = T, CLR = F) |> bind_rows(.id = "Generation")
+microbiomes_all <- generations_simu_env[c(3,4,5,6)] %>% map(get_microbiomes, transpose = T, CLR = F) |> bind_rows(.id = "Generation")
 
 diet_vec <- rep(0, nrow(microbiomes_all))
 diet_vec[which(microbiomes_all$Generation == "G1")[diet_ind]] <- 1
@@ -837,9 +844,9 @@ run_simulation <- function(i, it) {
   
   gc() #clean memory
   
-  phenotypes_all <- generations_simu[-1] %>% map(get_phenotypes) |> bind_rows(.id = "Generation")
+  phenotypes_all <- generations_simu[-c(1,2)] %>% map(get_phenotypes) |> bind_rows(.id = "Generation")
   
-  tibble(mean_phenotypes = list(generations_simu[-1] %>% 
+  tibble(mean_phenotypes = list(generations_simu[-c(1,2)] %>% 
                                   map(get_mean_phenotypes)),
          metric_values = list(phenotypes_all %>% 
                                 group_by(Generation) %>% 
@@ -1070,12 +1077,12 @@ run_simulation_study <- function(i, it) {
                                 w.param = c(as.numeric(params_df[i,2]), as.numeric(params_df[i,3])),
                                 seed = as.numeric(params_df[i,4]))
   
-  tibble(mean_phenotypes_y = list(generations_simu[-1] %>% 
+  tibble(mean_phenotypes_y = list(generations_simu[-c(1,2)] %>% 
                                     map(get_mean_phenotypes) %>% 
                                     bind_rows(.id = "Generation")),
-         diversities_microbiomes = list(generations_simu[-1] %>%
+         diversities_microbiomes = list(generations_simu[-c(1,2)] %>%
                                           map(get_microbiomes) %>% 
-                                          map(richness_from_abundances_gen) |> 
+                                          map(richness_from_abundances_gen, size_rmultinom = generations_simu$parameters$size_rmultinom) |> 
                                           map(get_mean_diversity) %>% 
                                           bind_rows(.id = "Generation"))
          )

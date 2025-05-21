@@ -15,7 +15,9 @@
 #' @param ind_selected Vector of string values with individuals to keep, have to match rownames of count table file, DEFAULT = NULL
 #' 
 #' @return
-#' A data.frame corresponding to (rarefied) microbiome with individuals in rows and taxa in columns. Genotypes data.frame is an attribute called "population" reachable using `attr(output_name,"population")`
+#' A `list` containing two object.
+#' A `matrix` containing the microbiome(`microbiome`). 
+#' A `list` from [MoBPS](https://pubmed.ncbi.nlm.nih.gov/32229505/) package, containing the genotypes (`population`). Individuals are in columns and taxa or SNPs are in rows.
 #' 
 #' @note
 #' The number of individuals in the microbiome an genotype data must be equivalent.

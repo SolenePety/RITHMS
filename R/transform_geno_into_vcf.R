@@ -17,7 +17,7 @@
 #' n_ind <- 50
 #' n_snp <- 50
 #'
-#' # Create a little genotype matrix
+#' # Create a small genotype matrix
 #' set.seed(123)
 #' geno_matrix <- matrix(sample(0:2, size = n_ind*n_snp, replace = TRUE),
 #'                       nrow = n_snp, ncol = n_ind)

@@ -1,6 +1,8 @@
 ---
 title: "Calibrate simulation parameters"
 output: rmarkdown::html_vignette
+bibliography: "bibliography/references.bib"
+link-citations: "TRUE"
 vignette: >
   %\VignetteIndexEntry{Calibrate simulation parameters}
   %\VignetteEngine{knitr::rmarkdown}
@@ -25,8 +27,10 @@ After [loading](https://solenepety.github.io/RITHMS/docs/articles/import-data.ht
 
 We focus here on two parameters that influence the behavior of the simulation:
 
-- **The genetic effect size** $\sigma \beta$, which shapes the distribution of QTLs effects across microbiome. 
-- **The multinomial sampling size parameter**, used to perform the multinomial sampling step that converts abundances to counts data. 
+- **The genetic effect size** $\sigma_\beta$, which shapes the distribution of QTLs effects across microbiome.
+  *Note: The default value of this parameter is optimized to match the `Deru` dataset, wich sets it to 0.3.*
+- **The multinomial sampling size parameter**, used to perform the multinomial sampling step that converts abundances to counts data.
+  *Note: The default value of this parameter is optimized to match the `Deru` dataset, wich sets it to 10,000.*
 
 ```{r}
 #| warning: no
@@ -48,9 +52,9 @@ library(psych)
 
 ## Calibrating the Genetic Effect Size
 
-The genetic effect size parameter $\sigma \beta$ directly impacts the distribution of taxa heritabilities (Further explanations are given in [the article](https://arxiv.org/abs/2502.07366)). The `gen_effect_calibration()` function allows users to evaluate how different values of $\sigma \beta$ influence this distribution.
+The genetic effect size parameter $\sigma_\beta$ directly impacts the distribution of taxa heritabilities (Further explanations are given in @https://doi.org/10.48550/arxiv.2502.07366 ). The `gen_effect_calibration()` function allows users to evaluate how different values of $\sigma_\beta$ influence this distribution.
 
-In practice, heritabilities for most taxa are expected to lie around 0.1, rarely exceeding 0.5 as suggested in [Zang et al.](https://pubmed.ncbi.nlm.nih.gov/36102532/).
+In practice, heritabilities for most taxa are expected to lie around 0.1, rarely exceeding 0.5 as suggested in @Zang2022 .
 ```{r}
 data(Deru)
 ToyData <- Deru
@@ -84,7 +88,7 @@ p2 <- ggplot(out_data_filtered, aes(x = Heritability, fill = as.factor(effect.si
   geom_density(alpha = 0.5, color = NA) +
   geom_text(
     data = density_peaks,
-    aes(x = peak_x, y = peak, label = effect.size, color = as.factor(effect.size)),
+    aes(x = peak_x, y = peak, label = as.factor(effect.size), color = as.factor(effect.size)),
     inherit.aes = FALSE,
     hjust = -0.1,
     size = 3,
@@ -105,19 +109,20 @@ p2 <- ggplot(out_data_filtered, aes(x = Heritability, fill = as.factor(effect.si
     plot.title = element_text(size = 7),
     legend.position = "right"
   ) +
-  scale_fill_paletteer_d("werpals::uyuni") +
-  scale_color_paletteer_d("werpals::uyuni")
+  scale_fill_paletteer_d(paste0("werpals", "::", "uyuni")) +
+  scale_color_paletteer_d(paste0("werpals", "::", "uyuni")) +
+  guides(color = "none")
 
 ggplotly(p2)
 ```
 
 
-Based on the [Zang et al.](https://pubmed.ncbi.nlm.nih.gov/36102532/) expectations, a reasonable distribution of taxa heritabilities appears to correspond to a value of $\sigma \beta * \sqrt {QTL_o} = 0.3$ in the case of [Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/) dataset.
+Based on the @Zang2022 expectations, a reasonable distribution of taxa heritabilities appears to correspond to a value of $\sigma_\beta * \sqrt {QTL_o} = 0.3$ in the case of @Dru2020 dataset.
 
 
 ## Calibrating the Multinomial Sampling Size
 
-The multinomial sampling size is used to simulate count data based on relative abundances, specially if the selection is based on diversity. The default value (10,000) in the `richness_from_abundances_gen()` function was calibrated using the [Déru et al. (2020)](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/) dataset and reflects its typical sequencing depths.
+The multinomial sampling size is used to simulate count data based on relative abundances, specially if the selection is based on diversity. The default value (10,000) in the `richness_from_abundances_gen()` function was calibrated using the `Deru` dataset and reflects its typical sequencing depths.
 
 The counts are drawn according to a multinomial low such as $M(N,p)$ where $p$ is the relative abundances vector and $N$ the sampling size. Let the following formula $M(10000, (p_{i,1}, ..., p_{i,n_b}))$.
 This parameter should be adapted to your own dataset based on the observed sequencing depth distribution.
@@ -130,9 +135,9 @@ ToyData <- Deru
 
 
 ```{r}
-sample_depth <- rowSums(ToyData)
+sample_depth <- rowSums(ToyData$microbiome)
 
- p <- ggplot(data.frame(Depth = sample_depth), aes(x = Depth)) +
+ggplot(data.frame(Depth = sample_depth), aes(x = Depth)) +
   geom_histogram(bins = 120, alpha = 0.3, fill = "#1f618d", color = "#1f618d") +
   labs(title = "Sequencing depths distribution of the microbiome",
        x = "Sequencing depth",
@@ -141,30 +146,13 @@ sample_depth <- rowSums(ToyData)
   theme_minimal() +
   theme(legend.title = element_blank())
  
- ggplotly(p)
- 
-p2 <- ggplot(data.frame(Depth = sample_depth), aes(y = Depth, x = "")) +
-  geom_boxplot(fill = "#1f618d", alpha = 0.3) +
-  theme_minimal() +
-  labs(title = "Sequencing depths distribution of microbiome",
-       x = "Microbiome",
-       y = "Sequencing depth") +
-  coord_flip()
-  
-  ggplotly(p2)
- 
+summary(sample_depth)
 ```
 
 
-Both the arithmetic and geometric means of sequencing depths must be calculated to guide your choice. If the distribution is biased due to outliers, the geometric mean may be more appropriate.
-```{r}
-mean(sample_depth)
-geometric.mean(sample_depth)
-```
+We suggest using the median to promote robustness against potential outliers present in the dataset. In this example, the median is close to 10,000, supporting the default parameter value for this dataset.
 
-
-In this example, both means are close to 10,000, supporting the default parameter value for this dataset.
-
+## Summary of parameter calibration
 
 This vignette provides guidelines for calibrating these two parameters in the `holo_simu()` simulation framework based on a new dataset. These two parameters can be specified in the `holo_simu()` call, as well :
 ```{r}
@@ -185,3 +173,5 @@ generations_simu <- holo_simu(founder_object = ToyData,
 
 
 If you want to reproduce the [figures in the article](https://solenepety.github.io/RITHMS/articles/generate-figures.html) from your own dataset, remember to modify the `size_rmultinom` parameter of `richness_from_abundances_gen()` when computing [diversity](https://solenepety.github.io/RITHMS/articles/generate-figures.html#alpha-diversity-remains-stable-across-generations).
+
+## References

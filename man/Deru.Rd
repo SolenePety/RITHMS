@@ -5,7 +5,9 @@
 \alias{Deru}
 \title{Deru Dataset}
 \format{
-A matrix with 780 rows (individuals) and 1845 taxa, where each element represents the abundance of a specific taxon in a specific individual. Additionnally, there is an attribute "population" wich provides the genotypes of each individual, encoded as 0, 1 ,2.
+A \code{list} containing two different matrices, one for the microbiome and the other for the genotypes.
+\code{microbiome} : a matrix with 780 rows (individuals) and 1845 taxa, where each element represents the abundance of a specific taxon in a specific individual.
+\code{population} : object from \href{https://pubmed.ncbi.nlm.nih.gov/32229505/}{MoBPS} package which provides the genotypes of each individual, encoded as 0, 1 ,2.
 }
 \source{
 \href{https://pmc.ncbi.nlm.nih.gov/articles/PMC9194801/}{Déru et al.} for microbiota data and \href{https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/}{Déru et al. 2020} for genotypes data.
@@ -14,16 +16,17 @@ A matrix with 780 rows (individuals) and 1845 taxa, where each element represent
 Deru
 }
 \description{
-A subset of data from \href{https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/}{Déru et al. 2020} containing hologenomic data from 750 pigs fed a conventional diet. Genotypes are accessible thanks to the "population" attribute.
+A subset of data from \href{https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/}{Déru et al. 2020} containing hologenomic data from 750 pigs fed a conventional diet.
 }
 \examples{
 # Access the dataset
 data("Deru")
 
 # View the first few rows of the taxa matrix
-head(Deru[1:5,1:5])
+head(Deru$microbiome[1:5,1:5])
 
-# Access the population attribute to view genotypes
-population <- attr(Deru, "population")
+# Access the population object
+population <- Deru$population
+
 }
 \keyword{datasets}

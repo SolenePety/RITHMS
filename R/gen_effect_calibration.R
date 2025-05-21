@@ -9,7 +9,7 @@
 #' @importFrom glue glue
 #' @importFrom magrittr %>%
 #' 
-#' @param founder_object Output of generate_founder() function
+#' @param founder_object Output of [generate_founder()] or [read_input_data()] function
 #' @param taxa_assign_g Factor vector giving cluster assignment for all taxa, typical output of assign_taxa()
 #' @param correlation Correlation between taxa within the same cluster, value between 0 and 1, DEFAULT = 0.5
 #' @param effect.size Vector giving the size of genetic effect to try 
@@ -38,11 +38,11 @@ gen_effect_calibration <- function(founder_object,
   #init of all parameters
   
   #Microbiome part
-  M <- founder_object %>% t() %>% apply(2, \(x) x/sum(x))
+  M <- founder_object$microbiome %>% t() %>% apply(2, \(x) x/sum(x))
   M0_clr <- M |> t() |> clr() |> t()
   taxa_scale <- apply(M0_clr, 1, sd)
   #Genotype
-  G <- get.geno(attr(founder_object,"population"),gen=1)
+  G <- get.geno(founder_object$population,gen=1)
   
   #beta arguments
   n_g <- nrow(G)
@@ -61,7 +61,7 @@ gen_effect_calibration <- function(founder_object,
                                             correlation = correlation, 
                                             effect_size = 0.1)
   
-  beta_info <- attr(beta_innit, "sim_params")
+  beta_info <- beta_innit$sim_params
   
   for(e in effect.size){
     beta <- compute_beta_matrix_cluster(n_b = nrow(M), 
@@ -72,9 +72,9 @@ gen_effect_calibration <- function(founder_object,
                                         correlation = correlation, 
                                         effect_size = e,
                                         beta_info = beta_info)
-    beta_test <- attr(beta, "sim_params")
+    beta_test <- beta$sim_params
     #print(beta_test$id_otu[1])
-    betaG_e <- compute_beta_g(beta, G, noise = 0.5, taxa_scale = taxa_scale)
+    betaG_e <- compute_beta_g(beta$matrix, G, noise = 0.5, taxa_scale = taxa_scale)
     betaG <- attr(betaG_e,"noise")$betag
     betag_var <- betaG |> apply(1,var)
     
