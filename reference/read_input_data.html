@@ -82,7 +82,9 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data.frame corresponding to (rarefied) microbiome with individuals in rows and taxa in columns. Genotypes data.frame is an attribute called "population" reachable using <code>attr(output_name,"population")</code></p>
+    <p>A <code>list</code> containing two object.
+A <code>matrix</code> containing the microbiome(<code>microbiome</code>).
+A <code>list</code> from <a href="https://pubmed.ncbi.nlm.nih.gov/32229505/" class="external-link">MoBPS</a> package, containing the genotypes (<code>population</code>). Individuals are in columns and taxa or SNPs are in rows.</p>
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>

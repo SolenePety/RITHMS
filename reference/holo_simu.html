@@ -186,8 +186,10 @@ Example use case: refer to the vignette on <a href="https://solenepety.github.io
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A big list object with metada info such as beta matrix details and each generation at level 1. For each generation, the genotypes, the microbiomes, the phenotypes, the pedigree and the individuals selected can be reachable.</p>
-    </div>
+    <p>An important list with several different objects :</p><ul><li><p><code>parameters</code>: the set of parameters used for the simulation when calling <code>holo_simu()</code></p></li>
+<li><p><code>metadata</code>: metadata info such as beta matrix details</p></li>
+<li><p><code>G0</code> to <code>G5</code> (5 generations by default): computational characteristics of generations. For each generation, genotypes, microbiomes, phenotypes, pedigree and individuals selected can be reachable.</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="required-parameters">Required parameters<a class="anchor" aria-label="anchor" href="#required-parameters"></a></h2>
 
