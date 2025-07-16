@@ -22,8 +22,7 @@ License: GPL (>= 3)
 URL: https://arxiv.org/abs/2502.07366
 Depends: 
     R (>= 4.4.0)
-Imports: 
-    bazar,
+Imports:
     compositions,
     data.table,
     dirmult,

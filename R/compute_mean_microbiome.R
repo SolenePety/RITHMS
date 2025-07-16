@@ -5,7 +5,6 @@
 #' This function estimate the mean microbiome by averaging abundances across individuals for each taxa. Optionally, 
 #' it use a Dirichlet distribution to simulate inter-individual variability centered arround the mean.
 #' 
-#' @importFrom bazar stopif
 #' @importFrom dirmult rdirichlet
 #' @importFrom magrittr %>%
 #' 
@@ -25,7 +24,10 @@
 compute_mean_microbiome <- function(microbiome, dir = F, n_ind = NULL, ao, mix.params){
   mean_microbiome <- rowMeans(microbiome)
   if(dir){
-    stopif(is.null(n_ind))
+    if (is.null(n_ind)){
+      stop("`n_ind` must be provided when `dir = TRUE`")
+    }
+    
     dir_mean <- rdirichlet(n_ind,as.numeric(mean_microbiome)*ao) %>% t()
     mix_mean <- (mix.params[1] * dir_mean + mix.params[2] * matrix(mean_microbiome,nrow=nrow(dir_mean),ncol=ncol(dir_mean),byrow=F))
     attr(mix_mean, "dirichlet") <- dir_mean
