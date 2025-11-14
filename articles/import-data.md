@@ -1,0 +1,71 @@
+# Import Data
+
+``` r
+library(RITHMS)
+```
+
+This vignette presents the steps required to import your own data into
+the package. This mainly involves creating the `founder-object`
+combining genetic and microbiotic information, thanks to the
+[`MoBPS`](https://github.com/tpook92/MoBPS) package.
+
+``` r
+library(data.table)
+library(dplyr)
+library(glue)
+library(magrittr)
+library(tibble)
+library(MoBPS)
+```
+
+## About accepted formats
+
+The `MoBPS` package natively accepts two file formats to generate the
+starting population with the
+[`creating.diploid()`](https://rdrr.io/pkg/MoBPS/man/creating.diploid.html)
+function: PED/MAP format and VCF. Thus, it is possible to start a
+simulation from this kind of format, just by specify the type with the
+`file_type` argument in the
+[`read_input_data()`](../reference/read_input_data.md) function.
+
+``` r
+# Create founder object from PED/MAP set
+founder_object <- read_input_data("path/to/microbiome.txt", "path/to/pedmap/'prefix'", biome_id_column = "sample_id", file_type = "pedmap")
+
+#Create founder object from VCF
+founder_object <- read_input_data("path/to/microbiome.txt", "path/to/vcf/'prefix'", biome_id_column = "sample_id", file_type = "vcf")
+```
+
+Microbiotic data is expected in the form of count table, with OTUs in
+columns and individuals in rows. (A column dedicated to individual
+identifiers is required). This data is filtered according to a
+prevalence threshold thanks to the `threshold` argument in the
+[`read_input_data()`](../reference/read_input_data.md).
+
+## Import simple genotype tables
+
+It is possible to provide RITHMS with a simple genotype matrix encoded
+in the 0,1,2 format, with a prior file transformation, which we detail
+below. The VCF file can be written by specifying the `output_type` and
+`output_path` arguments.
+
+``` r
+n_ind <- 50
+n_snp <- 50
+
+# Create a little genotype matrix
+set.seed(123)
+geno_matrix <- matrix(sample(0:2, size = n_ind*n_snp, replace = TRUE),
+                      nrow = n_snp, ncol = n_ind)
+
+# Transform genotype matrix into VCF
+vcf <- transform_geno_into_vcf(geno_matrix, output_type = "dataframe", output_path = "./output/path/file.vcf")
+head(vcf[1:3,1:7])
+```
+
+Then, you can continue with the classical import.
+
+``` r
+#Create founder object from VCF
+founder_object <- read_input_data("path/to/microbiome.txt", "path/to/vcf/'prefix'", biome_id_column = "sample_id", file_type = "vcf")
+```

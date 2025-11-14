@@ -1,8 +1,8 @@
 pandoc: 3.1.11
-pkgdown: 2.1.3
+pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   calibrate-simulation-parameters: calibrate-simulation-parameters.html
   generate-figures: generate-figures.html
   import-data: import-data.html
-last_built: 2025-11-01T09:05Z
+last_built: 2025-11-14T14:13Z

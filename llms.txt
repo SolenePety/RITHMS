@@ -1,0 +1,199 @@
+# RITHMS ![](reference/figures/hex_rithms.png)
+
+Our framework, **R** **I**mplementation of a **T**ransgenerational
+**H**ologenomic **M**odel-based **S**imulator (RITHMS) is an open-source
+package, builds upon the MoBPS package and incorporates the distinctive
+architecture of the microbiota, notably vertical and horizontal transfer
+as well as modulation due to the environment and host genetics. In
+addition, RITHMS can account for a variety of selection strategies, is
+adaptable to different genetic architectures.
+
+Full documentation website on: <https://SolenePety.github.io/RITHMS>  
+Last code version on: <https://github.com/SolenePety/RITHMS>
+
+Here is a little summary of how RITHMS work, but you can read the
+[preprint](https://arxiv.org/abs/2502.07366) for more details.
+
+![](reference/figures/core_algorithm.png)
+
+## Installation
+
+You can install the development version of RITHMS from GitHub using
+`remotes` as shown below.
+
+``` r
+
+# install.packages("remotes")
+
+remotes::install_github("SolenePety/RITHMS")
+```
+
+## Toy dataset
+
+You already have a toy dataset, a subset from [Déru et
+al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/), there are
+**1845 species** and **780 individuals**, that show you the expected
+structure of input data :
+
+``` r
+library(RITHMS)
+data("Deru")
+ToyData <- Deru
+```
+
+To import your own dataset, you can refer to the following
+[vignette](https://solenepety.github.io/RITHMS/articles/import-data.html).
+
+## Quick Start from the toy dataset
+
+``` r
+taxa_assign_g <- assign_taxa(ToyData)
+generations_simu <- holo_simu(h2 = 0.25,
+                              b2 = 0.25,
+                              founder_object = ToyData,
+                              n_clust = taxa_assign_g,
+                              n_ind = 500)
+```
+
+## Quick Start from your own dataset
+
+If you’re using your own dataset instead of the toy dataset, make sure
+to calibrate the simulation parameters accordingly. In particular, the
+`n_ind` (number of individuals in each generation), the genetic effect
+size `effect.size` and the multinomial sampling size parameter
+`size_rmultinom` used in holo_simu() should be consistent with the
+characteristics of your dataset.
+
+To help you with this, please refer to the [dedicated
+vignette](https://solenepety.github.io/RITHMS/articles/calibrate-simulation-parameters.html).
+
+``` r
+# from VCf format
+founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
+                                  path_to_pedmap = "/path/to/vcf/'prefix'",
+                                  biome_id_column = "ind_id")
+# from Ped/Map format
+founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
+                                  path_to_pedmap = "/path/to/pedmap/'prefix'",
+                                  biome_id_column = "ind_id")
+
+taxa_assign_g <- assign_taxa(founder_object)
+generations_simu <- holo_simu(h2 = 0.25,
+                              b2 = 0.25, 
+                              founder_object = founder_object,
+                              n_clust = taxa_assign_g,
+                              n_ind = 500,
+                              effect.size = 0.3,
+                              size_rmultinom = 10000)
+# Choose n_ind, effect.size and size_rmultinom such that it is consistent with the initial dimensions of your data set
+```
+
+## To go further
+
+If you’re interested into reproducing the figures of the article you can
+take a look at [this
+vignette](https://solenepety.github.io/RITHMS/articles/generate-figures.html#fine-selection-of-h2_d-b2-and-selection-schemes)
+to generate the figures coming from the article
+
+# Package index
+
+## Formatting data functions
+
+Set of useful functions for preparing input data
+
+- [`read_input_data()`](read_input_data.md) : Formatting data from file
+  paths to base population object
+
+- [`rarefied_microbiome()`](rarefied_microbiome.md) : Rarefaction step
+  within read_input_data
+
+- [`generate_founder()`](generate_founder.md) :
+
+  Formatting of ped/map files or vcf into haplotypes table and add it
+  inside the `founder_object` list.
+
+## Taxa assignation function
+
+Assign all taxa to a cluster
+
+- [`assign_taxa()`](formatting_data.md) : Assign all taxa to a cluster,
+  eventually under genetic control using hclust
+
+## Calibration of genetic effect
+
+- [`gen_effect_calibration()`](gen_effect_calibration.md) : Calibration
+  of genetic effect from founder population data
+
+## HoloSimu
+
+The main function
+
+- [`holo_simu()`](holo_simu.md) : Main function to generate
+  transgenerational hologenomic data
+
+## Useful function relative to HoloSimu
+
+Set of functions used within HoloSimu to generate the components of each
+generation, such as phenotypes and microbiomes.
+
+- [`compute_beta_g()`](compute_beta_g.md) : Compute product of matrixes
+  based on few parameters
+- [`compute_current_microbiome()`](compute_current_microbiome.md) :
+  Compute microbiomes for all individuals of current generation
+  gathering all relevant object already computed.
+- [`compute_mean_microbiome()`](compute_mean_microbiome.md) : Compute
+  the mean for each taxa across population
+- [`compute_phenotypes()`](compute_phenotypes.md) : Compute phenotype
+  values based on generated objects of the current generation
+- [`calibrate_params_phenotypes()`](calibrate_params_phenotypes.md) :
+  Calibration coefficients to compute phenotypes
+- [`compute_beta_matrix_cluster()`](compute_beta_matrix_cluster.md) :
+  Generate beta matrix giving genetic effect per SNP on taxa abundances.
+
+## Get functions
+
+Useful get functions for accessing the components of each generation
+from HoloSimu output.
+
+- [`get_microbiomes()`](get_microbiomes.md) : Useful function to extract
+  microbiomes from RITHMS output
+- [`get_mean_phenotypes()`](get_mean_phenotypes.md) : Useful function to
+  extract mean phenotype values from RITHMS output
+- [`get_phenotypes_value()`](get_phenotypes_value.md) : Useful function
+  to extract phenotype values from RITHMS output ("gq" by default)
+- [`get_phenotypes()`](get_phenotypes.md) : Useful function to extract
+  all phenotype values as data frame from RITHMS output
+- [`get_om_beta_g()`](get_om_beta_g.md) : Useful function to extract
+  omega beta G values from RITHMS output
+- [`get_selected_ind()`](get_selected_ind.md) : Useful function to
+  extract ID of selected individuals from RITHMS output
+- [`get_mean_diversity()`](get_mean_diversity.md) : Useful function to
+  extract Shannon diversity from RITHMS output
+
+## Estimate diversity metrics
+
+- [`richness_from_abundances_gen()`](richness_from_abundances_gen.md) :
+  Estimate diversity metrics from relative abundances
+
+## Another little useful functions across the HoloSimu process
+
+- [`replace_zero()`](replace_zero.md) : Replace zero in the matrix by
+  1e-15 to avoid infinite values when CLR transformation is computed
+- [`root()`](root.md) : Compute root value for beta matrix construction
+- [`select_individual()`](select_individual.md) : Obtain id of the
+  parents selected for the next generation based on the criteria chosen
+  by the user
+- [`transform_geno_into_vcf()`](transform_geno_into_vcf.md) : Convert a
+  0/1/2 genotype matrix into a VCF-like format
+
+## Dataset
+
+- [`Deru`](Deru.md) : Deru Dataset
+
+# Articles
+
+### All vignettes
+
+- [Calibrate simulation parameters](calibrate-simulation-parameters.md):
+- [Generate figures](generate-figures.md):
+- [Import Data](import-data.md):
