@@ -21,7 +21,7 @@ Description: RITHMS, an R Implementation of a Transgenerational
 License: GPL (>= 3)
 URL: https://arxiv.org/abs/2502.07366
 Depends: 
-    R (>= 4.3.2)
+    R (>= 4.3.0)
 Imports:
     compositions,
     data.table,
