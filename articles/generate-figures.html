@@ -92,7 +92,8 @@ metrics</strong>, exhibited the expected behavior in terms and
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/teunbrand/ggh4x" class="external-link">ggh4x</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/tpq/peakRAM" class="external-link">peakRAM</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glue.tidyverse.org/" class="external-link">glue</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glue.tidyverse.org/" class="external-link">glue</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">BGLR</span><span class="op">)</span></span></code></pre></div>
 <p>To visualise changes over generations, we will use a green gradient
 :</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -1031,6 +1032,324 @@ population and the last generation but it could be any generation.</p>
 <span></span>
 <span><span class="va">p</span></span></code></pre></div>
 <p><img src="../reference/figures/use_case.png" style="width:80.0%"></p>
+</div>
+<div class="section level2">
+<h2 id="impact-of-data-subsampling-on-variance-component-estimation">
+<strong>Impact of data subsampling on variance component
+estimation</strong><a class="anchor" aria-label="anchor" href="#impact-of-data-subsampling-on-variance-component-estimation"></a>
+</h2>
+<p>To illustrate another possible use of RITHMS, we conducted a study of
+the estimation of variance components under different data availability
+scenarios. Such a study is of particular interest to evaluate the impact
+of different sampling strategies, for example to account for financial
+or experimental constraints. First, we simulated a population of 2500
+hologenotyped and phenotyped individuals over 5% with generations, with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">\lambda = 0.5</annotation></semantics></math>.
+Then we estimated the direct heritability
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>h</mi><mi>d</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">h^2_d</annotation></semantics></math>)
+and microbiability
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>b</mi><mn>2</mn></msup><annotation encoding="application/x-tex">b^2</annotation></semantics></math>)
+with a GMBLUP model using the <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4196607/" class="external-link"> R package</a>
+and linear scaled kernels of genotypes and microbiota, based on various
+subsets of individuals: (a) the full dataset (2500 individuals), (b) a
+random subset of 30% of individuals (750 individuals), (c) only breeding
+parents (750 individuals), and (d) only mothers (375 individuals). The
+following figure shows the distribution of the estimated variance
+components across 500 independent iterations for each subset.</p>
+<div class="section level3">
+<h3 id="additional-functions">
+<strong>Additional functions</strong><a class="anchor" aria-label="anchor" href="#additional-functions"></a>
+</h3>
+<p>Several functions have been written to compute this study case.</p>
+<div class="section level4">
+<h4 id="build-linear-kernels">
+<strong>Build linear kernels</strong><a class="anchor" aria-label="anchor" href="#build-linear-kernels"></a>
+</h4>
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">get_genotypes</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">transpose</span> <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span><span class="op">(</span><span class="va">transpose</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">data</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html" class="external-link">pluck</a></span><span class="op">(</span><span class="st">"genotypes"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">data</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html" class="external-link">pluck</a></span><span class="op">(</span><span class="st">"genotypes"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">build_kernel_G</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">gen_simu</span>,</span>
+<span>                           <span class="va">mask_ind</span> <span class="op">=</span> <span class="cn">F</span>,</span>
+<span>                           <span class="va">mask_crit</span> <span class="op">=</span> <span class="st">"random"</span>,</span>
+<span>                           <span class="va">mask_size</span> <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="co">#####</span></span>
+<span>  <span class="co"># ID of individuals to be included in the kernels</span></span>
+<span>  <span class="co">#####</span></span>
+<span>  <span class="va">ind_id</span> <span class="op">&lt;-</span> <span class="va">gen_simu</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">get_microbiomes</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">colnames</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">.</span>,use.names <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span><span class="op">(</span><span class="va">mask_ind</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="kw">if</span><span class="op">(</span><span class="va">mask_crit</span> <span class="op">==</span> <span class="st">"random"</span><span class="op">)</span><span class="op">{</span></span>
+<span>      <span class="va">ind_omics</span> <span class="op">&lt;-</span> <span class="va">ind_id</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">*</span><span class="va">mask_size</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">}</span><span class="kw">else</span><span class="op">{</span></span>
+<span>      <span class="va">id_selected</span> <span class="op">&lt;-</span> <span class="va">gen_simu</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">get_selected_ind</span><span class="op">)</span></span>
+<span>      <span class="kw">if</span><span class="op">(</span><span class="va">mask_crit</span> <span class="op">==</span> <span class="st">"female"</span><span class="op">)</span><span class="op">{</span></span>
+<span>        <span class="va">ind_omics</span> <span class="op">&lt;-</span> <span class="va">id_selected</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span></span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/split.html" class="external-link">split</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_extract.html" class="external-link">str_extract</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"^[FM]"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="cn">F</span></span>
+<span>        <span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="op">)</span> </span>
+<span>      <span class="op">}</span><span class="kw">else</span><span class="op">{</span></span>
+<span>        <span class="va">ind_omics</span> <span class="op">&lt;-</span> <span class="va">id_selected</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">.</span>,use.names <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span><span class="kw">else</span><span class="op">{</span></span>
+<span>    <span class="va">ind_omics</span> <span class="op">&lt;-</span> <span class="va">ind_id</span></span>
+<span>  <span class="op">}</span></span>
+<span>  </span>
+<span>  <span class="co">#####</span></span>
+<span>  <span class="co"># Extract genotypes</span></span>
+<span>  <span class="co">#####</span></span>
+<span>  <span class="va">G_long</span> <span class="op">&lt;-</span> <span class="va">gen_simu</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">get_genotypes</span>, transpose <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="va">G_long</span> <span class="op">&lt;-</span> <span class="va">G_long</span><span class="op">[</span><span class="va">ind_omics</span>,<span class="op">]</span></span>
+<span>  </span>
+<span>  <span class="co">#View(G_long)</span></span>
+<span>  <span class="va">G_scaled</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale</a></span><span class="op">(</span><span class="va">G_long</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">G_long</span>, <span class="fl">2</span>, <span class="va">var</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">G_scaled</span><span class="op">)</span></span>
+<span>  <span class="va">K</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/crossprod.html" class="external-link">tcrossprod</a></span><span class="op">(</span><span class="va">G_scaled</span><span class="op">)</span><span class="op">/</span><span class="va">s</span></span>
+<span>  </span>
+<span>  <span class="co"># Store the hologenotyped individuals</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">K</span>,<span class="st">"omics"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">ind_omics</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">K</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">process_microbiome</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">agg_microbiome</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">B</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">agg_microbiome</span>, <span class="va">as.data.frame</span><span class="op">)</span></span>
+<span>  <span class="va">B_full</span> <span class="op">&lt;-</span> <span class="va">B</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span>.id <span class="op">=</span> <span class="st">"Generation"</span><span class="op">)</span></span>
+<span>  <span class="va">B</span> <span class="op">&lt;-</span> <span class="va">B_full</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">B</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">build_kernel_M</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">gen_simu</span>,</span>
+<span>                           <span class="va">ind_omics</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="co">#####</span></span>
+<span>  <span class="co"># Extract microbiomes</span></span>
+<span>  <span class="co">#####</span></span>
+<span>  <span class="va">B_long</span> <span class="op">&lt;-</span> <span class="va">gen_simu</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">get_microbiomes</span>, transpose <span class="op">=</span> <span class="cn">T</span>, CLR <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">M_join</span> <span class="op">&lt;-</span> <span class="fu">process_microbiome</span><span class="op">(</span><span class="va">B_long</span><span class="op">)</span><span class="op">[</span><span class="va">ind_omics</span>,<span class="op">]</span></span>
+<span>  <span class="va">M_scaled</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">M_join</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">M_scaled</span><span class="op">)</span></span>
+<span>  <span class="va">K</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/crossprod.html" class="external-link">tcrossprod</a></span><span class="op">(</span><span class="va">M_scaled</span><span class="op">)</span><span class="op">/</span><span class="va">p</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">K</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="call-to-bglr">
+<strong>Call to BGLR</strong><a class="anchor" aria-label="anchor" href="#call-to-bglr"></a>
+</h4>
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">run_BGLR</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">G</span>, <span class="va">M</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">yNA</span>, <span class="va">index</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">ETA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="va">ETA</span><span class="op">[[</span><span class="st">"genotype"</span><span class="op">]</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>K <span class="op">=</span> <span class="va">G</span>, model <span class="op">=</span> <span class="st">"RKHS"</span>, scale <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">M</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="va">ETA</span><span class="op">[[</span><span class="st">"microbiota"</span><span class="op">]</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>K <span class="op">=</span> <span class="va">M</span>, model <span class="op">=</span> <span class="st">"RKHS"</span>, scale <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">fm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BGLR/man/BGLR.html" class="external-link">BGLR</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">yNA</span>, ETA <span class="op">=</span> <span class="va">ETA</span>, nIter <span class="op">=</span> <span class="fl">3000</span>, burnIn <span class="op">=</span> <span class="fl">1000</span>, saveAt <span class="op">=</span> <span class="st">"RKHS_"</span>,verbose<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    coeffMHat <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">M</span><span class="op">)</span><span class="op">)</span> <span class="cn">NULL</span> <span class="kw">else</span> <span class="va">fm</span><span class="op">[[</span><span class="st">"ETA"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"microbiota"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"u"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    coeffGHat <span class="op">=</span> <span class="va">fm</span><span class="op">[[</span><span class="st">"ETA"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"genotype"</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">"u"</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>    varM <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">M</span><span class="op">)</span><span class="op">)</span> <span class="cn">NULL</span> <span class="kw">else</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/scan.html" class="external-link">scan</a></span><span class="op">(</span><span class="st">"RKHS_ETA_microbiota_varU.dat"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    varG <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/scan.html" class="external-link">scan</a></span><span class="op">(</span><span class="st">"RKHS_ETA_genotype_varU.dat"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    varE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/scan.html" class="external-link">scan</a></span><span class="op">(</span><span class="st">'RKHS_varE.dat'</span>,quiet <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    yHat <span class="op">=</span> <span class="va">fm</span><span class="op">$</span><span class="va">yHat</span><span class="op">[</span><span class="va">index</span><span class="op">]</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="call-to-rithms-and-result-extraction">
+<strong>Call to RITHMS and result extraction</strong><a class="anchor" aria-label="anchor" href="#call-to-rithms-and-result-extraction"></a>
+</h4>
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">MBLUP_kernel</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">gen_simu</span>,</span>
+<span>                         <span class="va">MBLUP</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                         <span class="va">mask_ind</span> <span class="op">=</span> <span class="cn">F</span>,</span>
+<span>                         <span class="va">mask_crit</span> <span class="op">=</span> <span class="st">"random"</span>,</span>
+<span>                         <span class="va">mask_size</span> <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span><span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="va">last_gen</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">gen_simu</span><span class="op">)</span>,n<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">G</span> <span class="op">&lt;-</span> <span class="fu">build_kernel_G</span><span class="op">(</span>gen_simu <span class="op">=</span> <span class="va">gen_simu</span>,</span>
+<span>                    mask_ind <span class="op">=</span> <span class="va">mask_ind</span>,</span>
+<span>                    mask_crit <span class="op">=</span> <span class="va">mask_crit</span>,</span>
+<span>                    mask_size <span class="op">=</span> <span class="va">mask_size</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="kw">if</span><span class="op">(</span><span class="va">MBLUP</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="va">M</span> <span class="op">&lt;-</span> <span class="fu">build_kernel_M</span><span class="op">(</span>gen_simu <span class="op">=</span> <span class="va">gen_simu</span>,</span>
+<span>                      ind_omics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">G</span>,<span class="st">"omics"</span><span class="op">)</span><span class="op">)</span> </span>
+<span>  <span class="op">}</span><span class="kw">else</span><span class="op">{</span></span>
+<span>    <span class="va">M</span> <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  <span class="op">}</span></span>
+<span>  </span>
+<span>  <span class="co">#####</span></span>
+<span>  <span class="co"># Extract phenotypes and remove G5 (without G0)</span></span>
+<span>  <span class="co">#####</span></span>
+<span>  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="va">gen_simu</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">get_phenotypes</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span>.id <span class="op">=</span> <span class="st">"Generation"</span><span class="op">)</span></span>
+<span>  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="va">Y</span><span class="op">[</span><span class="va">Y</span><span class="op">$</span><span class="va">ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">G</span>,<span class="st">"omics"</span><span class="op">)</span>,<span class="op">]</span></span>
+<span>  <span class="va">yNA</span> <span class="op">&lt;-</span> <span class="va">Y</span><span class="op">$</span><span class="va">y</span></span>
+<span>  <span class="va">G5_index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">Y</span><span class="op">$</span><span class="va">Generation</span> <span class="op">==</span> <span class="va">last_gen</span><span class="op">)</span></span>
+<span>  <span class="va">yNA</span><span class="op">[</span><span class="va">G5_index</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
+<span>  </span>
+<span>  <span class="co">#####</span></span>
+<span>  <span class="co"># Fits the (M)G-BLUP model on aggregated and random one</span></span>
+<span>  <span class="co">#####</span></span>
+<span>  <span class="va">results_std</span> <span class="op">&lt;-</span> <span class="fu">run_BGLR</span><span class="op">(</span>G <span class="op">=</span> <span class="va">G</span>, M <span class="op">=</span> <span class="va">M</span>, yNA <span class="op">=</span> <span class="va">yNA</span>, index <span class="op">=</span> <span class="va">G5_index</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co">#####</span></span>
+<span>  <span class="co"># Output</span></span>
+<span>  <span class="co">#####</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>    coeffMHat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">results_std</span><span class="op">$</span><span class="va">coeffMHat</span><span class="op">)</span>,</span>
+<span>    coeffGHat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">results_std</span><span class="op">$</span><span class="va">coeffGHat</span><span class="op">)</span>,</span>
+<span>    varM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">results_std</span><span class="op">$</span><span class="va">varM</span><span class="op">)</span>,</span>
+<span>    varG <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">results_std</span><span class="op">$</span><span class="va">varG</span><span class="op">)</span>,</span>
+<span>    varE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">results_std</span><span class="op">$</span><span class="va">varE</span><span class="op">)</span>,</span>
+<span>    gb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">Y</span><span class="op">$</span><span class="va">gb</span><span class="op">)</span>,</span>
+<span>    gq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">Y</span><span class="op">$</span><span class="va">gq</span><span class="op">)</span>,</span>
+<span>    real_y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">Y</span><span class="op">$</span><span class="va">y</span><span class="op">[</span><span class="va">G5_index</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>    yHat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">results_std</span><span class="op">$</span><span class="va">yHat</span><span class="op">)</span>,</span>
+<span>    ind_omics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">G</span>,<span class="st">"omics"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">run_simulation</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim_ID</span>, <span class="va">effect.size</span>, <span class="va">h2</span>, <span class="va">b2</span>, <span class="va">seed</span>, <span class="va">lambda</span>, <span class="va">log_file</span>, <span class="va">mask_ind</span> <span class="op">=</span> <span class="cn">F</span>, <span class="va">mask_crit</span> <span class="op">=</span> <span class="st">"random"</span>, <span class="va">mask_size</span> <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">{</span></span>
+<span></span>
+<span>     <span class="va">taxa_assign_g</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/formatting_data.html">assign_taxa</a></span><span class="op">(</span><span class="va">founder_object</span><span class="op">)</span></span>
+<span>  </span>
+<span>     <span class="va">generations_simu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/holo_simu.html">holo_simu</a></span><span class="op">(</span></span>
+<span>       h2 <span class="op">=</span> <span class="va">h2</span>, </span>
+<span>       b2 <span class="op">=</span> <span class="va">b2</span>, </span>
+<span>       correlation <span class="op">=</span> <span class="fl">0.5</span>, </span>
+<span>       n_gen <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>       founder_object <span class="op">=</span> <span class="va">founder_object</span>,</span>
+<span>       n_clust <span class="op">=</span> <span class="va">taxa_assign_g</span>, </span>
+<span>       selection <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>       size_selection_F <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>       size_selection_M <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>       selection_type <span class="op">=</span> <span class="st">"G"</span>,</span>
+<span>       n_ind <span class="op">=</span> <span class="fl">500</span>, </span>
+<span>       verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>       noise.microbiome <span class="op">=</span> <span class="fl">0.6</span>, </span>
+<span>       effect.size <span class="op">=</span> <span class="va">effect.size</span>,</span>
+<span>       lambda <span class="op">=</span> <span class="va">lambda</span>,</span>
+<span>       seed <span class="op">=</span> <span class="va">seed</span></span>
+<span>     <span class="op">)</span></span>
+<span>    </span>
+<span>    <span class="va">MGBLUP_results</span> <span class="op">&lt;-</span> <span class="fu">MBLUP_kernel</span><span class="op">(</span><span class="va">generations_simu</span>, </span>
+<span>                                   MBLUP <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                                   mask_ind <span class="op">=</span> <span class="va">mask_ind</span>,</span>
+<span>                                   mask_crit <span class="op">=</span> <span class="va">mask_crit</span>,</span>
+<span>                                   mask_size <span class="op">=</span> <span class="va">mask_size</span><span class="op">)</span></span>
+<span>    </span>
+<span>    <span class="va">MGBLUP_results_full</span> <span class="op">&lt;-</span> <span class="va">MGBLUP_results</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>sim_ID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">sim_ID</span><span class="op">)</span>,</span>
+<span>             nb_otug <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">generations_simu</span><span class="op">$</span><span class="va">metadata</span><span class="op">$</span><span class="va">otu_list</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>             omega <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">generations_simu</span><span class="op">$</span><span class="va">metadata</span><span class="op">$</span><span class="va">B_coeff</span><span class="op">)</span>,</span>
+<span>             alpha <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">generations_simu</span><span class="op">$</span><span class="va">metadata</span><span class="op">$</span><span class="va">G_coeff</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>    </span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">MGBLUP_results_full</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="simulation-parameters">
+<strong>Simulation parameters</strong><a class="anchor" aria-label="anchor" href="#simulation-parameters"></a>
+</h3>
+<p>For the article, 500 iterations were performed.</p>
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">n_it</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">200</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mask_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>  mask_ind  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">TRUE</span>, <span class="cn">TRUE</span>, <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  mask_crit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="st">"random"</span>, <span class="st">"random"</span>, <span class="st">"parents"</span>, <span class="st">"female"</span><span class="op">)</span>,</span>
+<span>  mask_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="cn">NA</span>, <span class="cn">NA</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">params_df_full</span> <span class="op">&lt;-</span> <span class="va">mask_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand.html" class="external-link">crossing</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>b2 <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span>,</span>
+<span>           <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>effect.size <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>,</span>
+<span>           <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>h2 <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span>,</span>
+<span>           <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>           <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>replicate <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">n_it</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>sim_ID <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>         seed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">100</span><span class="op">:</span><span class="fl">100000</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         .before <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">params_blocks</span> <span class="op">&lt;-</span> <span class="va">params_df_full</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">mask_crit</span>, <span class="va">replicate</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_split.html" class="external-link">group_split</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">results_demo</span> <span class="op">&lt;-</span> <span class="va">params_blocks</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html" class="external-link">map_dfr</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">block</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">block</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rowwise.html" class="external-link">rowwise</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>res <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        <span class="fu">run_simulation</span><span class="op">(</span></span>
+<span>          sim_ID      <span class="op">=</span> <span class="va">sim_ID</span>,</span>
+<span>          effect.size <span class="op">=</span> <span class="va">effect.size</span>,</span>
+<span>          h2          <span class="op">=</span> <span class="va">h2</span>,</span>
+<span>          b2          <span class="op">=</span> <span class="va">b2</span>,</span>
+<span>          seed        <span class="op">=</span> <span class="va">seed</span>,</span>
+<span>          lambda      <span class="op">=</span> <span class="va">lambda</span>,</span>
+<span>          mask_ind    <span class="op">=</span> <span class="va">mask_ind</span>,</span>
+<span>          mask_crit   <span class="op">=</span> <span class="va">mask_crit</span>,</span>
+<span>          mask_size   <span class="op">=</span> <span class="va">mask_size</span></span>
+<span>        <span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>sim_ID_res <span class="op">=</span> <span class="va">sim_ID</span><span class="op">)</span></span>
+<span>      <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>      <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/unnest.html" class="external-link">unnest</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="graphical-section">
+<strong>Graphical section</strong><a class="anchor" aria-label="anchor" href="#graphical-section"></a>
+</h3>
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_join</span> <span class="op">&lt;-</span> <span class="va">results_demo</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>varM <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">varM</span><span class="op">)</span>,</span>
+<span>                                   varG <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">varG</span><span class="op">)</span>,</span>
+<span>                                   varE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">varE</span><span class="op">)</span>,</span>
+<span>                                   b2_hat <span class="op">=</span> <span class="va">varM</span> <span class="op">/</span> <span class="op">(</span><span class="va">varE</span> <span class="op">+</span> <span class="va">varM</span> <span class="op">+</span> <span class="va">varG</span><span class="op">)</span>,</span>
+<span>                                   h2_hat <span class="op">=</span> <span class="va">varG</span> <span class="op">/</span> <span class="op">(</span><span class="va">varE</span> <span class="op">+</span> <span class="va">varM</span> <span class="op">+</span> <span class="va">varG</span><span class="op">)</span>,</span>
+<span>                                   scenario <span class="op">=</span> <span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span><span class="st">"{mask_ind}_{mask_crit}_{mask_size}"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="external-link">pivot_longer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">b2_hat</span>,<span class="va">h2_hat</span><span class="op">)</span>, values_to <span class="op">=</span> <span class="st">"Estimate"</span>,names_to <span class="op">=</span> <span class="st">"Metric"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>scenario <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span></span>
+<span>    <span class="va">scenario</span>,</span>
+<span>    levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FALSE_NA_NA"</span>, <span class="st">"TRUE_random_0.5"</span>, <span class="st">"TRUE_random_0.3"</span>, <span class="st">"TRUE_parents_NA"</span>, <span class="st">"TRUE_female_NA"</span><span class="op">)</span>,</span>
+<span>    labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"All individuals"</span>, <span class="st">"50% random"</span>, <span class="st">"30% random"</span>, <span class="st">"Parents only"</span>, <span class="st">"Mothers only"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">df_join</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">scenario</span> <span class="op">!=</span> <span class="st">"50% random"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co">#as in the article</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">scenario</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">Estimate</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_jitter.html" class="external-link">geom_jitter</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"grey20"</span>, alpha<span class="op">=</span> <span class="fl">0.3</span>, width <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"grey20"</span>,color <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_abline</a></span><span class="op">(</span>intercept <span class="op">=</span> <span class="fl">0.25</span>, slope <span class="op">=</span> <span class="fl">0</span>, linetype <span class="op">=</span> <span class="fl">2</span>, color <span class="op">=</span> <span class="st">"darkred"</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>fill<span class="op">=</span><span class="st">"white"</span><span class="op">)</span>,</span>
+<span>        panel.grid.major <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>colour<span class="op">=</span><span class="st">"#e3e3e3"</span><span class="op">)</span>,</span>
+<span>        panel.grid.minor <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>colour<span class="op">=</span><span class="st">"#e9e9e9"</span><span class="op">)</span>,</span>
+<span>        axis.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>,</span>
+<span>        axis.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">9</span><span class="op">)</span>,</span>
+<span>        plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">12</span><span class="op">)</span>,</span>
+<span>        strip.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"grey20"</span>, color <span class="op">=</span> <span class="st">"grey20"</span>, linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>        strip.text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"white"</span>, face <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
+<span>        legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"(Sub)set used for GMBLUP"</span>,</span>
+<span>       y <span class="op">=</span> <span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span><span class="st">"Estimated variance"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span></span>
+<span>    <span class="va">.</span> <span class="op">~</span> <span class="va">Metric</span>,</span>
+<span>    labeller <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/as_labeller.html" class="external-link">as_labeller</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>      <span class="st">"b2_hat"</span> <span class="op">=</span> <span class="st">"Microbiability"</span>,</span>
+<span>      <span class="st">"h2_hat"</span> <span class="op">=</span> <span class="st">"Direct Heritability"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">p</span></span></code></pre></div>
+<p><img src="../reference/figures/variance_estimates.png" style="width:80.0%"></p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="future-work">
