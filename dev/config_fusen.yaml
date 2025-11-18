@@ -47,7 +47,7 @@ flat_first.Rmd:
     vignette_name: ~
     open_vignette: true
     check: true
-    document: true
+    document: false
     overwrite: ask
     clean: ask
     codecov: false

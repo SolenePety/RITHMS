@@ -1256,8 +1256,8 @@ holo_simu <- function(### Required parameters ###
                                         pedigree = get.pedigree(population,gen = i+1),
                                         mean_microbiome = mean_microbiome,
                                         noise_microbiome = attr(microbiome_gen,"noise_microbiome"),
-                                        ID_selected = c(glue("F_{ID_selected$F_id}"),glue("M_{ID_selected$M_id}")),
-                                        omega_beta_g = as.vector(params_phenotypes$omega %*% (beta$matrix[rowSums(beta$matrix) != 0, ] %*% get.geno(population,gen = 1+i))))
+                                        ID_selected = c(glue("F{ID_selected$F_id}_{i+1}"),glue("M{ID_selected$M_id}_{i+1}")),
+                                        omega_beta_g = as.vector(params_phenotypes$omega %*% (beta[rowSums(beta) != 0, ] %*% get.geno(population,gen = 1+i))))
     if(verbose){
       end_g <- proc.time() - start_g
       print(glue("Executed in {round(end_g[1] |> as.numeric(),3)} seconds"))
