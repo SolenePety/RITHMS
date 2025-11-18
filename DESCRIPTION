@@ -1,7 +1,7 @@
 Package: RITHMS
 Title: An Advanced Stochastic Framework for the Simulation of
     Transgenerational Hologenomic Data
-Version: 0.0.2
+Version: 1.0.0
 Authors@R: c(
     person("Solène", "Pety", , "solene.pety@inrae.fr", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0002-1245-7425")),
