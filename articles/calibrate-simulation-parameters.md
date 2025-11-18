@@ -113,7 +113,13 @@ p2 <- ggplot(out_data_filtered, aes(x = Heritability, fill = as.factor(effect.si
   scale_color_paletteer_d(paste0("werpals", "::", "uyuni")) +
   guides(color = "none")
 
-ggplotly(p2)
+p2
+```
+
+![](calibrate-simulation-parameters_files/figure-html/unnamed-chunk-6-1.png)
+
+``` r
+#ggplotly(p2) easier to navigate on this plot with ggplotly
 ```
 
 Based on the Zang et al. ([2022](#ref-Zang2022)) expectations, a
