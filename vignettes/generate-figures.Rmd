@@ -52,6 +52,7 @@ library(ggh4x)
 library(ggplot2)
 library(peakRAM)
 library(glue)
+library(BGLR)
 ```
 
 
@@ -1238,6 +1239,329 @@ ggsave("../man/figures/use_case.png", p, width = 9, height = 6)
 
 ![](../man/figures/use_case.png){width=80%}
   
+# **Impact of data subsampling on variance component estimation** 
+
+To illustrate another possible use of RITHMS, we conducted a study of the estimation of variance components under different data availability scenarios. Such a study is of particular interest to evaluate the impact of different sampling strategies, for example to account for financial or experimental constraints. First, we simulated a population of 2500 hologenotyped and phenotyped individuals over 5% with generations, with $\lambda = 0.5$.
+Then we estimated the direct heritability ($h^2_d$) and microbiability ($b^2$) with a GMBLUP model using the [\textit{BGLR} R package](https://pmc.ncbi.nlm.nih.gov/articles/PMC4196607/) and linear scaled kernels of genotypes and microbiota, based on various subsets of individuals: (a) the full dataset (2500 individuals), (b) a random subset of 30\% of individuals (750 individuals), (c) only breeding parents (750 individuals), and (d) only mothers (375 individuals). The following figure shows the distribution of the estimated variance components across 500 independent iterations for each subset.
+
+## **Additional functions**  
+  
+Several functions have been written to compute this study case.   
+  
+### **Build linear kernels**  
+  
+```{r}
+get_genotypes <- function(data, transpose = F) {
+  if(transpose){
+    return(data |> pluck("genotypes") |> t() |> as.data.frame())
+  }
+  return(data |> pluck("genotypes") |> as.data.frame())
+}
+```
+
+
+```{r}
+build_kernel_G <- function(gen_simu,
+                           mask_ind = F,
+                           mask_crit = "random",
+                           mask_size = 0.3){
+  #####
+  # ID of individuals to be included in the kernels
+  #####
+  ind_id <- gen_simu[-c(1,2,3)] %>% map(get_microbiomes) %>% map(colnames) %>% unlist(.,use.names = F)
+  if(mask_ind){
+    if(mask_crit == "random"){
+      ind_omics <- ind_id %>% sample(., round(length(.)*mask_size))
+    }else{
+      id_selected <- gen_simu[-c(1,2,3)] %>% map(get_selected_ind)
+      if(mask_crit == "female"){
+        ind_omics <- id_selected %>% map(function(x){
+          split(x, str_extract(x, "^[FM]"))$F
+        }) %>% unlist() 
+      }else{
+        ind_omics <- id_selected %>% unlist(.,use.names = F)
+      }
+    }
+  }else{
+    ind_omics <- ind_id
+  }
+  
+  #####
+  # Extract genotypes
+  #####
+  G_long <- gen_simu[-c(1,2,3)] %>% map(get_genotypes, transpose = T) %>% bind_rows()
+  G_long <- G_long[ind_omics,]
+  
+  #View(G_long)
+  G_scaled <- scale(G_long[, apply(G_long, 2, var) > 0])
+  s <- ncol(G_scaled)
+  K <- tcrossprod(G_scaled)/s
+  
+  # Store the hologenotyped individuals
+  attr(K,"omics") <- ind_omics
+  return(K)
+}
+```
+
+  
+```{r}
+process_microbiome <- function(agg_microbiome){
+  B <- lapply(agg_microbiome, as.data.frame)
+  B_full <- B %>% bind_rows(.id = "Generation")
+  B <- B_full[,-1]
+  return(B)
+}
+```
+
+
+```{r}
+build_kernel_M <- function(gen_simu,
+                           ind_omics){
+  #####
+  # Extract microbiomes
+  #####
+  B_long <- gen_simu[-c(1,2,3)] %>% map(get_microbiomes, transpose = T, CLR = T)
+  
+  M_join <- process_microbiome(B_long)[ind_omics,]
+  M_scaled <- base::scale(as.matrix(M_join))
+  p <- ncol(M_scaled)
+  K <- tcrossprod(M_scaled)/p
+  return(K)
+}
+```
+
+
+### **Call to BGLR** 
+```{r}
+run_BGLR <- function(G, M = NULL, yNA, index) {
+  set.seed(Sys.time())
+  ETA <- list()
+  ETA[["genotype"]] = list(K = G, model = "RKHS", scale = FALSE)
+  if(!is.null(M)){
+    ETA[["microbiota"]] = list(K = M, model = "RKHS", scale = FALSE)
+  }
+  fm <- BGLR(y = yNA, ETA = ETA, nIter = 3000, burnIn = 1000, saveAt = "RKHS_",verbose=FALSE)
+  return(list(
+    coeffMHat = if (is.null(M)) NULL else fm[["ETA"]][["microbiota"]][["u"]],
+    coeffGHat = fm[["ETA"]][["genotype"]][["u"]],
+    varM = if (is.null(M)) NULL else mean(scan("RKHS_ETA_microbiota_varU.dat", quiet = TRUE)),
+    varG = mean(scan("RKHS_ETA_genotype_varU.dat", quiet = TRUE)),
+    varE = mean(scan('RKHS_varE.dat',quiet = T)),
+    yHat = fm$yHat[index]
+  ))
+}
+```
+
+
+### **Call to RITHMS and result extraction** 
+```{r}
+MBLUP_kernel <- function(gen_simu,
+                         MBLUP = FALSE,
+                         mask_ind = F,
+                         mask_crit = "random",
+                         mask_size = 0.3){
+  
+  last_gen <- tail(names(gen_simu),n=1)
+  
+  G <- build_kernel_G(gen_simu = gen_simu,
+                    mask_ind = mask_ind,
+                    mask_crit = mask_crit,
+                    mask_size = mask_size)
+  
+  if(MBLUP){
+    M <- build_kernel_M(gen_simu = gen_simu,
+                      ind_omics = attr(G,"omics")) 
+  }else{
+    M = NULL
+  }
+  
+  #####
+  # Extract phenotypes and remove G5 (without G0)
+  #####
+  Y <- gen_simu[-c(1,2,3)] %>% map(get_phenotypes) |> bind_rows(.id = "Generation")
+  Y <- Y[Y$ID %in% attr(G,"omics"),]
+  yNA <- Y$y
+  G5_index <- which(Y$Generation == last_gen)
+  yNA[G5_index] <- NA
+  
+  #####
+  # Fits the (M)G-BLUP model on aggregated and random one
+  #####
+  results_std <- run_BGLR(G = G, M = M, yNA = yNA, index = G5_index)
+  
+  #####
+  # Output
+  #####
+  return(tibble(
+    coeffMHat = list(results_std$coeffMHat),
+    coeffGHat = list(results_std$coeffGHat),
+    varM = list(results_std$varM),
+    varG = list(results_std$varG),
+    varE = list(results_std$varE),
+    gb = list(Y$gb),
+    gq = list(Y$gq),
+    real_y = list(Y$y[G5_index]),
+    yHat = list(results_std$yHat),
+    ind_omics = list(attr(G,"omics"))
+  ))
+}
+```
+
+
+```{r}
+run_simulation <- function(sim_ID, effect.size, h2, b2, seed, lambda, log_file, mask_ind = F, mask_crit = "random", mask_size = 0.3) {
+
+     taxa_assign_g <- assign_taxa(founder_object)
+  
+     generations_simu <- holo_simu(
+       h2 = h2, 
+       b2 = b2, 
+       correlation = 0.5, 
+       n_gen = 5,
+       founder_object = founder_object,
+       n_clust = taxa_assign_g, 
+       selection = T,
+       size_selection_F = 0.3,
+       size_selection_M = 0.3,
+       selection_type = "G",
+       n_ind = 500, 
+       verbose = FALSE,
+       noise.microbiome = 0.6, 
+       effect.size = effect.size,
+       lambda = lambda,
+       seed = seed
+     )
+    
+    MGBLUP_results <- MBLUP_kernel(generations_simu, 
+                                   MBLUP = TRUE,
+                                   mask_ind = mask_ind,
+                                   mask_crit = mask_crit,
+                                   mask_size = mask_size)
+    
+    MGBLUP_results_full <- MGBLUP_results %>%
+      mutate(sim_ID = list(sim_ID),
+             nb_otug = list(length(generations_simu$metadata$otu_list)),
+             omega = list(generations_simu$metadata$B_coeff),
+             alpha = list(generations_simu$metadata$G_coeff))
+    gc()
+    
+  return(MGBLUP_results_full)
+}
+```
+
+
+## **Simulation parameters**  
+  
+For the article, 500 iterations were performed.  
+  
+```{r}
+n_it <- 5
+set.seed(200)
+
+mask_tbl <- tibble(
+  mask_ind  = c(FALSE, TRUE, TRUE, TRUE, TRUE),
+  mask_crit = c(NA, "random", "random", "parents", "female"),
+  mask_size = c(NA, 0.5, 0.3, NA, NA)
+)
+
+params_df_full <- mask_tbl %>%
+  crossing(tibble(b2 = 0.25),
+           tibble(effect.size = 0.3),
+           tibble(h2 = 0.25),
+           tibble(lambda = c(0.5)),
+           tibble(replicate = 1:n_it)) %>%
+  dplyr::mutate(sim_ID = row_number(),
+         seed = sample(100:100000, n()),
+         .before = everything())
+
+params_blocks <- params_df_full %>%
+  group_by(mask_crit, replicate) %>%
+  group_split()
+```
+
+
+```{r}
+results_demo <- params_blocks %>%
+  purrr::map_dfr(function(block) {
+    block %>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(res = list(
+        run_simulation(
+          sim_ID      = sim_ID,
+          effect.size = effect.size,
+          h2          = h2,
+          b2          = b2,
+          seed        = seed,
+          lambda      = lambda,
+          mask_ind    = mask_ind,
+          mask_crit   = mask_crit,
+          mask_size   = mask_size
+        )  %>% 
+      dplyr::rename(sim_ID_res = sim_ID)
+      )) %>%
+      dplyr::ungroup() %>%
+      tidyr::unnest(res)
+  })
+```
+
+
+## **Graphical section**  
+  
+```{r}
+df_join <- results_demo %>% mutate(varM = unlist(varM),
+                                   varG = unlist(varG),
+                                   varE = unlist(varE),
+                                   b2_hat = varM / (varE + varM + varG),
+                                   h2_hat = varG / (varE + varM + varG),
+                                   scenario = glue("{mask_ind}_{mask_crit}_{mask_size}")) %>% 
+  pivot_longer(c(b2_hat,h2_hat), values_to = "Estimate",names_to = "Metric") %>%
+  mutate(scenario = factor(
+    scenario,
+    levels = c("FALSE_NA_NA", "TRUE_random_0.5", "TRUE_random_0.3", "TRUE_parents_NA", "TRUE_female_NA"),
+    labels = c("All individuals", "50% random", "30% random", "Parents only", "Mothers only")
+  ))
+```
+
+
+```{r}
+p <- df_join %>%
+  filter(scenario != "50% random") %>% #as in the article
+  ggplot(aes(x = as.factor(scenario), y = Estimate)) +
+  geom_jitter(aes(fill = "grey20", alpha= 0.3, width = 0.25)) +
+  geom_boxplot(fill = "grey20",color = "grey50") +
+  geom_abline(intercept = 0.25, slope = 0, linetype = 2, color = "darkred") + 
+  theme(panel.background = element_rect(fill="white"),
+        panel.grid.major = element_line(colour="#e3e3e3"),
+        panel.grid.minor = element_line(colour="#e9e9e9"),
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size=9),
+        plot.title = element_text(size=12),
+        strip.background = element_rect(fill = "grey20", color = "grey20", linewidth = 0.5),
+        strip.text = element_text(color = "white", face = "bold", size = 10),
+        legend.position = "none") +
+  labs(x = "(Sub)set used for GMBLUP",
+       y = glue("Estimated variance")) + 
+  facet_wrap(
+    . ~ Metric,
+    labeller = as_labeller(c(
+      "b2_hat" = "Microbiability",
+      "h2_hat" = "Direct Heritability"))
+  )
+
+p
+```
+
+
+```{r}
+#| echo: no
+
+ggsave("../man/figures/variance_estimates.png",p,width=9, height=6)
+```
+
+
+![](../man/figures/variance_estimates.png){width=80%}
+
+
 # **Future work**  
   
 It would be interesting to extend the RITHMS model to :  

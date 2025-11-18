@@ -38,6 +38,7 @@ Imports:
     tibble,
     vegan
 Suggests: 
+    BGLR,
     circlize,
     ComplexHeatmap,
     cowplot,
