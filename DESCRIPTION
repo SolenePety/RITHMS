@@ -54,9 +54,9 @@ Suggests:
 VignetteBuilder: knitr
 Remotes: 
     MoBPS=url::https://github.com/tpook92/MoBPS/raw/master/Previous%20versions/MoBPS_1.10.49.tar.gz
-BiocViews:
 Bibliography: references.bib
-Config/fusen/version: 0.7.1
+BiocViews:
+Config/fusen/version: 0.6.0
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz

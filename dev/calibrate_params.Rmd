@@ -92,7 +92,8 @@ p2 <- ggplot(out_data_filtered, aes(x = Heritability, fill = as.factor(effect.si
   scale_color_paletteer_d(paste0("werpals", "::", "uyuni")) +
   guides(color = "none")
 
-ggplotly(p2)
+p2
+#ggplotly(p2) easier to navigate on this plot with ggplotly
 ```
 
 Based on the @Zang2022 expectations, a reasonable distribution of taxa heritabilities appears to correspond to a value of $\sigma_\beta * \sqrt {QTL_o} = 0.3$ in the case of @Dru2020 dataset.

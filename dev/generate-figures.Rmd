@@ -1393,7 +1393,6 @@ run_simulation <- function(sim_ID, effect.size, h2, b2, seed, lambda, log_file, 
     
     MGBLUP_results_full <- MGBLUP_results %>%
       mutate(sim_ID = list(sim_ID),
-             h2eff = list(cum_heritability(generations_simu)),
              nb_otug = list(length(generations_simu$metadata$otu_list)),
              sigma_beta = list(compute_sigma_b(generations_simu$metadata$Beta_matrix)),
              omega = list(generations_simu$metadata$B_coeff),
