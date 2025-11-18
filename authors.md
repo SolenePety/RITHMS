@@ -20,13 +20,13 @@
 
 Pety S, David I, Maillié Y, Rau A, Mariadassou M (2025). *RITHMS: An
 Advanced Stochastic Framework for the Simulation of Transgenerational
-Hologenomic Data*. R package version 0.0.2,
+Hologenomic Data*. R package version 1.0.0,
 <https://arxiv.org/abs/2502.07366>.
 
     @Manual{,
       title = {RITHMS: An Advanced Stochastic Framework for the Simulation of Transgenerational Hologenomic Data},
       author = {Solène Pety and Ingrid David and Youna Maillié and Andrea Rau and Mahendra Mariadassou},
       year = {2025},
-      note = {R package version 0.0.2},
+      note = {R package version 1.0.0},
       url = {https://arxiv.org/abs/2502.07366},
     }
