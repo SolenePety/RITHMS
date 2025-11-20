@@ -9,6 +9,7 @@ addition, RITHMS can account for a variety of selection strategies, is
 adaptable to different genetic architectures.
 
 [![DOI](https://zenodo.org/badge/907309885.svg)](https://doi.org/10.5281/zenodo.15175150)
+
 Full documentation website on: <https://SolenePety.github.io/RITHMS>  
 Last code version on: <https://github.com/SolenePety/RITHMS>
 
