@@ -25,7 +25,7 @@ Our framework, **R** **I**mplementation of a **T**ransgenerational **H**ologenom
 Full documentation website on: https://SolenePety.github.io/RITHMS  
 Last code version on: https://github.com/SolenePety/RITHMS
 
-Here is a little summary of how RITHMS work, but you can read the [preprint](https://arxiv.org/abs/2502.07366) for more details. 
+Here is a little summary of how RITHMS work, but you can read the [article](https://peercommunityjournal.org/articles/10.24072/pcjournal.666/) for more details. 
 
 ![](man/figures/core_algorithm.png)
 
