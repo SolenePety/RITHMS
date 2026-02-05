@@ -14,7 +14,8 @@ Full documentation website on: <https://SolenePety.github.io/RITHMS>
 Last code version on: <https://github.com/SolenePety/RITHMS>
 
 Here is a little summary of how RITHMS work, but you can read the
-[preprint](https://arxiv.org/abs/2502.07366) for more details.
+[article](https://peercommunityjournal.org/articles/10.24072/pcjournal.666/)
+for more details.
 
 ![](reference/figures/core_algorithm.png)
 
