@@ -39,23 +39,6 @@ compute different types of diversity within the generation.
 if (FALSE) { # \dontrun{
 library(magrittr)
 library(purrr)
-data("Deru")
-ToyData <- Deru
-taxa_assign_g <- assign_taxa(founder_object = ToyData)
-generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
-                              n_clust = taxa_assign_g, n_ind = 500,
-                              verbose = FALSE, seed = 1234)
-                              
-# Extract Shannon diversity for each generations
-## First step, compute richness from abundances
-richness_from_abundances <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen, size_rmultinom = 10000)
-## size_rmultinom = 10000 according to DeruPops dataset
-
-mean_shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
-} # }
-if (FALSE) { # \dontrun{
-library(magrittr)
-library(purrr)
 
 data("Deru")
 ToyData <- Deru
@@ -97,7 +80,25 @@ selected_inds <- generations_simu[-1] %>% map(get_selected_ind)
 
 # To extract Shannon diversity
 # First step, compute richness from abundances
-richness_from_abundances <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen)
+richness_from_abundances <- generations_simu[c(-1,-2)] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen)
 shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
+} # }
+
+if (FALSE) { # \dontrun{
+library(magrittr)
+library(purrr)
+data("Deru")
+ToyData <- Deru
+taxa_assign_g <- assign_taxa(founder_object = ToyData)
+generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
+                              n_clust = taxa_assign_g, n_ind = 500,
+                              verbose = FALSE, seed = 1234)
+                              
+# Extract Shannon diversity for each generations
+## First step, compute richness from abundances
+richness_from_abundances <- generations_simu[c(-1,-2)] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen, size_rmultinom = 10000)
+## size_rmultinom = 10000 according to DeruPops dataset
+
+mean_shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
 } # }
 ```

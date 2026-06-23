@@ -38,7 +38,7 @@ than the set threshold
 
 ``` r
 if (FALSE) { # \dontrun{
-  microbiome <- data.table::fread("/path/to/microbiome.txt")
-  microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
-} # }
+microbiome <- data.table::fread("/path/to/microbiome.txt")
+ microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
+ } # }
 ```

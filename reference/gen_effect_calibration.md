@@ -43,19 +43,3 @@ gen_effect_calibration(
 
 A data.frame with three columns, giving the Taxa ID, the effect.size and
 the corresponding heritability
-
-## Examples
-
-``` r
-data("Deru")
-ToyData <- Deru
-taxa_assign_g <- assign_taxa(founder_object = ToyData)
-effect_size_vector <- c(seq(0.1,1, by = 0.2))
-out_data <- gen_effect_calibration(founder_object = ToyData,
-                                   taxa_assign_g = taxa_assign_g,
-                                   correlation = 0.5,
-                                   effect.size = effect_size_vector,
-                                   plot = TRUE)
-
-#> Picking joint bandwidth of 0.0299
-```

@@ -23,6 +23,8 @@ holo_simu(
   noise.microbiome = 0.1,
   dir = T,
   ao = 25,
+  taxonomy_table = NULL,
+  aggregate_rank = NULL,
   size_rmultinom = 10000,
   selection = F,
   size_selection_F = NULL,
@@ -113,6 +115,18 @@ holo_simu(
 
   A numeric scalar used as the concentration parameter for the Dirichlet
   distribution.
+
+- taxonomy_table:
+
+  Optional taxonomy `data.frame` used to aggregate the microbiome at a
+  given taxonomic rank before phenotype calibration. If `NULL`
+  (default), phenotypes are calibrated on raw OTU-level abundances.
+
+- aggregate_rank:
+
+  Optional string giving the taxonomic rank (e.g. `"Family"`) or
+  `"hclust"` to aggregate by genetic cluster, used jointly with
+  `taxonomy_table`. Ignored if `taxonomy_table` is `NULL`.
 
 - size_rmultinom:
 
@@ -220,6 +234,10 @@ An important list with several different objects :
 
 - `ao`
 
+- `taxonomy_table`
+
+- `aggregate_rank`
+
 ## Selection-related parameters
 
 - `selection`
@@ -257,7 +275,7 @@ if (FALSE) { # \dontrun{
   generations_simu <- holo_simu(h2 = 0.25,
                                  b2 = 0.25,
                                  founder_object = ToyData,
-                                 n_clust = taxa_assign_g,
+                                n_clust = taxa_assign_g,
                                  n_ind = 500,
                                  verbose = FALSE,
                                  noise.microbiome = 0.5,
@@ -266,5 +284,5 @@ if (FALSE) { # \dontrun{
                                  dir = TRUE,
                                  selection = FALSE,
                                  seed = 1234)
-} # }  
+} # }
 ```

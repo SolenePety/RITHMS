@@ -6,7 +6,13 @@ hclust
 ## Usage
 
 ``` r
-assign_taxa(founder_object, taxa_g = 0.05)
+assign_taxa(
+  founder_object,
+  taxa_g = 0.05,
+  type = "hclust",
+  taxonomy = NULL,
+  seed = 123
+)
 ```
 
 ## Arguments
@@ -28,8 +34,10 @@ genetic control cluster
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 data("Deru")
 ToyData <- Deru
 taxa_assign_g <- assign_taxa(founder_object = ToyData,
-            taxa_g = 0.2)
+           taxa_g = 0.2)
+           } # }
 ```

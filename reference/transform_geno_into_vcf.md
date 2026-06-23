@@ -40,6 +40,7 @@ the `.vcf` file if `output_type = "file" or "both"`.
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 n_ind <- 50
 n_snp <- 50
 
@@ -51,8 +52,5 @@ geno_matrix <- matrix(sample(0:2, size = n_ind*n_snp, replace = TRUE),
 # Transform genotype matrix into VCF
 vcf <- transform_geno_into_vcf(geno_matrix, output_type = "dataframe")
 head(vcf[1:3,1:7])
-#>   CHROM POS  ID REF ALT QUAL FILTER
-#> 1     1   1 rs1   A   T    .      .
-#> 2     1   2 rs2   A   T    .      .
-#> 3     1   3 rs3   A   T    .      .
+} # }
 ```

@@ -1,6 +1,7 @@
 # Import Data
 
 ``` r
+
 library(RITHMS)
 ```
 
@@ -10,6 +11,7 @@ combining genetic and microbiotic information, thanks to the
 [`MoBPS`](https://github.com/tpook92/MoBPS) package.
 
 ``` r
+
 library(data.table)
 library(dplyr)
 library(glue)
@@ -29,6 +31,7 @@ simulation from this kind of format, just by specify the type with the
 [`read_input_data()`](../reference/read_input_data.md) function.
 
 ``` r
+
 # Create founder object from PED/MAP set
 founder_object <- read_input_data("path/to/microbiome.txt", "path/to/pedmap/'prefix'", biome_id_column = "sample_id", file_type = "pedmap")
 
@@ -50,6 +53,7 @@ below. The VCF file can be written by specifying the `output_type` and
 `output_path` arguments.
 
 ``` r
+
 n_ind <- 50
 n_snp <- 50
 
@@ -66,6 +70,7 @@ head(vcf[1:3,1:7])
 Then, you can continue with the classical import.
 
 ``` r
+
 #Create founder object from VCF
 founder_object <- read_input_data("path/to/microbiome.txt", "path/to/vcf/'prefix'", biome_id_column = "sample_id", file_type = "vcf")
 ```

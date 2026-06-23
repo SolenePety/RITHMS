@@ -26,6 +26,7 @@ You can install the development version of RITHMS from GitHub using
 
 ``` r
 
+
 # install.packages("remotes")
 
 remotes::install_github("SolenePety/RITHMS")
@@ -39,6 +40,7 @@ al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/), there are
 structure of input data :
 
 ``` r
+
 library(RITHMS)
 data("Deru")
 ToyData <- Deru
@@ -50,6 +52,7 @@ To import your own dataset, you can refer to the following
 ## Quick Start from the toy dataset
 
 ``` r
+
 taxa_assign_g <- assign_taxa(ToyData)
 generations_simu <- holo_simu(h2 = 0.25,
                               b2 = 0.25,
@@ -71,6 +74,7 @@ To help you with this, please refer to the [dedicated
 vignette](https://solenepety.github.io/RITHMS/articles/calibrate-simulation-parameters.html).
 
 ``` r
+
 # from VCf format
 founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
                                   path_to_pedmap = "/path/to/vcf/'prefix'",

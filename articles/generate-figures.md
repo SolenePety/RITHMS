@@ -1,6 +1,7 @@
 # Generate figures
 
 ``` r
+
 library(RITHMS)
 ```
 
@@ -17,6 +18,7 @@ horizontal transmission**, response to **environmental effects** and the
 evolution of **phenotypic values** depending on selection strategy.
 
 ``` r
+
 library(magrittr)
 library(MoBPS)
 library(ComplexHeatmap)
@@ -36,12 +38,14 @@ library(BGLR)
 To visualise changes over generations, we will use a green gradient :
 
 ``` r
+
 greens_pal <- c("#6df17c","#2ede41","#26c537","#1da42c","#157e21","#0E5e17")
 ```
 
 General theme parameters for plots :
 
 ``` r
+
 session_theme <- theme_minimal() + theme(panel.border = element_rect(colour= "white", fill = NA),
                                                panel.grid.major = element_line(colour = "#e3e3e3"),
                                                panel.grid.minor = element_line(colour = "#e9e9e9"),
@@ -64,6 +68,7 @@ diet. Genotypes are encoded as 0,1,2 and reachable thanks to
 *“population”* attribute.
 
 ``` r
+
 data("Deru")
 founder_object <- Deru
 founder_object$microbiome[1:5,1:5]
@@ -76,6 +81,7 @@ founder_object$microbiome[1:5,1:5]
 ```
 
 ``` r
+
 #MoBPS population structure, use get.geno() and generation index to extract genotypes
 genotypes <- founder_object$population %>%
   get.geno(gen=1)
@@ -95,7 +101,7 @@ This section matches code of **Figure 3** of the paper.
 
 ### **Produce intra- and inter-cluster (anti)correlations**
 
-Through $\beta$ matrix, its values and the overlapping of QTL, we’re
+Through $`\beta`$ matrix, its values and the overlapping of QTL, we’re
 able to induce correlations between taxa.
 
 For this example, **4%** of the taxa are under genetic control. The
@@ -103,21 +109,23 @@ pairwise correlation matrix of taxa abundances are represented here.
 Taxa are sorted based on the cluster they belong to.
 
 ``` r
+
 taxa_assign_g_small <- assign_taxa(founder_object, 
                                    taxa_g = 0.04)
 
 # Output is the assignation of each taxa to a cluster, 0 corresponds to taxa that are not under genetic control
 taxa_assign_g_small[taxa_assign_g_small !=0 ]
-#>  [1] 1 1 1 2 1 1 2 1 3 4 3 4 3 2 2 2 4 3 2 5 2 2 2 4 3 3 2 3 4 3 3 1 6 6 1 6 4 4
-#> [39] 6 1 5 5 1 5 4 4 1 5 3 3 4 2 6 4 6 5 5 4 6 6 6 2 3 5 1 5 5 5 5 5 6 6 4 4 4 5
-#> [77] 4 3 6
-#> Levels: 0 1 2 3 4 5 6
+#>  [1] 1 2 2 1 2 2 3 1 1 3 2 1 2 1 3 2 4 1 2 2 2 2 5 2 1 5 3 3 2 2 2 5 2 1 2 2 2 2
+#> [39] 2 2 5 5 3 4 2 2 1 5 4 1 4 5 3 3 4 1 3 3 5 4 5 3 3 4 5 4 3 4 5 4 4 4 5 4 3 4
+#> [77] 3 3
+#> Levels: 0 1 2 3 4 5
 ```
 
 Once you have these elements you’re able to call
 [`holo_simu()`](../reference/holo_simu.md).
 
 ``` r
+
 noise = 0.6 #noise of the microbiome
 effect.size = 0.3 #genetic effect size
 lambda = 0.5 #same weight for vertical and horizontal transmission
@@ -137,10 +145,11 @@ generations_simu <- holo_simu(h2 = 0.25, #direct heritability
                               seed = 333)
 ```
 
-The $\beta$ matrix is reachable through metadata of
+The $`\beta`$ matrix is reachable through metadata of
 [`holo_simu()`](../reference/holo_simu.md) output.
 
 ``` r
+
 #Correlation intra-cluster for cluster under genetic control
 beta <- generations_simu$metadata$Beta_matrix$matrix[taxa_assign_g_small != 0,]
 cor_matrix <- cor(t(beta))
@@ -152,6 +161,7 @@ Then we’re able to build our Heatmap using
 [ComplexHeatmap](https://jokergoo.github.io/ComplexHeatmap-reference/book/)
 
 ``` r
+
 pal <- colorRampPalette(RColorBrewer::brewer.pal(5,"Set1"))(length(taxa_assign_g_small[taxa_assign_g_small != 0] %>% unique()))
 clus_col <- structure(pal, names = taxa_assign_g_small[taxa_assign_g_small != 0] %>% unique() %>% as.vector())
 
@@ -185,13 +195,14 @@ plot_grid(p1)
 
 The composition of the microbiota of individuals are given by this
 equation :
-$\lambda\mathbf{M}_{d{(i)}}^{(t - 1)} + (1 - \lambda)\mathbf{M}_{a{(i)}}^{(t)}$.
-Given this, $\lambda = 0$ corresponds to no vertical transmission. We’re
-looking here at the correlations between offspring α-diversity (from G2)
-and that of its mother (purple), father (orange) or ambient microbiota
-(green) for increasing values of λ.
+$`\lambda \boldsymbol{M}^{(t-1)}_{d(i)} + (1 - \lambda) \boldsymbol{M}^{(t)}_{a(i)}`$.
+Given this, $`\lambda = 0`$ corresponds to no vertical transmission.
+We’re looking here at the correlations between offspring α-diversity
+(from G2) and that of its mother (purple), father (orange) or ambient
+microbiota (green) for increasing values of λ.
 
 ``` r
+
 set.seed(484)
 
 #Change n_it to increase the accuracy of the function, n_it = 10 used in the article
@@ -206,6 +217,7 @@ params_df_it <- tibble::tibble(lambda = c(0,0.5,1)) %>%
 We perform the taxa assignation for all this small study.
 
 ``` r
+
 taxa_assign_g <- assign_taxa(founder_object)
 ```
 
@@ -213,6 +225,7 @@ Then we have the following function that can be call in parallel for all
 the different scnarios in this test.
 
 ``` r
+
 noise = 0.1
 effect.size = 0.1
 center_bg = T
@@ -264,6 +277,7 @@ run_simulation_lambda <- function(i, it) {
 If you want to parallelize the code, you could use `plan(multisession)`.
 
 ``` r
+
 plan(sequential)
 results <- future_map_dfr(
   seq_len(nrow(params_df_it)),
@@ -279,6 +293,7 @@ pedigree and the ambient microbiome that could be extracted for each
 generation. We’re focusing on G2 here.
 
 ``` r
+
 long_cor_gen <- results %>% 
   mutate(lambda = unlist(lambda),
          Mother = unlist(Mother),
@@ -290,6 +305,7 @@ long_cor_gen <- results %>%
 ```
 
 ``` r
+
 lambda_label <- cbind(x = c(0,0.5,1),
                       y = c(0.8,0.2,0.8),
                       label = c("Ambient","Father","Mother")) %>% as.data.frame()
@@ -326,10 +342,11 @@ choosing an appropriate effect size to achieve a target distribution of
 taxa heritabilities. Build-in plots are in the function but we’ve used
 the output of the function in order to make a density plot of the
 distribution of taxa heritability for increasing genetic effect sizes
-($\sigma_{\beta} \times \sqrt{\text{QTL}_{\text{o}}}$), shown above each
+($`\sigma_{\beta}\times\sqrt{\text{QTL}_\text{o}}`$), shown above each
 curve.
 
 ``` r
+
 out_data <- gen_effect_calibration(founder_object = founder_object,
                                    taxa_assign_g = taxa_assign_g,
                                    correlation = 0.5,
@@ -338,6 +355,7 @@ out_data <- gen_effect_calibration(founder_object = founder_object,
 ```
 
 ``` r
+
 # Calculate density peaks
 density_peaks <- out_data %>%
   group_by(effect.size) %>%
@@ -373,14 +391,15 @@ density_peaks <- out_data %>%
 ### **Alpha-diversity remains stable across generations**
 
 In a neutral framework, without selection of environmental effect, we
-expect the $\alpha$-diversity to be stable across generations. From
+expect the $`\alpha`$-diversity to be stable across generations. From
 [`holo_simu()`](../reference/holo_simu.md) output, the relative
-abundances of taxa, $\alpha$-diversity indexes thanks to multinomial
+abundances of taxa, $`\alpha`$-diversity indexes thanks to multinomial
 sampling in
 [`richness_from_abundances_gen()`](../reference/richness_from_abundances_gen.md)
 function.
 
 ``` r
+
 h2 = 0.25
 b2 = 0.25
 generations_simu <- holo_simu(h2 = h2,
@@ -398,6 +417,7 @@ generations_simu <- holo_simu(h2 = h2,
 ```
 
 ``` r
+
 diversities_microbiomes <- generations_simu[-c(1,2)] %>% map(get_microbiomes) %>%
   map(richness_from_abundances_gen, size_rmultinom = generations_simu$parameters$size_rmultinom) |>
   bind_rows(.id = "Generation")
@@ -411,6 +431,7 @@ p4
 ```
 
 ``` r
+
 ggsave("../man/figures/ridges_shannon.png", p4, width = 9, height = 6)
 ```
 
@@ -426,7 +447,7 @@ such factors under a variety of plausible scenarios, such as short-term
 treatments or long-term diet effects.
 
 To build this modulation, the user build outside the main function the
-$\theta X$ product and choose precisely the values and the effect size
+$`\theta X`$ product and choose precisely the values and the effect size
 given to each environmental effect. Dimensions of this product should
 match the `founder_object$microbiome` ones.
 
@@ -442,6 +463,7 @@ Half the individuals at G1 are subject to a sporadic antibiotic
 treatment which affects all taxa.
 
 ``` r
+
 #Construction of environmental effect before simulating the population
 h2 = 0.25
 b2 = 0.25
@@ -464,6 +486,7 @@ thetaX <- theta %*% X
 ```
 
 ``` r
+
 generations_simu_env <- holo_simu(h2 = h2,
                                   b2 = b2,
                                   founder_object = founder_object,
@@ -487,6 +510,7 @@ Call to [`get_microbiomes()`](../reference/get_microbiomes.md) and
 to extract all useful metrics.
 
 ``` r
+
 diversities_microbiomes <- generations_simu[-c(1,2)] %>% map(get_microbiomes) %>%
   map(richness_from_abundances_gen, size_rmultinom = generations_simu$parameters$size_rmultinom) |>
   bind_rows(.id = "Generation")
@@ -505,6 +529,7 @@ diversities_microbiomes <- generations_simu[-c(1,2)] %>% map(get_microbiomes) %>
 #### **MDS on antibiotic effect**
 
 ``` r
+
 microbiomes_all <- generations_simu_env[c(3,4,5,6)] %>% map(get_microbiomes, transpose = T, CLR = F) |> bind_rows(.id = "Generation")
                           
 antibio_vec <- rep(0, nrow(microbiomes_all))
@@ -519,6 +544,7 @@ package](https://cran.r-project.org/web/packages/vegan/vignettes/intro-vegan.pdf
 to compute Bray Curtis distance matrix.
 
 ``` r
+
 dist_mat <- vegan::vegdist(x = microbiomes_all[-1],
                  method = "bray")
 ```
@@ -528,6 +554,7 @@ manipulate efficiently and compute MDS with
 [`ordinate()`](https://rdrr.io/pkg/phyloseq/man/ordinate.html) function.
 
 ``` r
+
 physeq <- phyloseq(
   otu_table(t(microbiomes_all[,-1]), taxa_are_rows = TRUE),
   sample_data(metadata))
@@ -538,6 +565,7 @@ DF <- plot_ordination(physeq, ord, justDF = T)
 ```
 
 ``` r
+
 p2 <- ggplot(data = DF, aes(x=DF[,1], y=DF[,2], color = antibio, shape=antibio)) + 
     labs(x = "Axis 1",
          y = "Axis 2") +
@@ -557,6 +585,7 @@ Starting from G1, half the individuals at each generation (blue
 triangles) are subject to a diet favoring two clusters of taxa.
 
 ``` r
+
 h2 = 0.25
 b2 = 0.25
 noise = 0.6
@@ -582,6 +611,7 @@ thetaX <- theta %*% X
 ```
 
 ``` r
+
 generations_simu_env <- holo_simu(h2 = h2,
                               b2 = b2,
                               founder_object = founder_object,
@@ -601,6 +631,7 @@ generations_simu_env <- holo_simu(h2 = h2,
 #### **Diversity on diet effect**
 
 ``` r
+
 diversities_microbiomes <- generations_simu_env[c(3,4,5,6)] %>% map(get_microbiomes) %>%
   map(richness_from_abundances_gen, size_rmultinom = generations_simu$parameters$size_rmultinom) |> 
   bind_rows(.id = "Generation")
@@ -617,6 +648,7 @@ p4
 #### **MDS on diet effect**
 
 ``` r
+
 #Post-processing of the data
 microbiomes_all <- generations_simu_env[c(3,4,5,6)] %>% map(get_microbiomes, transpose = T, CLR = F) |> bind_rows(.id = "Generation")
 
@@ -632,11 +664,13 @@ rownames(metadata) <- metadata$ID
 ```
 
 ``` r
+
 dist_mat <- vegan::vegdist(x = microbiomes_all[-1],
                  method = "bray")
 ```
 
 ``` r
+
 physeq <- phyloseq(
   otu_table(t(microbiomes_all[,-1]), taxa_are_rows = TRUE),
   sample_data(metadata))
@@ -645,6 +679,7 @@ ord <- ordinate(physeq, method = "MDS", distance = dist_mat)
 ```
 
 ``` r
+
 DF <- plot_ordination(physeq, ord, justDF = T)
 p3 <- ggplot(data = DF, aes(x=DF[,1], y=DF[,2], color = diet, shape=diet)) + 
     labs(x = "Axis 1",
@@ -674,6 +709,7 @@ This section matches code of **Figure 5** of the paper.
 ### **Target values of direct heritability and microbiability are reached and maintained**
 
 ``` r
+
 # n_it = 50 was used to generate the figures of the article
 n_it = 1
 set.seed(42)
@@ -681,6 +717,7 @@ vec_seed <- sample(100:10000,n_it)
 ```
 
 ``` r
+
 noise = 0.6
 effect.size = 0.3
 lambda = 0.1
@@ -717,6 +754,7 @@ params_df <- tibble::tribble(
 ```
 
 ``` r
+
 run_simulation <- function(i, it) {
   start_time_it <- Sys.time()
   
@@ -760,6 +798,7 @@ run_simulation <- function(i, it) {
 If you want to parallelize the code, you could use `plan(multisession)`.
 
 ``` r
+
 plan(sequential)
 results <- future_map_dfr(
   seq_len(nrow(params_df)),
@@ -771,6 +810,7 @@ plan(sequential)
 ```
 
 ``` r
+
 metrics_values <- results %>% 
   bind_cols(params_df_it) %>% 
   filter(h2 == 0.25,b2 == 0.25) %>% #for barplot, gather only results for h2 = b2 = 0.25
@@ -785,6 +825,7 @@ metrics_values$Metric <- factor(metrics_values$Metric, levels = c("e2","b2","h2"
 ```
 
 ``` r
+
 colours <- setNames(c("#ce0104", "#0237AE", "#808080"), 
                     c("b2", "h2", "e2"))
 
@@ -807,6 +848,7 @@ p2
 ### **Mean phenotype change across generations according to selection strategy**
 
 ``` r
+
 mean_phenotypes <- results %>% 
   select(mean_phenotypes) %>% 
   bind_cols(params_df_it) %>% 
@@ -844,6 +886,7 @@ labels <- phenotypes_longer |>
 ```
 
 ``` r
+
 p1 <- phenotypes_longer |> 
   ggplot(aes(x = Generation, y = `Y mean`, group = `Selection Type`, color = `Selection Type`)) + 
   geom_point(size = 0.5) + 
@@ -881,11 +924,12 @@ we have :
 As a first demonstration of the usefulness of RITHMS, we consider a
 practical case study of complex breeding program with a multi-trait
 objective: maximizing phenotypic change while perserving microbial
-$\alpha$-diversity.
+$`\alpha`$-diversity.
 
 This section matches code of **Figure 6** of the paper.
 
 ``` r
+
 #n_it = 25 was used to generate the figure of the article
 n_it = 1
 set.seed(40)
@@ -893,6 +937,7 @@ vec_seed <- sample(100:10000,n_it)
 ```
 
 ``` r
+
 params_df <- tibble::tribble(
    ~div,  ~TBV,
    0,    1,
@@ -918,6 +963,7 @@ lambda = 0.5
 For each iteration, we look at the diversity and the phenotype values.
 
 ``` r
+
 run_simulation_study <- function(i, it) {
 
   set.seed(as.numeric(params_df[i,4]))
@@ -956,6 +1002,7 @@ run_simulation_study <- function(i, it) {
 If you want to parallelize the code, you could use `plan(multisession)`.
 
 ``` r
+
 plan(sequential)
 results <- future_map_dfr(
   seq_len(nrow(params_df)),
@@ -970,11 +1017,13 @@ We look at the differences for our two traits between the base
 population and the last generation but it could be any generation.
 
 ``` r
+
 mean_phenotypes_y <- results$mean_phenotypes_y %>% bind_rows()
 diversities_microbiomes <- results$diversities_microbiomes %>% bind_rows()
 ```
 
 ``` r
+
 diff_y <- mean_phenotypes_y$G5 - mean_phenotypes_y$G0
 diff_div <- diversities_microbiomes$G5 - diversities_microbiomes$G0
 
@@ -990,6 +1039,7 @@ diff_data_concat <- diff_data %>% summarise(mean_div = mean(diff_div),
 ```
 
 ``` r
+
 p <- diff_data %>%
   mutate(w = str_remove_all(category, "\\(|,.*") |> as.numeric()) |> 
   ggplot(aes(y = diff_y, x = diff_div, 
@@ -1039,8 +1089,8 @@ scenarios. Such a study is of particular interest to evaluate the impact
 of different sampling strategies, for example to account for financial
 or experimental constraints. First, we simulated a population of 2500
 hologenotyped and phenotyped individuals over 5% with generations, with
-$\lambda = 0.5$. Then we estimated the direct heritability ($h_{d}^{2}$)
-and microbiability ($b^{2}$) with a GMBLUP model using the [R
+$`\lambda = 0.5`$. Then we estimated the direct heritability ($`h^2_d`$)
+and microbiability ($`b^2`$) with a GMBLUP model using the [R
 package](https://pmc.ncbi.nlm.nih.gov/articles/PMC4196607/) and linear
 scaled kernels of genotypes and microbiota, based on various subsets of
 individuals: (a) the full dataset (2500 individuals), (b) a random
@@ -1056,6 +1106,7 @@ Several functions have been written to compute this study case.
 #### **Build linear kernels**
 
 ``` r
+
 get_genotypes <- function(data, transpose = F) {
   if(transpose){
     return(data |> pluck("genotypes") |> t() |> as.data.frame())
@@ -1065,6 +1116,7 @@ get_genotypes <- function(data, transpose = F) {
 ```
 
 ``` r
+
 build_kernel_G <- function(gen_simu,
                            mask_ind = F,
                            mask_crit = "random",
@@ -1108,6 +1160,7 @@ build_kernel_G <- function(gen_simu,
 ```
 
 ``` r
+
 process_microbiome <- function(agg_microbiome){
   B <- lapply(agg_microbiome, as.data.frame)
   B_full <- B %>% bind_rows(.id = "Generation")
@@ -1117,6 +1170,7 @@ process_microbiome <- function(agg_microbiome){
 ```
 
 ``` r
+
 build_kernel_M <- function(gen_simu,
                            ind_omics){
   #####
@@ -1135,6 +1189,7 @@ build_kernel_M <- function(gen_simu,
 #### **Call to BGLR**
 
 ``` r
+
 run_BGLR <- function(G, M = NULL, yNA, index) {
   set.seed(Sys.time())
   ETA <- list()
@@ -1157,6 +1212,7 @@ run_BGLR <- function(G, M = NULL, yNA, index) {
 #### **Call to RITHMS and result extraction**
 
 ``` r
+
 MBLUP_kernel <- function(gen_simu,
                          MBLUP = FALSE,
                          mask_ind = F,
@@ -1210,6 +1266,7 @@ MBLUP_kernel <- function(gen_simu,
 ```
 
 ``` r
+
 run_simulation <- function(sim_ID, effect.size, h2, b2, seed, lambda, log_file, mask_ind = F, mask_crit = "random", mask_size = 0.3) {
 
      taxa_assign_g <- assign_taxa(founder_object)
@@ -1255,6 +1312,7 @@ run_simulation <- function(sim_ID, effect.size, h2, b2, seed, lambda, log_file, 
 For the article, 500 iterations were performed.
 
 ``` r
+
 n_it <- 5
 set.seed(200)
 
@@ -1280,6 +1338,7 @@ params_blocks <- params_df_full %>%
 ```
 
 ``` r
+
 results_demo <- params_blocks %>%
   purrr::map_dfr(function(block) {
     block %>%
@@ -1306,6 +1365,7 @@ results_demo <- params_blocks %>%
 ### **Graphical section**
 
 ``` r
+
 df_join <- results_demo %>% mutate(varM = unlist(varM),
                                    varG = unlist(varG),
                                    varE = unlist(varE),
@@ -1321,6 +1381,7 @@ df_join <- results_demo %>% mutate(varM = unlist(varM),
 ```
 
 ``` r
+
 p <- df_join %>%
   filter(scenario != "50% random") %>% #as in the article
   ggplot(aes(x = as.factor(scenario), y = Estimate)) +
@@ -1354,7 +1415,7 @@ p
 
 It would be interesting to extend the RITHMS model to :  
 (i) account for **microbial interactions** with a non-diagonal
-covariance matrix for the noise component $\sigma_{m}$ of the taxa
+covariance matrix for the noise component $`\sigma_{m}`$ of the taxa
 abundances,  
 (ii) allow for the inclusion of **more complex environmental
 effects**,  

@@ -72,18 +72,17 @@ equivalent.
 if (FALSE) { # \dontrun{
 # Create founder object from PED/MAP set
 founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
-                                  path_to_pedmap = "/path/to/pedmap/'prefix'",
-                                  biome_id_column = "ind_id",
-                                  threshold = 0.05,
-                                  ind_selected = NULL,
-                                  file_type = "pedmap")
-
+                                 path_to_pedmap = "/path/to/pedmap/'prefix'",
+                                 biome_id_column = "ind_id",
+                                 threshold = 0.05,
+                                 ind_selected = NULL,
+                                 file_type = "pedmap")
 # Create founder object from VCF
 founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
-                                  path_to_pedmap = "/path/to/vcf/'prefix'",
-                                  biome_id_column = "ind_id",
-                                  threshold = 0.05,
-                                  ind_selected = NULL,
-                                  file_type = "vcf")
-} # }
+                                 path_to_pedmap = "/path/to/vcf/'prefix'",
+                                biome_id_column = "ind_id",
+                                 threshold = 0.05,
+                                 ind_selected = NULL,
+                                 file_type = "vcf")
+                                 } # }
 ```

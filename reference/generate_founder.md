@@ -41,12 +41,11 @@ genotypes, encoded as 0,1,2 and generated using the
 
 ``` r
 if (FALSE) { # \dontrun{
-  # Generate founder object from PED/MAP set
-  microbiome <- data.table::fread("/path/to/microbiome.txt")
-  founder_object <- generate_founder(path = "/path/to/pedmap", microbiome, file_type = "pedmap")
-  
-  # Generate founder object from VCF set
-  microbiome <- data.table::fread("/path/to/microbiome.txt")
-  founder_object <- generate_founder(path = "/path/to/vcf", microbiome, file_type = "vcf") 
-} # }
+# Generate founder object from PED/MAP set
+ microbiome <- data.table::fread("/path/to/microbiome.txt")
+ founder_object <- generate_founder(path = "/path/to/pedmap", microbiome, file_type = "pedmap")
+ # Generate founder object from VCF set
+ microbiome <- data.table::fread("/path/to/microbiome.txt")
+ founder_object <- generate_founder(path = "/path/to/vcf", microbiome, file_type = "vcf") 
+ } # }
 ```

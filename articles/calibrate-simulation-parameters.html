@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Calibrate simulation parameters • RITHMS</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Calibrate simulation parameters">
 </head>
@@ -125,7 +125,7 @@ al. (<a href="#ref-Zang2022">2022</a>)</span> .</p>
 <span>                                   effect.size <span class="op">=</span> <span class="va">effect_size_vector</span>,</span>
 <span>                                   plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="calibrate-simulation-parameters_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="700"></p>
-<pre><code><span><span class="co">#&gt; Picking joint bandwidth of 0.036</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Picking joint bandwidth of 0.0374</span></span></code></pre>
 <p><img src="calibrate-simulation-parameters_files/figure-html/unnamed-chunk-5-2.png" class="r-plt" alt="" width="700"></p>
 <p><strong>Select effect sizes that lead to taxa heritability
 distributions consistent with the literature:</strong></p>
@@ -188,13 +188,13 @@ The default value (10,000) in the
 using the <code>Deru</code> dataset and reflects its typical sequencing
 depths.</p>
 <p>The counts are drawn according to a multinomial low such as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>,</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">M(N,p)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo stretchy="false" form="prefix">(</mo><mi>N</mi><mo>,</mo><mi>p</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">M(N,p)</annotation></semantics></math>
 where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
 is the relative abundances vector and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
 the sampling size. Let the following formula
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>10000</mn><mo>,</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>i</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo>,</mo><msub><mi>p</mi><mrow><mi>i</mi><mo>,</mo><msub><mi>n</mi><mi>b</mi></msub></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">M(10000, (p_{i,1}, ..., p_{i,n_b}))</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo stretchy="false" form="prefix">(</mo><mn>10000</mn><mo>,</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>i</mi><mo>,</mo><mn>1</mn></mrow></msub><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo>,</mo><msub><mi>p</mi><mrow><mi>i</mi><mo>,</mo><msub><mi>n</mi><mi>b</mi></msub></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">M(10000, (p_{i,1}, ..., p_{i,n_b}))</annotation></semantics></math>.
 This parameter should be adapted to your own dataset based on the
 observed sequencing depth distribution.</p>
 <p><strong>Sequencing depths distribution:</strong></p>
@@ -246,7 +246,7 @@ in the article</a> from your own dataset, remember to modify the
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Dru2020" class="csl-entry">
 Déru, V., A. Bouquet, C. Hassenfratz, B. Blanchet, C. Carillier-Jacquin,
 and H. Gilbert. 2020. <span>“Impact of a High-Fibre Diet on Genetic
@@ -255,15 +255,14 @@ Parameters of Production Traits in Growing Pigs.”</span> <em>Animal</em>
 </div>
 <div id="ref-https://doi.org/10.48550/arxiv.2502.07366" class="csl-entry">
 Pety, Solène, Mahendra Mariadassou, Ingrid David, and Andrea Rau. 2025.
-<span>“RITHMS : An Advanced Stochastic Framework for the Simulation of
-Transgenerational Hologenomic Data.”</span> <a href="https://doi.org/10.48550/ARXIV.2502.07366" class="external-link">https://doi.org/10.48550/ARXIV.2502.07366</a>.
+<em>RITHMS : An Advanced Stochastic Framework for the Simulation of
+Transgenerational Hologenomic Data</em>. <a href="https://doi.org/10.48550/ARXIV.2502.07366" class="external-link">https://doi.org/10.48550/ARXIV.2502.07366</a>.
 </div>
 <div id="ref-Zang2022" class="csl-entry">
-Zang, Xin-Wei, Hui-Zeng Sun, Ming-Yuan Xue, Zhe Zhang, Graham Plastow,
-Tianfu Yang, Le Luo Guan, and Jian-Xin Liu. 2022. <span>“Heritable and
-Nonheritable Rumen Bacteria Are Associated with Different Characters of
-Lactation Performance of Dairy Cows.”</span> Edited by Jessica L.
-Metcalf. <em>mSystems</em> 7 (5). <a href="https://doi.org/10.1128/msystems.00422-22" class="external-link">https://doi.org/10.1128/msystems.00422-22</a>.
+Zang, Xin-Wei, Hui-Zeng Sun, Ming-Yuan Xue, et al. 2022.
+<span>“Heritable and Nonheritable Rumen Bacteria Are Associated with
+Different Characters of Lactation Performance of Dairy Cows.”</span>
+<em>mSystems</em> 7 (5). <a href="https://doi.org/10.1128/msystems.00422-22" class="external-link">https://doi.org/10.1128/msystems.00422-22</a>.
 </div>
 </div>
 </div>

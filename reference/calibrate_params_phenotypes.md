@@ -17,6 +17,7 @@ calibrate_params_phenotypes(
   b2,
   otu_list,
   Nqtl_y,
+  taxa_assign = NULL,
   Notu_y = length(otu_list)
 )
 ```
@@ -49,6 +50,14 @@ calibrate_params_phenotypes(
 - Nqtl_y:
 
   Integer; number of causal SNPs for the phenotypes.
+
+- taxa_assign:
+
+  Optional factor giving cluster assignment for each OTU in `otu_list`.
+  When provided, `beta_otu` is built as a 90%/10% mixture of
+  cluster-level and individual-level coefficients, inducing
+  within-cluster correlation. If `NULL` (default), purely
+  individual-level coefficients are used.
 
 - Notu_y:
 
@@ -95,10 +104,12 @@ params <- suppressWarnings(RITHMS:::calibrate_params_phenotypes(X0 = X0,
                                       Nqtl_y = 10,
                                       Notu_y = length(otu_list)))
 str(params)
-#> List of 4
+#> List of 5
 #>  $ alpha   : num [1:10] 0.000119 -0.139382 0.718991 -0.084337 -0.217468 ...
 #>  $ omega   : num [1:10] 1.147 1.564 1.253 -0.885 0.279 ...
 #>  $ qtl_list: int [1:10] 28 15 11 29 17 41 25 12 19 7
+#>  $ otu_list: Named chr [1:10] "OTU48" "OTU28" "OTU29" "OTU4" ...
+#>   ..- attr(*, "names")= chr [1:10] "y1" "y2" "y3" "y4" ...
 #>  $ se      : num [1, 1] 1
  
 ```

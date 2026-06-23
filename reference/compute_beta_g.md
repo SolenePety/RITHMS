@@ -46,6 +46,7 @@ influenced by the genotype.
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 set.seed(123)
 n_taxa <- 5
 n_snp <- 10
@@ -61,4 +62,5 @@ beta_g <- RITHMS:::compute_beta_g(beta = beta,
                                   genotypes = genotypes,
                                   noise = 0.05,
                                   taxa_scale = 1)
+} # }
 ```

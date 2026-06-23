@@ -1,6 +1,7 @@
 # Calibrate simulation parameters
 
 ``` r
+
 library(RITHMS)
 ```
 
@@ -15,7 +16,7 @@ data.
 We focus here on two parameters that influence the behavior of the
 simulation:
 
-- **The genetic effect size** $\sigma_{\beta}$, which shapes the
+- **The genetic effect size** $`\sigma_\beta`$, which shapes the
   distribution of QTLs effects across microbiome. *Note: The default
   value of this parameter is optimized to match the `Deru` dataset, wich
   sets it to 0.3.*
@@ -25,6 +26,7 @@ simulation:
   `Deru` dataset, wich sets it to 10,000.*
 
 ``` r
+
 library(magrittr)
 library(dplyr)
 library(ggplot2)
@@ -38,23 +40,25 @@ library(psych)
 
 ## Calibrating the Genetic Effect Size
 
-The genetic effect size parameter $\sigma_{\beta}$ directly impacts the
+The genetic effect size parameter $`\sigma_\beta`$ directly impacts the
 distribution of taxa heritabilities (Further explanations are given in
 Pety et al. ([2025](#ref-https://doi.org/10.48550/arxiv.2502.07366)) ).
 The [`gen_effect_calibration()`](../reference/gen_effect_calibration.md)
 function allows users to evaluate how different values of
-$\sigma_{\beta}$ influence this distribution.
+$`\sigma_\beta`$ influence this distribution.
 
 In practice, heritabilities for most taxa are expected to lie around
 0.1, rarely exceeding 0.5 as suggested in Zang et al.
 ([2022](#ref-Zang2022)) .
 
 ``` r
+
 data(Deru)
 ToyData <- Deru
 ```
 
 ``` r
+
 taxa_assign_g <- assign_taxa(founder_object = ToyData)
 effect_size_vector <- c(seq(0.1, 1, by = 0.1))
 out_data <- gen_effect_calibration(founder_object = ToyData,
@@ -66,7 +70,7 @@ out_data <- gen_effect_calibration(founder_object = ToyData,
 
 ![](calibrate-simulation-parameters_files/figure-html/unnamed-chunk-5-1.png)
 
-    #> Picking joint bandwidth of 0.036
+    #> Picking joint bandwidth of 0.0374
 
 ![](calibrate-simulation-parameters_files/figure-html/unnamed-chunk-5-2.png)
 
@@ -74,6 +78,7 @@ out_data <- gen_effect_calibration(founder_object = ToyData,
 consistent with the literature:**
 
 ``` r
+
 density_peaks <- out_data %>%
   group_by(effect.size) %>%
   summarise(
@@ -119,12 +124,13 @@ p2
 ![](calibrate-simulation-parameters_files/figure-html/unnamed-chunk-6-1.png)
 
 ``` r
+
 #ggplotly(p2) easier to navigate on this plot with ggplotly
 ```
 
 Based on the Zang et al. ([2022](#ref-Zang2022)) expectations, a
 reasonable distribution of taxa heritabilities appears to correspond to
-a value of $\sigma_{\beta}*\sqrt{QTL_{o}} = 0.3$ in the case of Déru et
+a value of $`\sigma_\beta * \sqrt {QTL_o} = 0.3`$ in the case of Déru et
 al. ([2020](#ref-Dru2020)) dataset.
 
 ## Calibrating the Multinomial Sampling Size
@@ -136,21 +142,22 @@ The default value (10,000) in the
 function was calibrated using the `Deru` dataset and reflects its
 typical sequencing depths.
 
-The counts are drawn according to a multinomial low such as $M(N,p)$
-where $p$ is the relative abundances vector and $N$ the sampling size.
-Let the following formula
-$M\left( 10000,\left( p_{i,1},...,p_{i,n_{b}} \right) \right)$. This
-parameter should be adapted to your own dataset based on the observed
-sequencing depth distribution.
+The counts are drawn according to a multinomial low such as $`M(N,p)`$
+where $`p`$ is the relative abundances vector and $`N`$ the sampling
+size. Let the following formula $`M(10000, (p_{i,1}, ..., p_{i,n_b}))`$.
+This parameter should be adapted to your own dataset based on the
+observed sequencing depth distribution.
 
 **Sequencing depths distribution:**
 
 ``` r
+
 data(Deru)
 ToyData <- Deru
 ```
 
 ``` r
+
 sample_depth <- rowSums(ToyData$microbiome)
 
 ggplot(data.frame(Depth = sample_depth), aes(x = Depth)) +
@@ -166,6 +173,7 @@ ggplot(data.frame(Depth = sample_depth), aes(x = Depth)) +
 ![](calibrate-simulation-parameters_files/figure-html/unnamed-chunk-8-1.png)
 
 ``` r
+
  
 summary(sample_depth)
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -184,6 +192,7 @@ based on a new dataset. These two parameters can be specified in the
 [`holo_simu()`](../reference/holo_simu.md) call, as well :
 
 ``` r
+
 
 generations_simu <- holo_simu(founder_object = ToyData,
                               h2 = 0.25,
@@ -210,12 +219,11 @@ of Production Traits in Growing Pigs.” *Animal* 14 (11): 2236–45.
 <https://doi.org/10.1017/s1751731120001275>.
 
 Pety, Solène, Mahendra Mariadassou, Ingrid David, and Andrea Rau. 2025.
-“RITHMS : An Advanced Stochastic Framework for the Simulation of
-Transgenerational Hologenomic Data.”
+*RITHMS : An Advanced Stochastic Framework for the Simulation of
+Transgenerational Hologenomic Data*.
 <https://doi.org/10.48550/ARXIV.2502.07366>.
 
-Zang, Xin-Wei, Hui-Zeng Sun, Ming-Yuan Xue, Zhe Zhang, Graham Plastow,
-Tianfu Yang, Le Luo Guan, and Jian-Xin Liu. 2022. “Heritable and
+Zang, Xin-Wei, Hui-Zeng Sun, Ming-Yuan Xue, et al. 2022. “Heritable and
 Nonheritable Rumen Bacteria Are Associated with Different Characters of
-Lactation Performance of Dairy Cows.” Edited by Jessica L. Metcalf.
-*mSystems* 7 (5). <https://doi.org/10.1128/msystems.00422-22>.
+Lactation Performance of Dairy Cows.” *mSystems* 7 (5).
+<https://doi.org/10.1128/msystems.00422-22>.
