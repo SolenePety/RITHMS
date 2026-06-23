@@ -21,6 +21,8 @@ holo_simu(
   noise.microbiome = 0.1,
   dir = T,
   ao = 25,
+  taxonomy_table = NULL,
+  aggregate_rank = NULL,
   size_rmultinom = 10000,
   selection = F,
   size_selection_F = NULL,
@@ -65,6 +67,10 @@ holo_simu(
 \item{dir}{Logical; Mentions if the ambient microbiome is generated via a Dirichlet law or a only the \code{mean_microbiome}. DEFAULT = T}
 
 \item{ao}{A numeric scalar used as the concentration parameter for the Dirichlet distribution.}
+
+\item{taxonomy_table}{Optional taxonomy \code{data.frame} used to aggregate the microbiome at a given taxonomic rank before phenotype calibration. If \code{NULL} (default), phenotypes are calibrated on raw OTU-level abundances.}
+
+\item{aggregate_rank}{Optional string giving the taxonomic rank (e.g. \code{"Family"}) or \code{"hclust"} to aggregate by genetic cluster, used jointly with \code{taxonomy_table}. Ignored if \code{taxonomy_table} is \code{NULL}.}
 
 \item{size_rmultinom}{Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).}
 
@@ -140,6 +146,8 @@ Simulates hologenomic data over multiple generations with genetic, microbial, an
 \item \code{noise.microbiome}
 \item \code{dir}
 \item \code{ao}
+\item \code{taxonomy_table}
+\item \code{aggregate_rank}
 }
 }
 
@@ -176,7 +184,7 @@ Simulates hologenomic data over multiple generations with genetic, microbial, an
   generations_simu <- holo_simu(h2 = 0.25,
                                  b2 = 0.25,
                                  founder_object = ToyData,
-                                 n_clust = taxa_assign_g,
+                                n_clust = taxa_assign_g,
                                  n_ind = 500,
                                  verbose = FALSE,
                                  noise.microbiome = 0.5,
@@ -185,7 +193,8 @@ Simulates hologenomic data over multiple generations with genetic, microbial, an
                                  dir = TRUE,
                                  selection = FALSE,
                                  seed = 1234)
-}  
+}
+
 }
 \seealso{
 \code{\link[=compute_beta_matrix_cluster]{compute_beta_matrix_cluster()}}, \code{\link[=compute_mean_microbiome]{compute_mean_microbiome()}}, \code{\link[=compute_current_microbiome]{compute_current_microbiome()}}, \code{\link[=compute_phenotypes]{compute_phenotypes()}}

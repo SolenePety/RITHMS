@@ -5,7 +5,7 @@ output:
     code_folding: hide
 ---
   
-In this vignette, we explore a large number of simulation scenarios to illustrate the capabilities and features of RITHMS. These results were obtained on the dataset described below. Further explanations are given in [the article](https://arxiv.org/abs/2502.07366). RITHMS can account for a variety of **selection strategies** and is adaptable to different genetic architectures. We found that simulated data accurately preserved key characteristics **across generations**, notably **microbial diversity metrics**, exhibited the expected behavior in terms and **correlation** between taxa and of modulation of **vertical and horizontal transmission**, response to **environmental effects** and the evolution of **phenotypic values** depending on selection strategy.   
+In this vignette, we explore a large number of simulation scenarios to illustrate the capabilities and features of RITHMS. These results were obtained on the dataset described below. Further explanations are given in [the article](https://peercommunityjournal.org/articles/10.24072/pcjournal.666/). RITHMS can account for a variety of **selection strategies** and is adaptable to different genetic architectures. We found that simulated data accurately preserved key characteristics **across generations**, notably **microbial diversity metrics**, exhibited the expected behavior in terms and **correlation** between taxa and of modulation of **vertical and horizontal transmission**, response to **environmental effects** and the evolution of **phenotypic values** depending on selection strategy.   
      
 ```{r setup}
 #| echo: no

@@ -39,12 +39,14 @@ generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
                                verbose = FALSE, seed = 1234)
                                
 # Extract microbiomes matrix for each generations
-microbiomes <- generations_simu[-1] \%>\% map(get_microbiomes)
+microbiomes <- generations_simu[c(-1,-2)] \%>\% map(get_microbiomes)
  
 # Estimate diversity metrics
 richness_from_abundances <- microbiomes \%>\% map(richness_from_abundances_gen, size_rmultinom = 10000) 
 ## size_rmultinom = 10000 according to DeruPops dataset
+
 }
+
 }
 \seealso{
 \code{\link[=get_microbiomes]{get_microbiomes()}}, \code{\link[phyloseq:estimate_richness]{phyloseq::estimate_richness()}}

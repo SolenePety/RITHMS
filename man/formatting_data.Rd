@@ -4,7 +4,13 @@
 \alias{assign_taxa}
 \title{Assign all taxa to a cluster, eventually under genetic control using hclust}
 \usage{
-assign_taxa(founder_object, taxa_g = 0.05)
+assign_taxa(
+  founder_object,
+  taxa_g = 0.05,
+  type = "hclust",
+  taxonomy = NULL,
+  seed = 123
+)
 }
 \arguments{
 \item{founder_object}{Output of read_input_data function}
@@ -18,8 +24,10 @@ A vector with a length matching the total number of taxa with values from 0 to t
 Assign all taxa to a cluster, eventually under genetic control using hclust
 }
 \examples{
+\dontrun{
 data("Deru")
 ToyData <- Deru
 taxa_assign_g <- assign_taxa(founder_object = ToyData,
-            taxa_g = 0.2)
+           taxa_g = 0.2)
+           }
 }

@@ -25,6 +25,7 @@ A \code{data.frame} if \verb{output_type = "dataframe" or "both"}, or just write
 This function converts a genotype matrix encoded as 0,1,2 into a VCF-like format. It can either return the VCF content as a \code{data.frame}, write it to a .vcf file or do both.
 }
 \examples{
+\dontrun{
 n_ind <- 50
 n_snp <- 50
 
@@ -36,4 +37,6 @@ geno_matrix <- matrix(sample(0:2, size = n_ind*n_snp, replace = TRUE),
 # Transform genotype matrix into VCF
 vcf <- transform_geno_into_vcf(geno_matrix, output_type = "dataframe")
 head(vcf[1:3,1:7])
+}
+
 }

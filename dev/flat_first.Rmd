@@ -69,6 +69,25 @@ ToyData <- Deru
 #' @param threshold Threshold for rarefaction, DEFAULT = 0.05
 #' @param ind_selected Vector of string values with individuals to keep, have to match rownames of count table file, DEFAULT = NULL
 #' 
+#' @examples
+#' \dontrun{
+#' # Create founder object from PED/MAP set
+#'founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
+#'                                  path_to_pedmap = "/path/to/pedmap/'prefix'",
+#'                                  biome_id_column = "ind_id",
+#'                                  threshold = 0.05,
+#'                                  ind_selected = NULL,
+#'                                  file_type = "pedmap")
+
+#'# Create founder object from VCF
+#'founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
+#'                                  path_to_pedmap = "/path/to/vcf/'prefix'",
+#'                                 biome_id_column = "ind_id",
+#'                                  threshold = 0.05,
+#'                                  ind_selected = NULL,
+#'                                  file_type = "vcf")
+#'                                  }
+
 #' @return
 #' A `list` containing two object.
 #' A `matrix` containing the microbiome(`microbiome`). 
@@ -108,25 +127,6 @@ read_input_data <- function(path_to_microbiome,
 
 ```
 
-```{r example-formatting_data, message=FALSE, warning=FALSE}
-\dontrun{
-# Create founder object from PED/MAP set
-founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
-                                  path_to_pedmap = "/path/to/pedmap/'prefix'",
-                                  biome_id_column = "ind_id",
-                                  threshold = 0.05,
-                                  ind_selected = NULL,
-                                  file_type = "pedmap")
-
-# Create founder object from VCF
-founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt",
-                                  path_to_pedmap = "/path/to/vcf/'prefix'",
-                                  biome_id_column = "ind_id",
-                                  threshold = 0.05,
-                                  ind_selected = NULL,
-                                  file_type = "vcf")
-}
-```
 
 ```{r function-rarefied_microbiome}
 #' Rarefaction step within read_input_data
@@ -141,6 +141,12 @@ founder_object <- read_input_data(path_to_microbiome = "/path/to/microbiome.txt"
 #' @param microbiome_matrix Microbiome counting table, OTUs in columns and a column specifying the IDs
 #' @param id_column String specifying the name of the column containing the individual IDs. Default is "ind_id"
 #' @param threshold Minimum prevalence threshold
+#' 
+#' @examples 
+#' \dontrun{
+#' microbiome <- data.table::fread("/path/to/microbiome.txt")
+#'  microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
+#'  }
 #' 
 #' @return
 #' The filtered microbiome matrix, without OTUs whose prevalence is lower than the set threshold
@@ -161,13 +167,6 @@ rarefied_microbiome <- function(microbiome_matrix,
 }
 ```
 
-```{r examples-rarefied_microbiome}
-\dontrun{
-  microbiome <- data.table::fread("/path/to/microbiome.txt")
-  microbiome_filtered <- rarefied_microbiome(microbiome, id_columns = "sample_id", threshold = 0.05)
-}
-```
-
 ```{r function-generate_founder}
 #' Formatting of ped/map files or vcf into haplotypes table and add it inside the `founder_object` list.
 #' 
@@ -175,6 +174,17 @@ rarefied_microbiome <- function(microbiome_matrix,
 #' @param microbiome_matrix Filtered microbiome matrix, with OTUs in columns and individuals in rows
 #' @param file_type String specifying the file type used to load genotype data. This should be one of `"pedmap"` or `"vcf"`. (default: `"pedmap"`).
 #' 
+#' @examples
+#' \dontrun{
+#' # Generate founder object from PED/MAP set
+#'  microbiome <- data.table::fread("/path/to/microbiome.txt")
+#'  founder_object <- generate_founder(path = "/path/to/pedmap", microbiome, file_type = "pedmap")
+  
+#'  # Generate founder object from VCF set
+#'  microbiome <- data.table::fread("/path/to/microbiome.txt")
+#'  founder_object <- generate_founder(path = "/path/to/vcf", microbiome, file_type = "vcf") 
+#'  }
+  
 #' @return
 #' A `list` of two `matrix`.
 #' The `microbiome` matrix contains taxa (in columns) accross individuals (in rows).
@@ -231,19 +241,6 @@ generate_founder <- function(path = NULL,
 
 ```
 
-```{r examples-generate_founder}
-\dontrun{
-  # Generate founder object from PED/MAP set
-  microbiome <- data.table::fread("/path/to/microbiome.txt")
-  founder_object <- generate_founder(path = "/path/to/pedmap", microbiome, file_type = "pedmap")
-  
-  # Generate founder object from VCF set
-  microbiome <- data.table::fread("/path/to/microbiome.txt")
-  founder_object <- generate_founder(path = "/path/to/vcf", microbiome, file_type = "vcf") 
-}
-
-```
-
 
 ## Taxa assignation function
 
@@ -257,41 +254,50 @@ generate_founder <- function(path = NULL,
 #' @importFrom glue glue
 #' @importFrom magrittr %>%
 #'
+#'@examples
+#'\dontrun{
+#' data("Deru")
+#' ToyData <- Deru
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData,
+#'            taxa_g = 0.2)
+#'            }
+
 #' @return
 #' A vector with a length matching the total number of taxa with values from 0 to the number of clusters, 0 corresponding to the non under genetic control cluster
 #' @rdname formatting_data
 #' @export
 
 assign_taxa <- function(founder_object,
-                        taxa_g = 0.05){
+                        taxa_g = 0.05,
+                        type = "hclust",
+                        taxonomy = NULL,
+                        seed = 123){
+  set.seed(seed)
   dist_mat <- vegdist(x = t(founder_object$microbiome),
                method = "bray")
   hc <- hclust(dist_mat)
   taxa_assign <- cutree(hc, k = 100)
-  ntaxa_g = 0
-  cluster_id_g = c()
-  if(sum(table(taxa_assign)[table(taxa_assign) > 10 & table(taxa_assign) < 25]) < round(length(taxa_assign)*taxa_g)){
-    print(glue("{sum(table(taxa_assign)[table(taxa_assign) > 10 & table(taxa_assign) < 25])} taxa available for genetic control sampling but {round(length(taxa_assign)*taxa_g)} asked. Change taxa_g parameter please."))
-  }
-  while(ntaxa_g < round(length(taxa_assign)*taxa_g)){
-    new_id <- table(taxa_assign)[table(taxa_assign) > 10 & table(taxa_assign) < 25] %>% sample(1) %>% names() %>% as.numeric()
-    if(! new_id %in% cluster_id_g){
-      cluster_id_g <- append(cluster_id_g, new_id)
-      ntaxa_g <- ntaxa_g + sum(taxa_assign == new_id)
+  if(type == "hclust"){
+    if(sum(table(taxa_assign)[table(taxa_assign) > 10 & table(taxa_assign) < 25]) < round(length(taxa_assign)*taxa_g)){
+      print(glue("{sum(table(taxa_assign)[table(taxa_assign) > 10 & table(taxa_assign) < 25])} taxa available for genetic control sampling but {round(length(taxa_assign)*taxa_g)} asked. Change taxa_g parameter please."))
     }
+    ntaxa_g = 0
+    cluster_id_g = c()
+    while(ntaxa_g < round(length(taxa_assign)*taxa_g)){
+      new_id <- table(taxa_assign)[table(taxa_assign) > 10 & table(taxa_assign) < 25] %>% sample(1) %>% names() %>% as.numeric()
+      if(! new_id %in% cluster_id_g){
+        cluster_id_g <- append(cluster_id_g, new_id)
+        ntaxa_g <- ntaxa_g + sum(taxa_assign == new_id, na.rm = TRUE)
+      }
+    }
+  }else{
+    cluster_id_g <- sample(unique(taxa_assign), 35)
   }
   taxa_assign_g <- ifelse(taxa_assign %in% cluster_id_g, taxa_assign, 0) %>% as.factor()
   levels(taxa_assign_g) <- c(0:length(cluster_id_g))
   return(taxa_assign_g)
 }
 
-```
-
-```{r examples-assign_taxa, message=FALSE, warning=FALSE}
-data("Deru")
-ToyData <- Deru
-taxa_assign_g <- assign_taxa(founder_object = ToyData,
-            taxa_g = 0.2)
 ```
 
 ```{r tests-assign_taxa}
@@ -316,6 +322,18 @@ taxa_assign_g <- assign_taxa(founder_object = ToyData,
 #' @param effect.size Vector giving the size of genetic effect to try 
 #' @param plot boolean, if plot generation is required, DEFAULT = TRUE
 #' 
+#' @exampleq
+#' \dontrun{
+#' data("Deru")
+#'ToyData <- Deru
+#'taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#'effect_size_vector <- c(seq(0.1,1, by = 0.2))
+#'out_data <- gen_effect_calibration(founder_object = ToyData,
+#'                                   taxa_assign_g = taxa_assign_g,
+#'                                   correlation = 0.5,
+#'                                   effect.size = effect_size_vector,
+#'                                   plot = TRUE)
+#' }
 #' @return
 #' A data.frame with three columns, giving the Taxa ID, the effect.size and the corresponding heritability
 #' 
@@ -413,18 +431,6 @@ gen_effect_calibration <- function(founder_object,
 }
 ```
 
-```{r examples-gen_effect_calibration, message=FALSE, warning=FALSE}
-data("Deru")
-ToyData <- Deru
-taxa_assign_g <- assign_taxa(founder_object = ToyData)
-effect_size_vector <- c(seq(0.1,1, by = 0.2))
-out_data <- gen_effect_calibration(founder_object = ToyData,
-                                   taxa_assign_g = taxa_assign_g,
-                                   correlation = 0.5,
-                                   effect.size = effect_size_vector,
-                                   plot = TRUE)
-```
-
 ```{r tests-genetic_effect}
 ```
 
@@ -518,6 +524,25 @@ compute_beta_matrix_cluster <- function(n_b,
 #' @param taxa_scale A `numeric` scalar to scale the noise added to each OTUs abundance.
 #' 
 #' @seealso [gen_effect_calibration()]
+#' 
+#' @examples
+#' \dontrun{
+#' set.seed(123)
+#' n_taxa <- 5
+#' n_snp <- 10
+#' n_ind <- 50
+#' # Simulate a small beta matrix
+#' beta <- matrix(sample(seq(0.1, 1, by = 0.05), size = n_taxa*n_snp, replace = TRUE), nrow = n_taxa, ncol = n_snp)
+#' 
+#' # Simulate a small genotype matrix
+#' genotypes <- matrix(sample(0:2, size = n_snp*n_ind, replace = TRUE), nrow = n_snp, ncol = n_ind)
+#' 
+#' # Compute beta_g matrix with noise
+#' beta_g <- RITHMS:::compute_beta_g(beta = beta,
+#'                                   genotypes = genotypes,
+#'                                   noise = 0.05,
+#'                                   taxa_scale = 1)
+#' }
 
 #' @return A `matrix` with taxa in roxs and individuals in columns, where each element represents the abundance of a given taxa in an individual, influenced by the genotype.
 #' 
@@ -537,23 +562,6 @@ compute_beta_g <- function(beta,
 }
 ```
 
-```{r examples-compute_beta_g}
-set.seed(123)
-n_taxa <- 5
-n_snp <- 10
-n_ind <- 50
-# Simulate a small beta matrix
-beta <- matrix(sample(seq(0.1, 1, by = 0.05), size = n_taxa*n_snp, replace = TRUE), nrow = n_taxa, ncol = n_snp)
-
-# Simulate a small genotype matrix
-genotypes <- matrix(sample(0:2, size = n_snp*n_ind, replace = TRUE), nrow = n_snp, ncol = n_ind)
-
-# Compute beta_g matrix with noise
-beta_g <- RITHMS:::compute_beta_g(beta = beta,
-                                  genotypes = genotypes,
-                                  noise = 0.05,
-                                  taxa_scale = 1)
-```
 
 ```{r function-root}
 #' Compute root value for beta matrix construction
@@ -584,6 +592,7 @@ root <- function(rho) {
 #' @param otu_list List of causal OTUs for the phenotypes.
 #' @param Nqtl_y Integer; number of causal SNPs for the phenotypes.
 #' @param Notu_y Integer; number of causal OTUs for the phenotypes.
+#' @param taxa_assign Optional factor giving cluster assignment for each OTU in `otu_list`. When provided, `beta_otu` is built as a 90%/10% mixture of cluster-level and individual-level coefficients, inducing within-cluster correlation. If `NULL` (default), purely individual-level coefficients are used.
 #' 
 #' @examples
 #' library(magrittr)
@@ -627,12 +636,13 @@ calibrate_params_phenotypes <- function(X0,
                                         b2,
                                         otu_list,
                                         Nqtl_y,
+                                        taxa_assign = NULL,
                                         Notu_y = length(otu_list)){
   if (Notu_y == 0) b2 = 0
   if (Nqtl_y == 0) h2 = 0
   
   ## heritability and microbiability should be non-negative and the sum should be positive
-  stopifnot(h2 >= 0, b2 >= 0, h2 + b2 > 0)
+  #stopifnot(h2 >= 0, b2 >= 0, h2 + b2 > 0)
   
   #init 
   Nind = ncol(X0)
@@ -646,7 +656,22 @@ calibrate_params_phenotypes <- function(X0,
   ## list of snps directly influencing y :
   qtl_list  = sample(seq(Nsnp), size = Nqtl_y)
   beta_qtl = rgamma(Nqtl_y, shape = 0.4, scale = 5) * sample(c(1,-1), size=Nqtl_y, replace = T)
-  beta_otu = rgamma(Notu_y, shape = 1.4, scale = 3.8) * sample(c(1,-1), size = Notu_y, replace = T)
+  
+  ## OTU effect coefficients
+  if (!is.null(taxa_assign)) {
+    ## mixture of cluster-level and individual-level coefficients (induces within-cluster correlation)
+    taxa_assign <- as.factor(taxa_assign)
+    beta_otu_clust <- mapvalues(taxa_assign, from = levels(taxa_assign),
+                                to = rgamma(length(levels(taxa_assign)), shape = 1.4, scale = 3.8) *
+                                     sample(c(1,-1), size = length(levels(taxa_assign)), replace = T)) %>%
+      as.character() %>% as.numeric()
+    beta_otu_ind <- rgamma(length(taxa_assign), shape = 1.4, scale = 3.8) *
+      sample(c(1,-1), size = length(taxa_assign), replace = T)
+    beta_otu <- 0.90 * beta_otu_clust + 0.10 * beta_otu_ind
+    beta_otu_mix <- beta_otu
+  } else {
+    beta_otu <- rgamma(Notu_y, shape = 1.4, scale = 3.8) * sample(c(1,-1), size = Notu_y, replace = T)
+  }
   
   # OTU part  
   if(Notu_y>0){ #arrow from B to y
@@ -686,6 +711,7 @@ calibrate_params_phenotypes <- function(X0,
   return(list('alpha' = beta_qtl / c(se), 
               'omega' = beta_otu / c(se),
               'qtl_list' = qtl_list,
+              'otu_list' = otu_list,
               'se' = se / se ## = 1
   ))
 }
@@ -966,6 +992,8 @@ select_individual <- function(phenotypes,
 #' If `NULL` (default value), no environmental effect is applied.
 #' Example use case: refer to the vignette on [Generate figures](https://solenepety.github.io/RITHMS/articles/generate-figures.html#introduction-of-transient-perturbations-of-the-microbiota)
 #' @param env_gen vector of booleans.
+#' @param taxonomy_table Optional taxonomy `data.frame` used to aggregate the microbiome at a given taxonomic rank before phenotype calibration. If `NULL` (default), phenotypes are calibrated on raw OTU-level abundances.
+#' @param aggregate_rank Optional string giving the taxonomic rank (e.g. `"Family"`) or `"hclust"` to aggregate by genetic cluster, used jointly with `taxonomy_table`. Ignored if `taxonomy_table` is `NULL`.
 #' @param seed seed value for samplings in the function.
 #' @param verbose bool, DEFAULT = T
 #'
@@ -992,6 +1020,8 @@ select_individual <- function(phenotypes,
 #' - `noise.microbiome`
 #' - `dir`
 #' - `ao`
+#' - `taxonomy_table`
+#' - `aggregate_rank`
 #'
 #' @section Selection-related parameters:
 #' - `selection` 
@@ -1005,6 +1035,25 @@ select_individual <- function(phenotypes,
 #' @section Misc:
 #' - `seed`
 #' - `verbose` 
+#' 
+#' @examples
+#' \dontrun{
+#'   data("Deru")
+#'   ToyData <- Deru
+#'   taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#'   generations_simu <- holo_simu(h2 = 0.25,
+#'                                  b2 = 0.25,
+#'                                  founder_object = ToyData,
+#'                                 n_clust = taxa_assign_g,
+#'                                  n_ind = 500,
+#'                                  verbose = FALSE,
+#'                                  noise.microbiome = 0.5,
+#'                                  effect.size = 0.3,
+#'                                  lambda = 0.5,
+#'                                  dir = TRUE,
+#'                                  selection = FALSE,
+#'                                  seed = 1234)
+#' }
 #' 
 #' @return
 #' An important list with several different objects :
@@ -1041,6 +1090,8 @@ holo_simu <- function(### Required parameters ###
                       noise.microbiome = 0.1,
                       dir = T,
                       ao = 25,
+                      taxonomy_table = NULL,
+                      aggregate_rank = NULL,
                       ###
                       
                       ### Selection-related parameters ###
@@ -1115,19 +1166,46 @@ holo_simu <- function(### Required parameters ###
   #####################
   ### founder phenotypes and parameters calibration
   #####################
+  if (!is.null(taxonomy_table) && !is.null(aggregate_rank)) {
+    microbiome_pheno <- as.matrix(microbiome_gen)
+    microbiome_pheno <- microbiome_pheno[otu_list, ] |> t() |> clrInv() |> t()
+    
+    if (aggregate_rank == "hclust") {
+      id_group <- microbiome_pheno |> as_tibble() |>
+        mutate(assignation = glue("Cluster_{n_clust[n_clust != 0]}")) |>
+        group_by(assignation)
+    } else {
+      id_group <- dplyr::inner_join(
+        microbiome_pheno |> as_tibble(rownames = "OTU"),
+        taxonomy_table, by = "OTU"
+      ) |>
+        dplyr::select(!prevalence) |>
+        dplyr::group_by(.data[[aggregate_rank]])
+    }
+    
+    otu_list_calib    <- rownames(microbiome_pheno)
+    B0_calib          <- microbiome_pheno |> t() |> clr() |> t()
+    taxa_assign_calib <- group_indices(id_group)
+  } else {
+    otu_list_calib    <- otu_list
+    B0_calib          <- microbiome_gen
+    taxa_assign_calib <- NULL
+  }
+  
   params_phenotypes <- calibrate_params_phenotypes(X0 = get.geno(population,gen = 1),
-                                                   B0 = microbiome_gen, #CLR abundances ,
+                                                   B0 = B0_calib, #CLR abundances ,
                                                    h2 = h2,
                                                    b2 = b2,
-                                                   otu_list = otu_list,
+                                                   otu_list = otu_list_calib,
                                                    Nqtl_y = Nqtl_y,
-                                                   Notu_y = length(otu_list))
+                                                   taxa_assign = taxa_assign_calib,
+                                                   Notu_y = length(otu_list_calib))
   
   phenotypes_founder <- compute_phenotypes(X = get.geno(population,gen = 1), 
-                                           B = microbiome_gen, #CLR abundances 
+                                           B = B0_calib, #CLR abundances 
                                            Nqtl_y = Nqtl_y, 
-                                           Notu_y = length(otu_list), 
-                                           otu_list = otu_list,
+                                           Notu_y = length(otu_list_calib), 
+                                           otu_list = otu_list_calib,
                                            qtl_list = params_phenotypes$qtl_list,
                                            beta_qtl = params_phenotypes$alpha,
                                            beta_otu = params_phenotypes$omega,
@@ -1267,26 +1345,6 @@ holo_simu <- function(### Required parameters ###
 
 ```
 
-```{r examples-holo_simu, warning=FALSE, message=FALSE}
-\dontrun{
-  data("Deru")
-  ToyData <- Deru
-  taxa_assign_g <- assign_taxa(founder_object = ToyData)
-  generations_simu <- holo_simu(h2 = 0.25,
-                                 b2 = 0.25,
-                                 founder_object = ToyData,
-                                 n_clust = taxa_assign_g,
-                                 n_ind = 500,
-                                 verbose = FALSE,
-                                 noise.microbiome = 0.5,
-                                 effect.size = 0.3,
-                                 lambda = 0.5,
-                                 dir = TRUE,
-                                 selection = FALSE,
-                                 seed = 1234)
-}  
-```
-
 
 ```{r function-richness_from_abundances_gen}
 
@@ -1301,6 +1359,26 @@ holo_simu <- function(### Required parameters ###
 #' @param size_rmultinom Integer; specifying the total number of object for the multinomial sampling(default: 10000, according to DeruPop.rds dataset).
 #' @param n_loop Integer; number of multinomial resampling iterations to perform (default: 10).
 #' @param plot Logical; not currently implemented
+#' 
+#' @examples
+#' \dontrun{
+#' library(magrittr)
+#' library(purrr)
+#' data("Deru")
+#' ToyData <- Deru
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
+#'                                n_clust = taxa_assign_g, n_ind = 500,
+#'                                verbose = FALSE, seed = 1234)
+#'                                
+#' # Extract microbiomes matrix for each generations
+#' microbiomes <- generations_simu[c(-1,-2)] %>% map(get_microbiomes)
+#'  
+#' # Estimate diversity metrics
+#' richness_from_abundances <- microbiomes %>% map(richness_from_abundances_gen, size_rmultinom = 10000) 
+#' ## size_rmultinom = 10000 according to DeruPops dataset
+#' 
+#' }
 #' 
 #' @return A `data.frame`of average diversity metrics (Observed, Shannon, Inverse Simpson) for each sample.
 #'
@@ -1322,26 +1400,6 @@ richness_from_abundances_gen <- function(microbiome_matrix, size_rmultinom = 100
   return(richness/n_loop)
 }
 
-```
-
-```{r examples-richness_from_abundances_gen, message=FALSE, warning=FALSE}
-\dontrun{
-library(magrittr)
-library(purrr)
-data("Deru")
-ToyData <- Deru
-taxa_assign_g <- assign_taxa(founder_object = ToyData)
-generations_simu <- holo_simu(h2 = 0.25, b2 = 0.25, founder_object = ToyData,
-                               n_clust = taxa_assign_g, n_ind = 500,
-                               verbose = FALSE, seed = 1234)
-                               
-# Extract microbiomes matrix for each generations
-microbiomes <- generations_simu[-1] %>% map(get_microbiomes)
- 
-# Estimate diversity metrics
-richness_from_abundances <- microbiomes %>% map(richness_from_abundances_gen, size_rmultinom = 10000) 
-## size_rmultinom = 10000 according to DeruPops dataset
-}
 ```
 
 ```{r tests-holo_simu}
@@ -1614,6 +1672,56 @@ get_phenotypes <- function(data) {
 #' @importFrom magrittr %>%
 #' 
 #' @param data List corresponding to one generation, as returned by [holo_simu()]. Containing simulation output.
+#' 
+#' @examples
+#' \dontrun{
+#' library(magrittr)
+#' library(purrr)
+#' 
+#' data("Deru")
+#' ToyData <- Deru
+#' taxa_assign_g <- assign_taxa(founder_object = ToyData)
+#' generations_simu <- holo_simu(h2 = 0.25,
+#'                               b2 = 0.25,
+#'                               founder_object = ToyData,
+#'                               n_clust = taxa_assign_g,
+#'                               n_ind = 500,
+#'                               verbose = FALSE,
+#'                               noise.microbiome = 0.5,
+#'                               effect.size = 0.3,
+#'                               lambda = 0.5,
+#'                               dir = TRUE,
+#'                               selection = FALSE,
+#'                               seed = 1234)
+#' 
+#' # To extract CLR abundances of the G1 generation microbiome
+#' G1_microbiome <- get_microbiomes(generations_simu$G1, CLR = TRUE)
+#' 
+#' # To extract all the relative abundances of microbiomes from all generations
+#' # substract metadata
+#' microbiomes <- generations_simu[-1] %>% map(get_microbiomes)
+#' 
+#' # To extract mean phenotypes of all generations
+#' mean_phenotypes <- generations_simu[-1] %>% map(get_mean_phenotypes)
+#' 
+#' # To extract phenotypic values for each individual of generation G1
+#' G1_phenotypes_values <- get_phenotypes_value(generations_simu$G1)
+#' 
+#' # To extract the phenotype of each generation as the combined effects of microbiota and direct genetic effects
+#' phenotypes <- generations_simu[-1] %>% map(get_phenotypes)
+#' 
+#' # To extract omega beta G values for each individual of generation G1
+#' G1_om_beta_g <- get_om_beta_g(generations_simu$G1)
+#' 
+#' # To extract ID of selected individuals to each generation
+#' selected_inds <- generations_simu[-1] %>% map(get_selected_ind) 
+#' 
+#' # To extract Shannon diversity
+#' # First step, compute richness from abundances
+#' richness_from_abundances <- generations_simu[c(-1,-2)] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen)
+#' shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
+#' }
+#' 
 #' @return The average Shannon diversity within a given generation.
 #' 
 #' @examples
@@ -1629,7 +1737,7 @@ get_phenotypes <- function(data) {
 #'                               
 #' # Extract Shannon diversity for each generations
 #' ## First step, compute richness from abundances
-#' richness_from_abundances <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen, size_rmultinom = 10000)
+#' richness_from_abundances <- generations_simu[c(-1,-2)] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen, size_rmultinom = 10000)
 #' ## size_rmultinom = 10000 according to DeruPops dataset
 #' 
 #' mean_shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
@@ -1639,56 +1747,6 @@ get_phenotypes <- function(data) {
 #' @export
 get_mean_diversity <- function(data) {
   mean(data$Shannon)
-}
-```
-
-```{r examples-get, message=FALSE, warning=FALSE}
-\dontrun{
-library(magrittr)
-library(purrr)
-
-data("Deru")
-ToyData <- Deru
-taxa_assign_g <- assign_taxa(founder_object = ToyData)
-generations_simu <- holo_simu(h2 = 0.25,
-                              b2 = 0.25,
-                              founder_object = ToyData,
-                              n_clust = taxa_assign_g,
-                              n_ind = 500,
-                              verbose = FALSE,
-                              noise.microbiome = 0.5,
-                              effect.size = 0.3,
-                              lambda = 0.5,
-                              dir = TRUE,
-                              selection = FALSE,
-                              seed = 1234)
-
-# To extract CLR abundances of the G1 generation microbiome
-G1_microbiome <- get_microbiomes(generations_simu$G1, CLR = TRUE)
-
-# To extract all the relative abundances of microbiomes from all generations
-# substract metadata
-microbiomes <- generations_simu[-1] %>% map(get_microbiomes)
-
-# To extract mean phenotypes of all generations
-mean_phenotypes <- generations_simu[-1] %>% map(get_mean_phenotypes)
-
-# To extract phenotypic values for each individual of generation G1
-G1_phenotypes_values <- get_phenotypes_value(generations_simu$G1)
-
-# To extract the phenotype of each generation as the combined effects of microbiota and direct genetic effects
-phenotypes <- generations_simu[-1] %>% map(get_phenotypes)
-
-# To extract omega beta G values for each individual of generation G1
-G1_om_beta_g <- get_om_beta_g(generations_simu$G1)
-
-# To extract ID of selected individuals to each generation
-selected_inds <- generations_simu[-1] %>% map(get_selected_ind) 
-
-# To extract Shannon diversity
-# First step, compute richness from abundances
-richness_from_abundances <- generations_simu[-1] %>% map(get_microbiomes) %>% map(richness_from_abundances_gen)
-shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
 }
 ```
 
@@ -1704,6 +1762,21 @@ shannon_diversity <- richness_from_abundances %>% map(get_mean_diversity)
 #' @param output_type A character, that specifies the output type. Choose between `"file"` (write `.vcf`),
 #'                    `"dataframe"` (return `data.frame`), or `"both"` (do both).
 #' @param output_path A character string that specifies the output path. Requiered if `output_type` is "file" or "both".
+#' 
+#' @examples
+#'\dontrun{
+#' n_ind <- 50
+#' n_snp <- 50
+#' 
+#' # Create a small genotype matrix
+#' set.seed(123)
+#' geno_matrix <- matrix(sample(0:2, size = n_ind*n_snp, replace = TRUE),
+#'                       nrow = n_snp, ncol = n_ind)
+#' 
+#' # Transform genotype matrix into VCF
+#' vcf <- transform_geno_into_vcf(geno_matrix, output_type = "dataframe")
+#' head(vcf[1:3,1:7])
+#'}
 #' 
 #' @return A `data.frame` if `output_type = "dataframe" or "both"`, or just write the `.vcf` file if `output_type = "file" or "both"`.
 #' 
@@ -1748,21 +1821,6 @@ transform_geno_into_vcf <- function(geno_matrix, output_type = c("file", "datafr
       print("The output type must be one of 'file' or 'dataframe'.")
     }
 }
-```
-
-
-```{r examples-transform_geno_into_vcf}
-n_ind <- 50
-n_snp <- 50
-
-# Create a small genotype matrix
-set.seed(123)
-geno_matrix <- matrix(sample(0:2, size = n_ind*n_snp, replace = TRUE),
-                      nrow = n_snp, ncol = n_ind)
-
-# Transform genotype matrix into VCF
-vcf <- transform_geno_into_vcf(geno_matrix, output_type = "dataframe")
-head(vcf[1:3,1:7])
 ```
 
 # Deru

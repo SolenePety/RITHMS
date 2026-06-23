@@ -42,24 +42,30 @@ Suggests:
     circlize,
     ComplexHeatmap,
     cowplot,
+    FactoMineR,
     ggh4x,
     ggrepel,
+    ggtext,
     knitr,
     paletteer,
     peakRAM,
     plotly,
     psych,
+    RColorBrewer,
     rmarkdown,
+    scales,
     testthat,
+    tidyr,
     tidyverse
-VignetteBuilder: knitr
+VignetteBuilder: 
+    knitr
 Remotes: 
     MoBPS=url::https://github.com/tpook92/MoBPS/raw/master/Previous%20versions/MoBPS_1.10.49.tar.gz
 Bibliography: references.bib
 BiocViews:
-Config/fusen/version: 0.6.0
+Config/fusen/version: 0.7.2
+Config/roxygen2/version: 8.0.0
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
