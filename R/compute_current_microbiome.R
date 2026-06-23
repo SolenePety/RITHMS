@@ -19,7 +19,8 @@
 #' 
 #' @seealso [compute_mean_microbiome()]
 #' @rdname compute_current_microbiome 
-#' @noRd
+#' @export
+#' @keywords internal
 
 compute_current_microbiome <- function(beta,
                                        current_genotypes,

@@ -36,7 +36,9 @@
 #' @return A `matrix` with taxa in roxs and individuals in columns, where each element represents the abundance of a given taxa in an individual, influenced by the genotype.
 #' 
 #' @rdname compute_beta_g
-#' @noRd
+#' @export
+#' @keywords internal
+#' 
 compute_beta_g <- function(beta,
                            genotypes,
                            noise,

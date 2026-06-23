@@ -48,7 +48,8 @@
 #' 
 #' @seealso [compute_phenotypes()]
 #' @rdname calibrate_params_phenotypes
-#' @noRd
+#' @export
+#' @keywords internal
 
 calibrate_params_phenotypes <- function(X0,
                                         B0,

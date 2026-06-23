@@ -25,7 +25,8 @@
 #' @seealso [compute_beta_g()], [holo_simu()]
 #' 
 #' @rdname compute_beta_matrix_cluster
-#' @noRd
+#' @export
+#' @keywords internal
 
 compute_beta_matrix_cluster <- function(n_b,
                                         n_g,

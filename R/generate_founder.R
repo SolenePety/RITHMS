@@ -25,7 +25,8 @@
 #' @seealso [read_input_data()], [rarefied_microbiome()]
 #' 
 #' @rdname generate_founder
-#' @noRd
+#' @export
+#' @keywords internal
 
 
 generate_founder <- function(path = NULL,

@@ -15,7 +15,8 @@
 #' 
 #' @seealso [calibrate_params_phenotypes()]
 #' @rdname compute_phenotypes
-#' @noRd
+#' @export
+#' @keywords internal
 
 compute_phenotypes <- function(X,     #Genotypes matrix with 0,1,2 encoding
                                B,     #Microbiome matrix, CLR abundances

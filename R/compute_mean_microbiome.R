@@ -20,7 +20,8 @@
 #' 
 #' @seealso [compute_current_microbiome()]
 #' @rdname compute_mean_microbiome
-#' @noRd
+#' @export
+#' @keywords internal
 
 compute_mean_microbiome <- function(microbiome, dir = F, n_ind = NULL, ao, mix.params){
   mean_microbiome <- rowMeans(microbiome)

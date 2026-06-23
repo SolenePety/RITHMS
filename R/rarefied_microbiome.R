@@ -25,7 +25,8 @@
 #' @seealso [read_input_data()], [generate_founder()]
 #' 
 #' @rdname rarefied_microbiome
-#' @noRd
+#' @export
+#' @keywords internal
 
 rarefied_microbiome <- function(microbiome_matrix,
                                 id_column = "ind_id",

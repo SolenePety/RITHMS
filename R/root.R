@@ -6,8 +6,9 @@
 #' 
 #' @param rho A numeric value between 0 and 1 representing the target correlation between taxa within the same cluster. This parameter is used to induce correlation in the beta matrix.
 #' @rdname root
+#' @export
+#' @keywords internal
 #' 
-#' @noRd
 root <- function(rho) {
   if (rho == 0.5) return(0.5)
   (2 * rho - sqrt(4 * rho^2 - 4 * rho * (2* rho - 1))) / (4*rho - 2)

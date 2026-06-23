@@ -14,7 +14,8 @@
 #' 
 #' @inheritParams holo_simu
 #' @rdname select_individual
-#' @noRd
+#' @export
+#' @keywords internal
 
 select_individual <- function(phenotypes,
                               microbiomes,

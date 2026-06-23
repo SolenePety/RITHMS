@@ -154,6 +154,8 @@ read_input_data <- function(path_to_microbiome,
 #' @seealso [read_input_data()], [generate_founder()]
 #' 
 #' @rdname rarefied_microbiome
+#' @export
+#' @keywords internal
 
 rarefied_microbiome <- function(microbiome_matrix,
                                 id_column = "ind_id",
@@ -193,6 +195,8 @@ rarefied_microbiome <- function(microbiome_matrix,
 #' @seealso [read_input_data()], [rarefied_microbiome()]
 #' 
 #' @rdname generate_founder
+#' @export
+#' @keywords internal
 
 
 generate_founder <- function(path = NULL,
@@ -460,6 +464,8 @@ gen_effect_calibration <- function(founder_object,
 #' @seealso [compute_beta_g()], [holo_simu()]
 #' 
 #' @rdname compute_beta_matrix_cluster
+#' @export
+#' @keywords internal
 
 compute_beta_matrix_cluster <- function(n_b,
                                         n_g,
@@ -547,6 +553,9 @@ compute_beta_matrix_cluster <- function(n_b,
 #' @return A `matrix` with taxa in roxs and individuals in columns, where each element represents the abundance of a given taxa in an individual, influenced by the genotype.
 #' 
 #' @rdname compute_beta_g
+#' @export
+#' @keywords internal
+#' 
 compute_beta_g <- function(beta,
                            genotypes,
                            noise,
@@ -570,6 +579,8 @@ compute_beta_g <- function(beta,
 #' 
 #' @param rho A numeric value between 0 and 1 representing the target correlation between taxa within the same cluster. This parameter is used to induce correlation in the beta matrix.
 #' @rdname root
+#' @export
+#' @keywords internal
 #' 
 root <- function(rho) {
   if (rho == 0.5) return(0.5)
@@ -629,6 +640,8 @@ root <- function(rho) {
 #' 
 #' @seealso [compute_phenotypes()]
 #' @rdname calibrate_params_phenotypes
+#' @export
+#' @keywords internal
 
 calibrate_params_phenotypes <- function(X0,
                                         B0,
@@ -734,6 +747,8 @@ calibrate_params_phenotypes <- function(X0,
 #' 
 #' @seealso [calibrate_params_phenotypes()]
 #' @rdname compute_phenotypes
+#' @export
+#' @keywords internal
 
 compute_phenotypes <- function(X,     #Genotypes matrix with 0,1,2 encoding
                                B,     #Microbiome matrix, CLR abundances
@@ -787,6 +802,8 @@ compute_phenotypes <- function(X,     #Genotypes matrix with 0,1,2 encoding
 #' 
 #' @seealso [compute_current_microbiome()]
 #' @rdname compute_mean_microbiome
+#' @export
+#' @keywords internal
 
 compute_mean_microbiome <- function(microbiome, dir = F, n_ind = NULL, ao, mix.params){
   mean_microbiome <- rowMeans(microbiome)
@@ -825,6 +842,8 @@ compute_mean_microbiome <- function(microbiome, dir = F, n_ind = NULL, ao, mix.p
 #' 
 #' @seealso [compute_mean_microbiome()]
 #' @rdname compute_current_microbiome 
+#' @export
+#' @keywords internal
 
 compute_current_microbiome <- function(beta,
                                        current_genotypes,
@@ -887,6 +906,8 @@ replace_zero <- function(x){
 #' 
 #' @inheritParams holo_simu
 #' @rdname select_individual
+#'    @export
+#' @keywords internal
 
 select_individual <- function(phenotypes,
                               microbiomes,
