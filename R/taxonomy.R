@@ -6,12 +6,5 @@
 #' 
 #' @source [Déru et al.](https://pmc.ncbi.nlm.nih.gov/articles/PMC9194801/) for microbiota data and corresponding metadata
 #' 
-#' @examples
-#' # Access the dataset
-#' data("taxonomy")
-#' 
-#' # View the column names of the matrix
-#' colnames(taxonomy)
-#' 
 #' 
 "taxonomy"

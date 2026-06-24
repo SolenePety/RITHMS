@@ -16,13 +16,4 @@ taxonomy
 \description{
 Taxonomy assignation
 }
-\examples{
-# Access the dataset
-data("taxonomy")
-
-# View the column names of the matrix
-colnames(taxonomy)
-
-
-}
 \keyword{datasets}

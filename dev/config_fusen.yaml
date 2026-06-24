@@ -38,7 +38,7 @@ flat_first.Rmd:
   - R/get_phenotypes.R
   - R/get_mean_diversity.R
   - R/transform_geno_into_vcf.R
-  - R/deru-dataset--pigs-.R
+  - R/deru-et-al--pigs-.R
   - R/taxonomy.R
   tests: tests/testthat/test-formatting_data.R
   vignettes: vignettes/get-started.Rmd
