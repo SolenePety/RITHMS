@@ -86,8 +86,13 @@ and `system.file()` to read it in your examples.
 
 # Additional functions
 
-# Deru
+# Datasets 
+ 
+## Deru dataset (pigs)  
+  
 
+## Taxonomy  
+  
 
 <!--
 # There can be development actions

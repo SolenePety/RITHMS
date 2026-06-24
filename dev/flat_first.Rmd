@@ -906,7 +906,7 @@ replace_zero <- function(x){
 #' 
 #' @inheritParams holo_simu
 #' @rdname select_individual
-#'    @export
+#' @export
 #' @keywords internal
 
 select_individual <- function(phenotypes,
@@ -1844,8 +1844,10 @@ transform_geno_into_vcf <- function(geno_matrix, output_type = c("file", "datafr
 }
 ```
 
-# Deru
-
+# Datasets 
+ 
+## Deru dataset (pigs)  
+  
 ```{r function-Deru}
 #' Deru Dataset
 #' 
@@ -1870,6 +1872,25 @@ transform_geno_into_vcf <- function(geno_matrix, output_type = c("file", "datafr
 "Deru"
 ```
 
+## Taxonomy  
+  
+```{r function-Deru}
+#' Taxonomy assignation
+#' 
+#' @format A `data.frame` containing the taxonomy for each OTU sequenced matching the ID in the microbiota matrix till Kingdom level.
+#' 
+#' @source [Déru et al.](https://pmc.ncbi.nlm.nih.gov/articles/PMC9194801/) for microbiota data and corresponding metadata
+#' 
+#' @examples
+#' # Access the dataset
+#' data("taxonomy")
+#' 
+#' # View the column names of the matrix
+#' colnames(taxonomy)
+#' 
+#' 
+"taxonomy"
+```
 
 <!--
 # There can be development actions

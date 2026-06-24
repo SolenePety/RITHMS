@@ -42,20 +42,15 @@ Suggests:
     circlize,
     ComplexHeatmap,
     cowplot,
-    FactoMineR,
     ggh4x,
     ggrepel,
-    ggtext,
     knitr,
     paletteer,
     peakRAM,
     plotly,
     psych,
-    RColorBrewer,
     rmarkdown,
-    scales,
     testthat,
-    tidyr,
     tidyverse
 VignetteBuilder: 
     knitr
