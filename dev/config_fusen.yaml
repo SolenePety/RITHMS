@@ -80,3 +80,18 @@ import-data.Rmd:
     overwrite: ask
     clean: ask
     codecov: false
+phenotypic_prediction.Rmd:
+  path: dev/phenotypic_prediction.Rmd
+  state: active
+  R: []
+  tests: []
+  vignettes: vignettes/hologenomic-data-for-phenotypic-prediction.Rmd
+  inflate:
+    flat_file: dev/phenotypic_prediction.Rmd
+    vignette_name: Hologenomic data for phenotypic prediction
+    open_vignette: true
+    check: true
+    document: true
+    overwrite: ask
+    clean: ask
+    codecov: false
