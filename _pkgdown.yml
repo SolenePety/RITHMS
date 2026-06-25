@@ -19,6 +19,8 @@ navbar:
         href: articles/import-data.html
       - text: "Calibrate simulation parameters"
         href: articles/calibrate-simulation-parameters.html
+      - text: "Hologenomic data for phenotypic prediction"
+        href: articles/hologenomic-data-for-phenotypic-prediction.html
     github:
       icon: fab fa-github
       href: https://github.com/SolenePety/RITHMS
