@@ -56,25 +56,6 @@
     <p><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9194801/" class="external-link">Déru et al.</a> for microbiota data and <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/" class="external-link">Déru et al. 2020</a> for genotypes data.</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Access the dataset</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Deru"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># View the first few rows of the taxa matrix</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Deru</span><span class="op">$</span><span class="va">microbiome</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   OTU1 OTU2 OTU6793 OTU3 OTU4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   30  593       4  630  414</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  254  275      62 1131  446</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  181  487     164 1472  656</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  469  665      45  640  328</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  771  519      21  758  347</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Access the population object</span></span></span>
-<span class="r-in"><span><span class="va">population</span> <span class="op">&lt;-</span> <span class="va">Deru</span><span class="op">$</span><span class="va">population</span></span></span>
-<span class="r-in"><span></span></span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

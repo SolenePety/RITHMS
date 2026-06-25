@@ -31,4 +31,6 @@ knitr::opts_chunk$set(
 
 ## Additional functions
 
-## Deru
+## Deru et al. (pigs)
+
+## Taxonomy

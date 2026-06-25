@@ -25,22 +25,3 @@ provides the genotypes of each individual, encoded as 0, 1 ,2.
 microbiota data and [Déru et al.
 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/) for genotypes
 data.
-
-## Examples
-
-``` r
-# Access the dataset
-data("Deru")
-
-# View the first few rows of the taxa matrix
-head(Deru$microbiome[1:5,1:5])
-#>   OTU1 OTU2 OTU6793 OTU3 OTU4
-#> 1   30  593       4  630  414
-#> 2  254  275      62 1131  446
-#> 3  181  487     164 1472  656
-#> 4  469  665      45  640  328
-#> 5  771  519      21  758  347
-
-# Access the population object
-population <- Deru$population
-```

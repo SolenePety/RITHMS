@@ -92,3 +92,4 @@ from HoloSimu output.
 ## Dataset
 
 - [`Deru`](Deru.md) : Deru Dataset
+- [`taxonomy`](taxonomy.md) : Taxonomy assignation
