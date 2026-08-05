@@ -5,7 +5,7 @@ output:
     code_folding: hide
 ---
   
-In this vignette, by generating controlled and contrasted biological scenarios across a broad parameter space, we examine how **microbiota granularity**, **variance structure** and **host modulation** influence variance component estimation and phenotypic prediction. We show that the added value of microbiota integration is highly context-dependent, and provide a structured framework to interrogate **when** and **how** integrating microbiota into models may enhance prediction in breeding applications. These results have been further detailed and explained in a **publication in preparation**.
+In this vignette, by generating controlled and contrasted biological scenarios across a broad parameter space, we examine how **microbiota granularity**, **variance structure** and **host modulation** influence variance component estimation and phenotypic prediction. We show that the added value of microbiota integration is highly context-dependent, and provide a structured framework to interrogate **when** and **how** integrating microbiota into models may enhance prediction in breeding applications. These results have been further detailed and explained in a [**preprint presented at CIBB 2026**](https://hal.science/hal-05709904).
 
 ```{r setup}
 #| echo: no
@@ -64,12 +64,7 @@ theme_set(session_theme)
 
 # **Load data**
 
-The data matrix loaded is the count matrix of taxa (in columns) across
-individuals (in rows). In our toy dataset, a subset from
-[Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/), there
-are **1845 species** and **780 individuals** coming from the conventional diet.
-Genotypes are encoded as 0, 1, 2 and reachable thanks to the *"population"*
-attribute.
+The data matrix loaded is the count matrix of taxa (in columns) across individuals (in rows). In our toy dataset, a subset from [Déru et al. 2020](https://pmc.ncbi.nlm.nih.gov/articles/PMC7538339/), there are **1845 species** and **780 individuals** coming from the conventional diet. Genotypes are encoded as 0, 1, 2 and reachable thanks to the *"population"* attribute.
 
 ```{r load-data}
 #| class.source: fold-show
@@ -102,9 +97,7 @@ genotypes[1:5, 1:5]
 
 # **Additional functions**
 
-Helper functions specific to this study cover kernel construction, model
-fitting, and result extraction. They are defined once here and shared across
-all sections. Note that in `run_BGLR()` function, `nIter=10` in this vignette but was at 1000 to generate the following figures.
+Helper functions specific to this study cover kernel construction, model fitting, and result extraction. They are defined once here and shared across all sections. Note that in `run_BGLR()` function, `nIter=10` in this vignette but was at 1000 to generate the following figures.
 
 ```{r helper-functions}
 #| eval: yes
@@ -265,20 +258,11 @@ MBLUP_kernel <- function(gen_simu,
 
 # **Explore the correlation between kernel matrices**
 
-We first examine how kernel matrices built from microbiota data at different
-taxonomic levels relate to one another. For each simulation replicate, we
-construct six kernel matrices — from OTU to Phylum level — and compute pairwise
-RV coefficients between them using `coeffRV()` from **FactoMineR**. A RV
-coefficient close to 1 indicates that two matrices carry similar structural
-information about inter-individual relationships.
+We first examine how kernel matrices built from microbiota data at different taxonomic levels relate to one another. For each simulation replicate, we construct six kernel matrices — from OTU to Phylum level — and compute pairwise RV coefficients between them using `coeffRV()` from **FactoMineR**. A RV coefficient close to 1 indicates that two matrices carry similar structural information about inter-individual relationships.
 
 ## Simulation
 
-For each replicate, we simulate a hologenomic population with `holo_simu()` and
-compute pairwise RV coefficients between the six kernel matrices. The chunk
-below runs **3 replicates** for illustration; the results presented in the paper
-were obtained from **100 replicates** (seeds drawn via
-`sample(100:100000, 100)` with `set.seed(200)`).
+For each replicate, we simulate a hologenomic population with `holo_simu()` and compute pairwise RV coefficients between the six kernel matrices. The chunk below runs **3 replicates** for illustration; the results presented in [the paper](https://hal.science/hal-05709904) were obtained from **100 replicates** (seeds drawn via `sample(100:100000, 100)` with `set.seed(200)`).
 
 ```{r run-kernel-correlation, eval=FALSE}
 #| 
@@ -356,12 +340,10 @@ colnames(mean_mat) <- rownames(mean_mat) <-
 
 ## Figure 1A
 
-The heatmap below displays the mean RV coefficient between each pair of
-aggregation levels. Values close to 1 indicate that the two kernels encode
-similar inter-individual similarity structures.
+The heatmap below displays the mean RV coefficient between each pair of aggregation levels. Values close to 1 indicate that the two kernels encode similar inter-individual similarity structures.
 
 > **Note.** The figure shown here is based on 3 replicates. Figure 1A in the
-> paper is based on 100 replicates and may differ slightly.
+> (paper)[https://hal.science/hal-05709904] is based on 100 replicates and may differ slightly.
 
 ```{r fig-kernel-correlation,eval=FALSE}
 #| eval: no
@@ -407,17 +389,11 @@ ggsave("../man/figures/kernel_corplots.png")
 
 # **Variance decomposition and phenotypic prediction across aggregation levels**
 
-We evaluate how the choice of taxonomic aggregation level affects two
-objectives: (i) the accuracy of variance component estimation (microbiability
-$\hat{b}^2$ and direct heritability $\hat{h}^2_d$), and (ii) phenotypic
-prediction accuracy in the last generation. For each replicate and each
-aggregation level, we fit an MGBLUP model using `MBLUP_kernel()`, which wraps a
-BGLR RKHS fit on both the microbiota kernel and the genomic relationship matrix.
+We evaluate how the choice of taxonomic aggregation level affects two objectives: (i) the accuracy of variance component estimation (microbiability $\hat{b}^2$ and direct heritability $\hat{h}^2_d$), and (ii) phenotypic prediction accuracy in the last generation. For each replicate and each aggregation level, we fit an MGBLUP model using `MBLUP_kernel()`, which wraps a BGLR RKHS fit on both the microbiota kernel and the genomic relationship matrix.
 
 ## Simulation
 
-The chunk below runs **3 replicate × 2 aggregation levels** for illustration;
-the paper used **500 replicates × 6 levels**.
+The chunk below runs **3 replicate × 2 aggregation levels** for illustration; [the paper](https://hal.science/hal-05709904) used **500 replicates × 6 levels**.
 
 ```{r run-variance-decomp,eval=FALSE}
 
@@ -587,7 +563,7 @@ ggsave("../man/figures/pheno_cor.png")
 ## Figure 1 — Assembly
 
 > **Note.** The figures shown here are based on 3 replicates × 2 aggregation
-> levels. Figure 1 in the paper uses 500 replicates × 6 levels.
+> levels. Figure 1 in [the paper](https://hal.science/hal-05709904) uses 500 replicates × 6 levels.
 
 ```{r fig1-assembly, eval=FALSE}
 #| eval: no
@@ -622,7 +598,7 @@ the transmission parameter $\lambda$.
 
 ## Simulation
 
-The parameter grid follows a simplified design as the one in the paper. To reproduce the one from the article, change the values in the following chunk with these one : 25 values of $b^2$
+The parameter grid follows a simplified design as the one in [the paper](https://hal.science/hal-05709904). To reproduce the one from the article, change the values in the following chunk with these one : 25 values of $b^2$
 (`seq(0, 0.49, 0.02)`), 25 values of `effect.size` (`seq(0, 4.8, 0.2)`), and
 three values of $\lambda$ (`0.1, 0.5, 0.9`). The chunk below runs **1
 replicate** across the grid for illustration; the paper used **100
@@ -740,7 +716,7 @@ ggsave("../man/figures/contour_plot.png", width = 12, height = 4)
 ```
 
 > **Note.** The figure shown here is based on 1 replicate across the simplified
-> parameter grid. Figure 2 in the paper averages over 100 replicates and may
+> parameter grid. Figure 2 in [the paper](https://hal.science/hal-05709904) averages over 100 replicates and may
 > differ substantially in the intermediate regime where $\Delta$ is close to
 > zero.
 

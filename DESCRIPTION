@@ -55,6 +55,7 @@ Suggests:
     RColorBrewer,
     rmarkdown,
     testthat,
+    tidyr,
     tidyverse
 VignetteBuilder: 
     knitr
