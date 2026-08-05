@@ -13,7 +13,8 @@ the added value of microbiota integration is highly context-dependent,
 and provide a structured framework to interrogate **when** and **how**
 integrating microbiota into models may enhance prediction in breeding
 applications. These results have been further detailed and explained in
-a **publication in preparation**.
+a [**preprint presented at CIBB
+2026**](https://hal.science/hal-05709904).
 
 ``` r
 
@@ -285,9 +286,10 @@ relationships.
 For each replicate, we simulate a hologenomic population with
 [`holo_simu()`](../reference/holo_simu.md) and compute pairwise RV
 coefficients between the six kernel matrices. The chunk below runs **3
-replicates** for illustration; the results presented in the paper were
-obtained from **100 replicates** (seeds drawn via
-`sample(100:100000, 100)` with `set.seed(200)`).
+replicates** for illustration; the results presented in [the
+paper](https://hal.science/hal-05709904) were obtained from **100
+replicates** (seeds drawn via `sample(100:100000, 100)` with
+`set.seed(200)`).
 
 ``` r
 
@@ -369,7 +371,8 @@ aggregation levels. Values close to 1 indicate that the two kernels
 encode similar inter-individual similarity structures.
 
 > **Note.** The figure shown here is based on 3 replicates. Figure 1A in
-> the paper is based on 100 replicates and may differ slightly.
+> the (paper)\[<https://hal.science/hal-05709904>\] is based on 100
+> replicates and may differ slightly.
 
 ``` r
 
@@ -423,7 +426,8 @@ kernel and the genomic relationship matrix.
 ### Simulation
 
 The chunk below runs **3 replicate × 2 aggregation levels** for
-illustration; the paper used **500 replicates × 6 levels**.
+illustration; [the paper](https://hal.science/hal-05709904) used **500
+replicates × 6 levels**.
 
 ``` r
 
@@ -587,7 +591,8 @@ ggsave("../man/figures/pheno_cor.png")
 ### Figure 1 — Assembly
 
 > **Note.** The figures shown here are based on 3 replicates × 2
-> aggregation levels. Figure 1 in the paper uses 500 replicates × 6
+> aggregation levels. Figure 1 in [the
+> paper](https://hal.science/hal-05709904) uses 500 replicates × 6
 > levels.
 
 ``` r
@@ -623,13 +628,13 @@ transmission parameter $`\lambda`$.
 
 ### Simulation
 
-The parameter grid follows a simplified design as the one in the paper.
-To reproduce the one from the article, change the values in the
-following chunk with these one : 25 values of $`b^2`$
-(`seq(0, 0.49, 0.02)`), 25 values of `effect.size` (`seq(0, 4.8, 0.2)`),
-and three values of $`\lambda`$ (`0.1, 0.5, 0.9`). The chunk below runs
-**1 replicate** across the grid for illustration; the paper used **100
-replicates**.
+The parameter grid follows a simplified design as the one in [the
+paper](https://hal.science/hal-05709904). To reproduce the one from the
+article, change the values in the following chunk with these one : 25
+values of $`b^2`$ (`seq(0, 0.49, 0.02)`), 25 values of `effect.size`
+(`seq(0, 4.8, 0.2)`), and three values of $`\lambda`$ (`0.1, 0.5, 0.9`).
+The chunk below runs **1 replicate** across the grid for illustration;
+the paper used **100 replicates**.
 
 ``` r
 
@@ -742,9 +747,10 @@ ggsave("../man/figures/contour_plot.png", width = 12, height = 4)
 ```
 
 > **Note.** The figure shown here is based on 1 replicate across the
-> simplified parameter grid. Figure 2 in the paper averages over 100
-> replicates and may differ substantially in the intermediate regime
-> where $`\Delta`$ is close to zero.
+> simplified parameter grid. Figure 2 in [the
+> paper](https://hal.science/hal-05709904) averages over 100 replicates
+> and may differ substantially in the intermediate regime where
+> $`\Delta`$ is close to zero.
 
 ### ![](../reference/figures/contour_plot.png)
 
